@@ -102,7 +102,7 @@ async function loadPareto(region, metricKey) {
 }
 async function loadOrders(region) {
   return sheetGet('getOrders', {
-    region
+    region: region || 'all'
   });
 }
 
@@ -3329,7 +3329,9 @@ const DN_MIN = DN_MIN_;
 const DN_MAX = DN_MAX_;
 const n2d = n => new Date(Math.round(n) * 86400000).toISOString().slice(0, 10);
 function DataView(_ref25) {
-  let metricId = _ref25.metricId;
+  let metricId = _ref25.metricId,
+    regionKey = _ref25.regionKey,
+    sheetsOrders = _ref25.sheetsOrders;
   const _useState27 = useState("All"),
     _useState28 = _slicedToArray(_useState27, 2),
     filterStatus = _useState28[0],
@@ -3353,7 +3355,9 @@ function DataView(_ref25) {
   const facilities = ["All", ...Array.from(new Set(SAMPLE_DATA.map(r => r.facility))).sort()];
   const rs = n2d(dateRange[0]);
   const re = n2d(dateRange[1]);
-  const filtered = SAMPLE_DATA.filter(r => filterStatus === "All" || r.status === filterStatus).filter(r => filterFacility === "All" || r.facility === filterFacility).filter(r => r.date >= rs && r.date <= re).sort((a, b) => {
+  // Use sheet orders for this region if available, otherwise fall back to SAMPLE_DATA
+  const baseData = sheetsOrders && sheetsOrders.length > 0 ? sheetsOrders.filter(r => !regionKey || r.region === regionKey || !r.region) : SAMPLE_DATA;
+  const filtered = baseData.filter(r => filterStatus === "All" || r.status === filterStatus).filter(r => filterFacility === "All" || r.facility === filterFacility).filter(r => r.date >= rs && r.date <= re).sort((a, b) => {
     const av = a[sortCol] ?? "",
       bv = b[sortCol] ?? "";
     return sortDir === "asc" ? av.localeCompare(bv) : bv.localeCompare(av);
@@ -3674,7 +3678,7 @@ function DataView(_ref25) {
       fontSize: 11,
       color: C.grayDark
     }
-  }, "Showing ", filtered.length, " of ", SAMPLE_DATA.length, " records \xB7 click headers to sort"));
+  }, "Showing ", filtered.length, " of ", baseData.length, " records \xB7 click headers to sort", sheetsOrders && sheetsOrders.length > 0 ? " (from Google Sheet)" : ""));
 }
 function RegionDashboard(_ref31) {
   let region = _ref31.region,
@@ -3907,7 +3911,9 @@ function RegionDashboard(_ref31) {
     saving: sheetsSaving,
     saveMsg: sheetsSaveMsg
   }), tab === "data" && /*#__PURE__*/React.createElement(DataView, {
-    metricId: sm
+    metricId: sm,
+    regionKey: regionKey,
+    sheetsOrders: sheetsData && sheetsData.orders
   })));
 }
 
@@ -5101,14 +5107,16 @@ function App() {
     setRefreshing(true);
     setSheetsStatus("loading");
     try {
-      const _await$Promise$all3 = await Promise.all([loadKPIMetrics(), loadDailyTrends()]),
-        _await$Promise$all4 = _slicedToArray(_await$Promise$all3, 2),
+      const _await$Promise$all3 = await Promise.all([loadKPIMetrics(), loadDailyTrends(), loadOrders('all')]),
+        _await$Promise$all4 = _slicedToArray(_await$Promise$all3, 3),
         kpiData = _await$Promise$all4[0],
-        trendData = _await$Promise$all4[1];
-      if (kpiData || trendData) {
+        trendData = _await$Promise$all4[1],
+        ordersData = _await$Promise$all4[2];
+      if (kpiData || trendData || ordersData) {
         setSheetsData({
           kpi: kpiData,
-          trends: trendData
+          trends: trendData,
+          orders: ordersData
         });
         setSheetsStatus("connected");
         sheetsConnected = true;
