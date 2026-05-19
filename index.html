@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CDS Daily Management — March 2026</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body, #root { height: 100%; }
@@ -19,318 +17,154 @@ button { font-family: inherit; }
 ::-webkit-scrollbar-track { background: #f4f7fb; }
 ::-webkit-scrollbar-thumb { background: #b0bec5; border-radius: 3px; }
 </style>
-
 </head>
 <body>
-<div id="root"></div>
+<div id="root"><div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Arial,sans-serif;color:#002f56;font-size:18px;">Loading dashboard…</div></div>
+<script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
 <script>
+(function waitForReact() {
+  if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
+    setTimeout(waitForReact, 50);
+    return;
+  }
+  (function() {
 var useState=React.useState,useEffect=React.useEffect;
-function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
-function _regenerator() { /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */ var e, t, r = "function" == typeof Symbol ? Symbol : {}, n = r.iterator || "@@iterator", o = r.toStringTag || "@@toStringTag"; function i(r, n, o, i) { var c = n && n.prototype instanceof Generator ? n : Generator, u = Object.create(c.prototype); return _regeneratorDefine2(u, "_invoke", function (r, n, o) { var i, c, u, f = 0, p = o || [], y = !1, G = { p: 0, n: 0, v: e, a: d, f: d.bind(e, 4), d: function d(t, r) { return i = t, c = 0, u = e, G.n = r, a; } }; function d(r, n) { for (c = r, u = n, t = 0; !y && f && !o && t < p.length; t++) { var o, i = p[t], d = G.p, l = i[2]; r > 3 ? (o = l === n) && (u = i[(c = i[4]) ? 5 : (c = 3, 3)], i[4] = i[5] = e) : i[0] <= d && ((o = r < 2 && d < i[1]) ? (c = 0, G.v = n, G.n = i[1]) : d < l && (o = r < 3 || i[0] > n || n > l) && (i[4] = r, i[5] = n, G.n = l, c = 0)); } if (o || r > 1) return a; throw y = !0, n; } return function (o, p, l) { if (f > 1) throw TypeError("Generator is already running"); for (y && 1 === p && d(p, l), c = p, u = l; (t = c < 2 ? e : u) || !y;) { i || (c ? c < 3 ? (c > 1 && (G.n = -1), d(c, u)) : G.n = u : G.v = u); try { if (f = 2, i) { if (c || (o = "next"), t = i[o]) { if (!(t = t.call(i, u))) throw TypeError("iterator result is not an object"); if (!t.done) return t; u = t.value, c < 2 && (c = 0); } else 1 === c && (t = i.return) && t.call(i), c < 2 && (u = TypeError("The iterator does not provide a '" + o + "' method"), c = 1); i = e; } else if ((t = (y = G.n < 0) ? u : r.call(n, G)) !== a) break; } catch (t) { i = e, c = 1, u = t; } finally { f = 1; } } return { value: t, done: y }; }; }(r, o, i), !0), u; } var a = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} t = Object.getPrototypeOf; var c = [][n] ? t(t([][n]())) : (_regeneratorDefine2(t = {}, n, function () { return this; }), t), u = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(c); function f(e) { return Object.setPrototypeOf ? Object.setPrototypeOf(e, GeneratorFunctionPrototype) : (e.__proto__ = GeneratorFunctionPrototype, _regeneratorDefine2(e, o, "GeneratorFunction")), e.prototype = Object.create(u), e; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, _regeneratorDefine2(u, "constructor", GeneratorFunctionPrototype), _regeneratorDefine2(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = "GeneratorFunction", _regeneratorDefine2(GeneratorFunctionPrototype, o, "GeneratorFunction"), _regeneratorDefine2(u), _regeneratorDefine2(u, o, "Generator"), _regeneratorDefine2(u, n, function () { return this; }), _regeneratorDefine2(u, "toString", function () { return "[object Generator]"; }), (_regenerator = function _regenerator() { return { w: i, m: f }; })(); }
-function _regeneratorDefine2(e, r, n, t) { var i = Object.defineProperty; try { i({}, "", {}); } catch (e) { i = 0; } _regeneratorDefine2 = function _regeneratorDefine(e, r, n, t) { function o(r, n) { _regeneratorDefine2(e, r, function (e) { return this._invoke(r, n, e); }); } r ? i ? i(e, r, { value: n, enumerable: !t, configurable: !t, writable: !t }) : e[r] = n : (o("next", 0), o("throw", 1), o("return", 2)); }, _regeneratorDefine2(e, r, n, t); }
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 function _iterableToArrayLimit(r, l) { var t = null == r ? null : "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (null != t) { var e, n, i, u, a = [], f = !0, o = !1; try { if (i = (t = t.call(r)).next, 0 === l) { if (Object(t) !== t) return; f = !1; } else for (; !(f = (e = i.call(t)).done) && (a.push(e.value), a.length !== l); f = !0); } catch (r) { o = !0, n = r; } finally { try { if (!f && null != t.return && (u = t.return(), Object(u) !== u)) return; } finally { if (o) throw n; } } return a; } }
 function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
-function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
-function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
-function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
-function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
-function ownKeys(e, r) { var t = Object.keys(e); if (Object.getOwnPropertySymbols) { var o = Object.getOwnPropertySymbols(e); r && (o = o.filter(function (r) { return Object.getOwnPropertyDescriptor(e, r).enumerable; })), t.push.apply(t, o); } return t; }
-function _objectSpread(e) { for (var r = 1; r < arguments.length; r++) { var t = null != arguments[r] ? arguments[r] : {}; r % 2 ? ownKeys(Object(t), !0).forEach(function (r) { _defineProperty(e, r, t[r]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(t)) : ownKeys(Object(t)).forEach(function (r) { Object.defineProperty(e, r, Object.getOwnPropertyDescriptor(t, r)); }); } return e; }
-function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object.defineProperty(e, r, { value: t, enumerable: !0, configurable: !0, writable: !0 }) : e[r] = t, e; }
-function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
-function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
-function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
-function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
-var _React = React,
-  useState = _React.useState,
-  useEffect = _React.useEffect;
-
 // ── APPS SCRIPT CONFIGURATION ───────────────────────────────────────────────
 // Paste your deployed Apps Script Web App URL here
-var SHEETS_CONFIG = {
+const SHEETS_CONFIG = {
   WEB_APP_URL: "https://script.google.com/macros/s/AKfycby3G-4IZSLJt9F_o9nrg4KAInTxmFz4uigXQO1fviXMSsqmu2nWugR8QkS2ZYFYMPfPSg/exec"
 };
 
 // ── API HELPERS ───────────────────────────────────────────────────────────────
-var sheetsConnected = false;
-var sheetsError = null;
-function sheetGet(_x) {
-  return _sheetGet.apply(this, arguments);
+let sheetsConnected = false;
+let sheetsError = null;
+async function sheetGet(action) {
+  let params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  if (!SHEETS_CONFIG.WEB_APP_URL || SHEETS_CONFIG.WEB_APP_URL.includes("YOUR_APPS")) return null;
+  const qs = new URLSearchParams({
+    action,
+    ...params
+  }).toString();
+  const resp = await fetch(`${SHEETS_CONFIG.WEB_APP_URL}?${qs}`);
+  const json = await resp.json();
+  if (!json.ok) throw new Error(json.error || 'Sheet read failed');
+  return json.data;
 }
-function _sheetGet() {
-  _sheetGet = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee5(action) {
-    var params,
-      qs,
-      resp,
-      json,
-      _args5 = arguments;
-    return _regenerator().w(function (_context5) {
-      while (1) switch (_context5.n) {
-        case 0:
-          params = _args5.length > 1 && _args5[1] !== undefined ? _args5[1] : {};
-          if (!(!SHEETS_CONFIG.WEB_APP_URL || SHEETS_CONFIG.WEB_APP_URL.includes("YOUR_APPS"))) {
-            _context5.n = 1;
-            break;
-          }
-          return _context5.a(2, null);
-        case 1:
-          qs = new URLSearchParams(_objectSpread({
-            action: action
-          }, params)).toString();
-          _context5.n = 2;
-          return fetch("".concat(SHEETS_CONFIG.WEB_APP_URL, "?").concat(qs));
-        case 2:
-          resp = _context5.v;
-          _context5.n = 3;
-          return resp.json();
-        case 3:
-          json = _context5.v;
-          if (json.ok) {
-            _context5.n = 4;
-            break;
-          }
-          throw new Error(json.error || 'Sheet read failed');
-        case 4:
-          return _context5.a(2, json.data);
-      }
-    }, _callee5);
-  }));
-  return _sheetGet.apply(this, arguments);
+async function sheetPost(action) {
+  let payload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  if (!SHEETS_CONFIG.WEB_APP_URL || SHEETS_CONFIG.WEB_APP_URL.includes("YOUR_APPS")) return null;
+  const resp = await fetch(SHEETS_CONFIG.WEB_APP_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      action,
+      ...payload
+    })
+  });
+  const json = await resp.json();
+  if (!json.ok) throw new Error(json.error || 'Sheet write failed');
+  return json.data;
 }
-function sheetPost(_x2) {
-  return _sheetPost.apply(this, arguments);
-} // ── DATA LOADING ──────────────────────────────────────────────────────────────
-function _sheetPost() {
-  _sheetPost = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee6(action) {
-    var payload,
-      resp,
-      json,
-      _args6 = arguments;
-    return _regenerator().w(function (_context6) {
-      while (1) switch (_context6.n) {
-        case 0:
-          payload = _args6.length > 1 && _args6[1] !== undefined ? _args6[1] : {};
-          if (!(!SHEETS_CONFIG.WEB_APP_URL || SHEETS_CONFIG.WEB_APP_URL.includes("YOUR_APPS"))) {
-            _context6.n = 1;
-            break;
-          }
-          return _context6.a(2, null);
-        case 1:
-          _context6.n = 2;
-          return fetch(SHEETS_CONFIG.WEB_APP_URL, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(_objectSpread({
-              action: action
-            }, payload))
-          });
-        case 2:
-          resp = _context6.v;
-          _context6.n = 3;
-          return resp.json();
-        case 3:
-          json = _context6.v;
-          if (json.ok) {
-            _context6.n = 4;
-            break;
-          }
-          throw new Error(json.error || 'Sheet write failed');
-        case 4:
-          return _context6.a(2, json.data);
-      }
-    }, _callee6);
-  }));
-  return _sheetPost.apply(this, arguments);
+
+// ── DATA LOADING ──────────────────────────────────────────────────────────────
+async function loadKPIMetrics() {
+  return sheetGet('getKPIMetrics');
 }
-function loadKPIMetrics() {
-  return _loadKPIMetrics.apply(this, arguments);
+async function loadDailyTrends() {
+  return sheetGet('getDailyTrends');
 }
-function _loadKPIMetrics() {
-  _loadKPIMetrics = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee7() {
-    return _regenerator().w(function (_context7) {
-      while (1) switch (_context7.n) {
-        case 0:
-          return _context7.a(2, sheetGet('getKPIMetrics'));
-      }
-    }, _callee7);
-  }));
-  return _loadKPIMetrics.apply(this, arguments);
+async function loadCILog(region, metricKey) {
+  return sheetGet('getCILog', {
+    region,
+    metricKey
+  });
 }
-function loadDailyTrends() {
-  return _loadDailyTrends.apply(this, arguments);
+async function loadPareto(region, metricKey) {
+  return sheetGet('getPareto', {
+    region,
+    metricKey
+  });
 }
-function _loadDailyTrends() {
-  _loadDailyTrends = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee8() {
-    return _regenerator().w(function (_context8) {
-      while (1) switch (_context8.n) {
-        case 0:
-          return _context8.a(2, sheetGet('getDailyTrends'));
-      }
-    }, _callee8);
-  }));
-  return _loadDailyTrends.apply(this, arguments);
+async function loadOrders(region) {
+  return sheetGet('getOrders', {
+    region
+  });
 }
-function loadCILog(_x3, _x4) {
-  return _loadCILog.apply(this, arguments);
+
+// ── DATA SAVING ───────────────────────────────────────────────────────────────
+async function saveCILog(region, metricKey, ciLog) {
+  try {
+    await sheetPost('saveCILog', {
+      region,
+      metricKey,
+      payload: ciLog
+    });
+    return true;
+  } catch (e) {
+    console.error('saveCILog', e);
+    return false;
+  }
 }
-function _loadCILog() {
-  _loadCILog = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee9(region, metricKey) {
-    return _regenerator().w(function (_context9) {
-      while (1) switch (_context9.n) {
-        case 0:
-          return _context9.a(2, sheetGet('getCILog', {
-            region: region,
-            metricKey: metricKey
-          }));
-      }
-    }, _callee9);
-  }));
-  return _loadCILog.apply(this, arguments);
+async function savePareto(region, metricKey, counts) {
+  try {
+    await sheetPost('savePareto', {
+      region,
+      metricKey,
+      payload: counts
+    });
+    return true;
+  } catch (e) {
+    console.error('savePareto', e);
+    return false;
+  }
 }
-function loadPareto(_x5, _x6) {
-  return _loadPareto.apply(this, arguments);
+
+// Export all current dashboard data to the sheet in one shot
+async function exportAllToSheet(regions, sampleData) {
+  const kpiMetrics = [];
+  const dailyTrends = [];
+  Object.entries(regions).forEach(_ref => {
+    let _ref2 = _slicedToArray(_ref, 2),
+      regionKey = _ref2[0],
+      region = _ref2[1];
+    Object.entries(region.metrics).forEach(_ref3 => {
+      var _metric$monthly, _metric$monthly2;
+      let _ref4 = _slicedToArray(_ref3, 2),
+        mk = _ref4[0],
+        metric = _ref4[1];
+      kpiMetrics.push([regionKey, mk, metric.daily.standard, metric.daily.actual, metric.mtd.standard, metric.mtd.actual, ((_metric$monthly = metric.monthly) === null || _metric$monthly === void 0 ? void 0 : _metric$monthly.January) ?? '', ((_metric$monthly2 = metric.monthly) === null || _metric$monthly2 === void 0 ? void 0 : _metric$monthly2.February) ?? '']);
+      Object.entries(metric.dailyTrend || {}).forEach(_ref5 => {
+        let _ref6 = _slicedToArray(_ref5, 2),
+          day = _ref6[0],
+          val = _ref6[1];
+        dailyTrends.push([regionKey, mk, day, val]);
+      });
+    });
+  });
+  const orders = sampleData.map(r => ['Northeast', r.order, r.status, r.facility, r.billTo, r.manufacturer, r.driver, r.deliveryDT || '', r.tfStart || '', r.tfEnd || '', r.receiveDT || '', r.actualReceiveDate || '', r.dwellDays ?? '', r.schedOnDate || '', r.presActualReceiveDate || '', r.scanType || '', r.totalItems ?? '', r.shortItems ?? '', r.cesScore ?? '', r.audited || '']);
+  return sheetPost('exportAll', {
+    payload: {
+      kpiMetrics,
+      dailyTrends,
+      orders
+    }
+  });
 }
-function _loadPareto() {
-  _loadPareto = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee0(region, metricKey) {
-    return _regenerator().w(function (_context0) {
-      while (1) switch (_context0.n) {
-        case 0:
-          return _context0.a(2, sheetGet('getPareto', {
-            region: region,
-            metricKey: metricKey
-          }));
-      }
-    }, _callee0);
-  }));
-  return _loadPareto.apply(this, arguments);
-}
-function loadOrders(_x7) {
-  return _loadOrders.apply(this, arguments);
-} // ── DATA SAVING ───────────────────────────────────────────────────────────────
-function _loadOrders() {
-  _loadOrders = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee1(region) {
-    return _regenerator().w(function (_context1) {
-      while (1) switch (_context1.n) {
-        case 0:
-          return _context1.a(2, sheetGet('getOrders', {
-            region: region
-          }));
-      }
-    }, _callee1);
-  }));
-  return _loadOrders.apply(this, arguments);
-}
-function saveCILog(_x8, _x9, _x0) {
-  return _saveCILog.apply(this, arguments);
-}
-function _saveCILog() {
-  _saveCILog = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee10(region, metricKey, ciLog) {
-    var _t2;
-    return _regenerator().w(function (_context10) {
-      while (1) switch (_context10.p = _context10.n) {
-        case 0:
-          _context10.p = 0;
-          _context10.n = 1;
-          return sheetPost('saveCILog', {
-            region: region,
-            metricKey: metricKey,
-            payload: ciLog
-          });
-        case 1:
-          return _context10.a(2, true);
-        case 2:
-          _context10.p = 2;
-          _t2 = _context10.v;
-          console.error('saveCILog', _t2);
-          return _context10.a(2, false);
-      }
-    }, _callee10, null, [[0, 2]]);
-  }));
-  return _saveCILog.apply(this, arguments);
-}
-function savePareto(_x1, _x10, _x11) {
-  return _savePareto.apply(this, arguments);
-} // Export all current dashboard data to the sheet in one shot
-function _savePareto() {
-  _savePareto = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee11(region, metricKey, counts) {
-    var _t3;
-    return _regenerator().w(function (_context11) {
-      while (1) switch (_context11.p = _context11.n) {
-        case 0:
-          _context11.p = 0;
-          _context11.n = 1;
-          return sheetPost('savePareto', {
-            region: region,
-            metricKey: metricKey,
-            payload: counts
-          });
-        case 1:
-          return _context11.a(2, true);
-        case 2:
-          _context11.p = 2;
-          _t3 = _context11.v;
-          console.error('savePareto', _t3);
-          return _context11.a(2, false);
-      }
-    }, _callee11, null, [[0, 2]]);
-  }));
-  return _savePareto.apply(this, arguments);
-}
-function exportAllToSheet(_x12, _x13) {
-  return _exportAllToSheet.apply(this, arguments);
-} // ── SHEETS STATUS INDICATOR ───────────────────────────────────────────────────
-function _exportAllToSheet() {
-  _exportAllToSheet = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee12(regions, sampleData) {
-    var kpiMetrics, dailyTrends, orders;
-    return _regenerator().w(function (_context12) {
-      while (1) switch (_context12.n) {
-        case 0:
-          kpiMetrics = [];
-          dailyTrends = [];
-          Object.entries(regions).forEach(function (_ref53) {
-            var _ref54 = _slicedToArray(_ref53, 2),
-              regionKey = _ref54[0],
-              region = _ref54[1];
-            Object.entries(region.metrics).forEach(function (_ref55) {
-              var _metric$monthly$Janua, _metric$monthly, _metric$monthly$Febru, _metric$monthly2;
-              var _ref56 = _slicedToArray(_ref55, 2),
-                mk = _ref56[0],
-                metric = _ref56[1];
-              kpiMetrics.push([regionKey, mk, metric.daily.standard, metric.daily.actual, metric.mtd.standard, metric.mtd.actual, (_metric$monthly$Janua = (_metric$monthly = metric.monthly) === null || _metric$monthly === void 0 ? void 0 : _metric$monthly.January) !== null && _metric$monthly$Janua !== void 0 ? _metric$monthly$Janua : '', (_metric$monthly$Febru = (_metric$monthly2 = metric.monthly) === null || _metric$monthly2 === void 0 ? void 0 : _metric$monthly2.February) !== null && _metric$monthly$Febru !== void 0 ? _metric$monthly$Febru : '']);
-              Object.entries(metric.dailyTrend || {}).forEach(function (_ref57) {
-                var _ref58 = _slicedToArray(_ref57, 2),
-                  day = _ref58[0],
-                  val = _ref58[1];
-                dailyTrends.push([regionKey, mk, day, val]);
-              });
-            });
-          });
-          orders = sampleData.map(function (r) {
-            var _r$dwellDays, _r$totalItems, _r$shortItems, _r$cesScore;
-            return ['Northeast', r.order, r.status, r.facility, r.billTo, r.manufacturer, r.driver, r.deliveryDT || '', r.tfStart || '', r.tfEnd || '', r.receiveDT || '', r.actualReceiveDate || '', (_r$dwellDays = r.dwellDays) !== null && _r$dwellDays !== void 0 ? _r$dwellDays : '', r.schedOnDate || '', r.presActualReceiveDate || '', r.scanType || '', (_r$totalItems = r.totalItems) !== null && _r$totalItems !== void 0 ? _r$totalItems : '', (_r$shortItems = r.shortItems) !== null && _r$shortItems !== void 0 ? _r$shortItems : '', (_r$cesScore = r.cesScore) !== null && _r$cesScore !== void 0 ? _r$cesScore : '', r.audited || ''];
-          });
-          return _context12.a(2, sheetPost('exportAll', {
-            payload: {
-              kpiMetrics: kpiMetrics,
-              dailyTrends: dailyTrends,
-              orders: orders
-            }
-          }));
-      }
-    }, _callee12);
-  }));
-  return _exportAllToSheet.apply(this, arguments);
-}
-function SheetsStatus(_ref) {
-  var status = _ref.status,
-    onExport = _ref.onExport;
-  var cfg = {
+
+// ── SHEETS STATUS INDICATOR ───────────────────────────────────────────────────
+function SheetsStatus(_ref7) {
+  let status = _ref7.status,
+    onExport = _ref7.onExport;
+  const cfg = {
     loading: {
       color: "#e07b00",
       icon: "⏳",
@@ -395,18 +229,29 @@ function SheetsStatus(_ref) {
     }
   }, "\u2191 Export to Sheet"));
 }
-var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-var MARCH_WEEKENDS = new Set([1, 7, 8, 14, 15, 21, 22, 28, 29]);
-var isMarchWeekend = function isMarchWeekend(d) {
-  return MARCH_WEEKENDS.has(d);
+const C = {
+  darkBlue: "#002f56",
+  blue: "#2e97ed",
+  red: "#ea0029",
+  green: "#5db136",
+  gray: "#e0e0e0",
+  darkBlue2: "#00213d",
+  darkBlue3: "#003d70",
+  darkBlue4: "#004a8a",
+  blueLight: "#d6eaf8",
+  grayDark: "#6b7280",
+  grayMid: "#b0bec5",
+  white: "#ffffff",
+  offWhite: "#f4f7fb",
+  amber: "#e07b00"
 };
-var pct = function pct(v) {
-  return v != null ? "".concat((v * 100).toFixed(1), "%") : "—";
-};
-var perfColor = function perfColor(hit) {
-  return hit ? C.green : C.red;
-};
-var METRIC_DEFS = {
+const FONT = "'Calibri','Carlito','Segoe UI',Arial,sans-serif";
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const MARCH_WEEKENDS = new Set([1, 7, 8, 14, 15, 21, 22, 28, 29]);
+const isMarchWeekend = d => MARCH_WEEKENDS.has(d);
+const pct = v => v != null ? `${(v * 100).toFixed(1)}%` : "—";
+const perfColor = hit => hit ? C.green : C.red;
+const METRIC_DEFS = {
   OT: {
     label: "On Time %",
     category: "Delivery",
@@ -478,7 +323,7 @@ var METRIC_DEFS = {
     hib: true
   }
 };
-var REGION_METRIC_KEYS = {
+const REGION_METRIC_KEYS = {
   West: ["OT", "Scanning", "COT", "Dwell", "Preschedule", "CES", "RNS"],
   Midwest: ["OT", "Scanning", "COT", "Dwell", "Preschedule", "CES", "RNS"],
   Gulf: ["Shortages", "POD", "Scanning", "COT"],
@@ -486,19 +331,19 @@ var REGION_METRIC_KEYS = {
   Northeast: ["OT", "COT", "Scanning", "POD", "Call"],
   "Mid-Atlantic": ["OT", "COT", "Scanning", "POD", "Call"]
 };
-var janDays = [2, 5, 6, 7, 8, 9, 12, 13, 14, 15, 16, 20, 21, 22, 23, 26, 27];
-var febDays = [2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 17, 18, 19, 20, 24, 25, 26, 27];
-var marchTrendDays = [3, 4, 5, 6, 10, 11, 12, 13, 17, 18, 19, 20, 24, 25, 26, 27, 31];
+const janDays = [2, 5, 6, 7, 8, 9, 12, 13, 14, 15, 16, 20, 21, 22, 23, 26, 27];
+const febDays = [2, 3, 4, 5, 6, 9, 10, 11, 12, 13, 17, 18, 19, 20, 24, 25, 26, 27];
+const marchTrendDays = [3, 4, 5, 6, 10, 11, 12, 13, 17, 18, 19, 20, 24, 25, 26, 27, 31];
 function jT(seed, base, range, days) {
-  var o = {};
-  days.forEach(function (d, i) {
+  const o = {};
+  days.forEach((d, i) => {
     o[d] = Math.min(1.0, Math.max(0, base + Math.sin(seed * 31 + i * 7) * range));
   });
   return o;
 }
 function jD(seed, base, range) {
-  var o = {};
-  marchTrendDays.forEach(function (d, i) {
+  const o = {};
+  marchTrendDays.forEach((d, i) => {
     o[d] = Math.min(1.0, Math.max(0, base + Math.sin(seed * 17 + i * 13) * range));
   });
   return o;
@@ -507,14 +352,15 @@ function jitter(seed, base, range) {
   return Math.min(1.0, Math.max(0, base + Math.sin(seed * 137 + base * 1000) * range));
 }
 function buildMetric(key, seed) {
-  var def = METRIC_DEFS[key];
-  var g = def.goal;
-  var bm = def.hib ? jitter(seed, g * 1.005, g * 0.025) : jitter(seed, g * 0.95, g * 0.1);
-  var bd = def.hib ? jitter(seed + 1, g * 1.008, g * 0.03) : jitter(seed + 1, g * 0.92, g * 0.12);
-  var bj = def.hib ? jitter(seed + 2, g * 0.998, g * 0.02) : jitter(seed + 2, g * 0.95, g * 0.1);
-  var bf = def.hib ? jitter(seed + 3, g * 1.001, g * 0.018) : jitter(seed + 3, g * 0.94, g * 0.09);
-  var jR = def.hib ? g * 0.04 : g * 0.15;
-  return _objectSpread(_objectSpread({}, def), {}, {
+  const def = METRIC_DEFS[key];
+  const g = def.goal;
+  const bm = def.hib ? jitter(seed, g * 1.005, g * 0.025) : jitter(seed, g * 0.95, g * 0.1);
+  const bd = def.hib ? jitter(seed + 1, g * 1.008, g * 0.03) : jitter(seed + 1, g * 0.92, g * 0.12);
+  const bj = def.hib ? jitter(seed + 2, g * 0.998, g * 0.02) : jitter(seed + 2, g * 0.95, g * 0.1);
+  const bf = def.hib ? jitter(seed + 3, g * 1.001, g * 0.018) : jitter(seed + 3, g * 0.94, g * 0.09);
+  const jR = def.hib ? g * 0.04 : g * 0.15;
+  return {
+    ...def,
     daily: {
       standard: g,
       actual: bd
@@ -532,15 +378,14 @@ function buildMetric(key, seed) {
     dailyTrend: jD(seed + 30, bm, jR),
     pareto: {},
     ciLog: []
-  });
+  };
 }
 function makeRegionMetrics(rk, seed) {
-  return Object.fromEntries(REGION_METRIC_KEYS[rk].map(function (k, i) {
-    return [k, buildMetric(k, seed * 100 + i)];
-  }));
+  return Object.fromEntries(REGION_METRIC_KEYS[rk].map((k, i) => [k, buildMetric(k, seed * 100 + i)]));
 }
-var NE_METRICS = {
-  OT: _objectSpread(_objectSpread({}, METRIC_DEFS.OT), {}, {
+const NE_METRICS = {
+  OT: {
+    ...METRIC_DEFS.OT,
     daily: {
       standard: 0.98,
       actual: 1.0
@@ -620,8 +465,9 @@ var NE_METRICS = {
       "Weather": 0
     },
     ciLog: []
-  }),
-  COT: _objectSpread(_objectSpread({}, METRIC_DEFS.COT), {}, {
+  },
+  COT: {
+    ...METRIC_DEFS.COT,
     daily: {
       standard: 0.99,
       actual: 1.0
@@ -720,8 +566,9 @@ var NE_METRICS = {
       status: "Countermeasure Implemented",
       updates: []
     }]
-  }),
-  Scanning: _objectSpread(_objectSpread({}, METRIC_DEFS.Scanning), {}, {
+  },
+  Scanning: {
+    ...METRIC_DEFS.Scanning,
     daily: {
       standard: 0.98,
       actual: 0.9633
@@ -796,8 +643,9 @@ var NE_METRICS = {
       "Will Call": 0
     },
     ciLog: []
-  }),
-  POD: _objectSpread(_objectSpread({}, METRIC_DEFS.POD), {}, {
+  },
+  POD: {
+    ...METRIC_DEFS.POD,
     daily: {
       standard: 0.97,
       actual: 0.9655
@@ -867,8 +715,9 @@ var NE_METRICS = {
     },
     pareto: {},
     ciLog: []
-  }),
-  Call: _objectSpread(_objectSpread({}, METRIC_DEFS.Call), {}, {
+  },
+  Call: {
+    ...METRIC_DEFS.Call,
     daily: {
       standard: 0.97,
       actual: 0.8814
@@ -938,9 +787,9 @@ var NE_METRICS = {
     },
     pareto: {},
     ciLog: []
-  })
+  }
 };
-var REGIONS = {
+const REGIONS = {
   Northeast: {
     label: "Northeast",
     metrics: NE_METRICS
@@ -966,7 +815,7 @@ var REGIONS = {
     metrics: makeRegionMetrics("West", 5)
   }
 };
-var REGION_GROUPS = [{
+const REGION_GROUPS = [{
   label: "Northeast & Mid-Atlantic",
   keys: ["Northeast", "Mid-Atlantic"],
   metricKeys: ["OT", "COT", "Scanning", "POD", "Call"]
@@ -979,52 +828,42 @@ var REGION_GROUPS = [{
   keys: ["West", "Midwest"],
   metricKeys: ["OT", "Scanning", "COT", "Dwell", "Preschedule", "CES", "RNS"]
 }];
-var CWD = [24, 25, 26, 27];
+const CWD = [24, 25, 26, 27];
 function weeklyAvg(metric) {
-  var vals = CWD.map(function (d) {
-    return metric.dailyTrend[d];
-  }).filter(function (v) {
-    return v != null;
-  });
+  const vals = CWD.map(d => metric.dailyTrend[d]).filter(v => v != null);
   if (!vals.length) return metric.mtd.actual;
-  return vals.reduce(function (s, v) {
-    return s + v;
-  }, 0) / vals.length;
+  return vals.reduce((s, v) => s + v, 0) / vals.length;
 }
 function metricHit(key, value) {
-  var def = METRIC_DEFS[key];
+  const def = METRIC_DEFS[key];
   return def.hib ? value >= def.goal : value <= def.goal;
 }
 function normScore(key, value) {
-  var def = METRIC_DEFS[key];
+  const def = METRIC_DEFS[key];
   if (def.hib) return Math.min(1, value);
   return Math.max(0, Math.min(1, 1 - (value - def.goal) / def.goal));
 }
 function overallScore(metrics) {
-  var ks = Object.keys(metrics);
-  return ks.map(function (k) {
-    return normScore(k, weeklyAvg(metrics[k]));
-  }).reduce(function (s, v) {
-    return s + v;
-  }, 0) / ks.length;
+  const ks = Object.keys(metrics);
+  return ks.map(k => normScore(k, weeklyAvg(metrics[k]))).reduce((s, v) => s + v, 0) / ks.length;
 }
 function fmtM(key, value) {
   if (value == null) return "—";
-  var def = METRIC_DEFS[key];
+  const def = METRIC_DEFS[key];
   if (!def) return pct(value);
-  return def.fmt === "pct" ? pct(def.hib ? Math.min(1, value) : value) : "".concat(Math.round(value), "d");
+  return def.fmt === "pct" ? pct(def.hib ? Math.min(1, value) : value) : `${Math.round(value)}d`;
 }
 function getMonthInfo(name, year) {
-  var i = MONTHS.indexOf(name);
+  const i = MONTHS.indexOf(name);
   if (i < 0) return {
     weekendSet: MARCH_WEEKENDS,
     daysInMonth: 31,
     firstDow: 0
   };
-  var fd = new Date(year, i, 1).getDay();
-  var dim = new Date(year, i + 1, 0).getDate();
-  var ws = new Set();
-  for (var d = 1; d <= dim; d++) {
+  const fd = new Date(year, i, 1).getDay();
+  const dim = new Date(year, i + 1, 0).getDate();
+  const ws = new Set();
+  for (let d = 1; d <= dim; d++) {
     if ((fd + d - 1) % 7 === 0 || (fd + d - 1) % 7 === 6) ws.add(d);
   }
   return {
@@ -1033,17 +872,17 @@ function getMonthInfo(name, year) {
     firstDow: fd
   };
 }
-function GaugeBar(_ref2) {
-  var actual = _ref2.actual,
-    goal = _ref2.goal,
-    onCard = _ref2.onCard,
-    _ref2$hib = _ref2.hib,
-    hib = _ref2$hib === void 0 ? true : _ref2$hib;
-  var hit = hib ? actual >= goal : actual <= goal;
-  var MIN = 0.85;
+function GaugeBar(_ref8) {
+  let actual = _ref8.actual,
+    goal = _ref8.goal,
+    onCard = _ref8.onCard,
+    _ref8$hib = _ref8.hib,
+    hib = _ref8$hib === void 0 ? true : _ref8$hib;
+  const hit = hib ? actual >= goal : actual <= goal;
+  const MIN = 0.85;
   // Map actual into [MIN,1.0] range -> [0%,100%] for hib; invert for lower-is-better
-  var w = hib ? Math.min(100, Math.max(0, ((actual !== null && actual !== void 0 ? actual : 0) - MIN) / (1.0 - MIN) * 100)) : Math.max(0, 100 - Math.min(100, Math.max(0, ((actual !== null && actual !== void 0 ? actual : 0) - 0) / (goal * 2) * 100)));
-  var gp = hib ? (goal - MIN) / (1.0 - MIN) * 100 : 100 - goal / (goal * 2) * 100;
+  const w = hib ? Math.min(100, Math.max(0, ((actual ?? 0) - MIN) / (1.0 - MIN) * 100)) : Math.max(0, 100 - Math.min(100, Math.max(0, ((actual ?? 0) - 0) / (goal * 2) * 100)));
+  const gp = hib ? (goal - MIN) / (1.0 - MIN) * 100 : 100 - goal / (goal * 2) * 100;
   return /*#__PURE__*/React.createElement("div", {
     style: {
       position: "relative",
@@ -1055,7 +894,7 @@ function GaugeBar(_ref2) {
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      width: "".concat(w, "%"),
+      width: `${w}%`,
       height: "100%",
       background: perfColor(hit),
       borderRadius: 5,
@@ -1065,7 +904,7 @@ function GaugeBar(_ref2) {
     style: {
       position: "absolute",
       top: -4,
-      left: "".concat(gp, "%"),
+      left: `${gp}%`,
       width: 2,
       height: 18,
       background: onCard ? C.white : C.darkBlue,
@@ -1074,29 +913,21 @@ function GaugeBar(_ref2) {
     }
   }));
 }
-function MiniChart(_ref3) {
-  var data = _ref3.data,
-    goal = _ref3.goal,
-    weekendSet = _ref3.weekendSet,
-    monthLabel = _ref3.monthLabel,
-    daysInMonth = _ref3.daysInMonth,
-    _ref3$hib = _ref3.hib,
-    hib = _ref3$hib === void 0 ? true : _ref3$hib;
-  var days = Array.from({
+function MiniChart(_ref9) {
+  let data = _ref9.data,
+    goal = _ref9.goal,
+    weekendSet = _ref9.weekendSet,
+    monthLabel = _ref9.monthLabel,
+    daysInMonth = _ref9.daysInMonth,
+    _ref9$hib = _ref9.hib,
+    hib = _ref9$hib === void 0 ? true : _ref9$hib;
+  const days = Array.from({
     length: daysInMonth
-  }, function (_, i) {
-    return i + 1;
-  }).filter(function (d) {
-    return !weekendSet.has(d);
-  });
-  var pts = days.filter(function (d) {
-    return data[d] != null;
-  }).map(function (d) {
-    return {
-      d: d,
-      v: data[d]
-    };
-  });
+  }, (_, i) => i + 1).filter(d => !weekendSet.has(d));
+  const pts = days.filter(d => data[d] != null).map(d => ({
+    d,
+    v: data[d]
+  }));
   if (!pts.length) return /*#__PURE__*/React.createElement("div", {
     style: {
       color: C.grayDark,
@@ -1105,35 +936,25 @@ function MiniChart(_ref3) {
       fontFamily: FONT
     }
   }, "No data for ", monthLabel);
-  var allV = pts.map(function (p) {
-    return p.v;
-  });
-  var mn = Math.min.apply(Math, [hib ? goal - 0.06 : 0].concat(_toConsumableArray(allV)));
-  var mx = Math.max.apply(Math, [hib ? 1.005 : goal * 1.5].concat(_toConsumableArray(allV)));
-  var rng = mx - mn || 0.01;
-  var W = 440,
+  const allV = pts.map(p => p.v);
+  const mn = Math.min(hib ? goal - 0.06 : 0, ...allV);
+  const mx = Math.max(hib ? 1.005 : goal * 1.5, ...allV);
+  const rng = mx - mn || 0.01;
+  const W = 440,
     H = 110,
     PL = 8,
     PR = 52,
     PT = 8,
     PB = 28;
-  var x = function x(d) {
-    return PL + (d - 1) / (daysInMonth - 1) * (W - PL - PR);
-  };
-  var y = function y(v) {
-    return H - PB - (v - mn) / rng * (H - PT - PB);
-  };
-  var gy = y(goal);
-  var pd = pts.map(function (p, i) {
-    return "".concat(i === 0 ? "M" : "L").concat(x(p.d).toFixed(1), ",").concat(y(p.v).toFixed(1));
-  }).join(" ");
-  var ad = "".concat(pd, " L").concat(x(pts[pts.length - 1].d).toFixed(1), ",").concat(H - PB, " L").concat(x(pts[0].d).toFixed(1), ",").concat(H - PB, " Z");
-  var lp = pts.filter(function (p, i) {
-    return i === 0 || x(p.d) - x(pts[i - 1].d) >= 22;
-  });
-  var sm = monthLabel.slice(0, 3);
+  const x = d => PL + (d - 1) / (daysInMonth - 1) * (W - PL - PR);
+  const y = v => H - PB - (v - mn) / rng * (H - PT - PB);
+  const gy = y(goal);
+  const pd = pts.map((p, i) => `${i === 0 ? "M" : "L"}${x(p.d).toFixed(1)},${y(p.v).toFixed(1)}`).join(" ");
+  const ad = `${pd} L${x(pts[pts.length - 1].d).toFixed(1)},${H - PB} L${x(pts[0].d).toFixed(1)},${H - PB} Z`;
+  const lp = pts.filter((p, i) => i === 0 || x(p.d) - x(pts[i - 1].d) >= 22);
+  const sm = monthLabel.slice(0, 3);
   return /*#__PURE__*/React.createElement("svg", {
-    viewBox: "0 0 ".concat(W, " ").concat(H),
+    viewBox: `0 0 ${W} ${H}`,
     style: {
       width: "100%",
       overflow: "visible",
@@ -1187,55 +1008,49 @@ function MiniChart(_ref3) {
     strokeWidth: 2.5,
     strokeLinecap: "round",
     strokeLinejoin: "round"
-  }), pts.map(function (p) {
-    return /*#__PURE__*/React.createElement("circle", {
-      key: p.d,
-      cx: x(p.d),
-      cy: y(p.v),
-      r: 4.5,
-      fill: (hib ? p.v >= goal : p.v <= goal) ? C.green : C.red,
-      stroke: C.white,
-      strokeWidth: 1.5
-    });
-  }), lp.map(function (p) {
-    return /*#__PURE__*/React.createElement("g", {
-      key: "t".concat(p.d)
-    }, /*#__PURE__*/React.createElement("line", {
-      x1: x(p.d),
-      y1: H - PB,
-      x2: x(p.d),
-      y2: H - PB + 4,
-      stroke: C.grayDark,
-      strokeWidth: 1
-    }), /*#__PURE__*/React.createElement("text", {
-      x: x(p.d),
-      y: H - PB + 15,
-      textAnchor: "middle",
-      fontSize: 10,
-      fill: C.grayDark,
-      fontFamily: FONT
-    }, "".concat(sm, " ").concat(p.d)));
-  }));
+  }), pts.map(p => /*#__PURE__*/React.createElement("circle", {
+    key: p.d,
+    cx: x(p.d),
+    cy: y(p.v),
+    r: 4.5,
+    fill: (hib ? p.v >= goal : p.v <= goal) ? C.green : C.red,
+    stroke: C.white,
+    strokeWidth: 1.5
+  })), lp.map(p => /*#__PURE__*/React.createElement("g", {
+    key: `t${p.d}`
+  }, /*#__PURE__*/React.createElement("line", {
+    x1: x(p.d),
+    y1: H - PB,
+    x2: x(p.d),
+    y2: H - PB + 4,
+    stroke: C.grayDark,
+    strokeWidth: 1
+  }), /*#__PURE__*/React.createElement("text", {
+    x: x(p.d),
+    y: H - PB + 15,
+    textAnchor: "middle",
+    fontSize: 10,
+    fill: C.grayDark,
+    fontFamily: FONT
+  }, `${sm} ${p.d}`))));
 }
-function CalendarGrid(_ref4) {
-  var data = _ref4.data,
-    goal = _ref4.goal,
-    monthName = _ref4.monthName,
-    year = _ref4.year,
-    _ref4$hib = _ref4.hib,
-    hib = _ref4$hib === void 0 ? true : _ref4$hib;
-  var _getMonthInfo = getMonthInfo(monthName, year),
+function CalendarGrid(_ref0) {
+  let data = _ref0.data,
+    goal = _ref0.goal,
+    monthName = _ref0.monthName,
+    year = _ref0.year,
+    _ref0$hib = _ref0.hib,
+    hib = _ref0$hib === void 0 ? true : _ref0$hib;
+  const _getMonthInfo = getMonthInfo(monthName, year),
     weekendSet = _getMonthInfo.weekendSet,
     daysInMonth = _getMonthInfo.daysInMonth,
     firstDow = _getMonthInfo.firstDow;
-  var ac = [].concat(_toConsumableArray(Array(firstDow).fill(null)), _toConsumableArray(Array.from({
+  const ac = [...Array(firstDow).fill(null), ...Array.from({
     length: daysInMonth
-  }, function (_, i) {
-    return i + 1;
-  })));
+  }, (_, i) => i + 1)];
   while (ac.length % 7 !== 0) ac.push(null);
-  var rows = [];
-  for (var i = 0; i < ac.length; i += 7) rows.push(ac.slice(i, i + 7));
+  const rows = [];
+  for (let i = 0; i < ac.length; i += 7) rows.push(ac.slice(i, i + 7));
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
@@ -1243,72 +1058,68 @@ function CalendarGrid(_ref4) {
       gap: 4,
       marginBottom: 5
     }
-  }, ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map(function (d) {
-    return /*#__PURE__*/React.createElement("div", {
-      key: d,
+  }, ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map(d => /*#__PURE__*/React.createElement("div", {
+    key: d,
+    style: {
+      textAlign: "center",
+      fontSize: 11,
+      color: C.grayDark,
+      fontWeight: 700,
+      fontFamily: FONT
+    }
+  }, d))), rows.map((row, ri) => /*#__PURE__*/React.createElement("div", {
+    key: ri,
+    style: {
+      display: "grid",
+      gridTemplateColumns: "repeat(7,1fr)",
+      gap: 4,
+      marginBottom: 4
+    }
+  }, row.map((d, ci) => {
+    if (!d) return /*#__PURE__*/React.createElement("div", {
+      key: ci,
       style: {
-        textAlign: "center",
+        aspectRatio: "1"
+      }
+    });
+    const iw = weekendSet.has(d);
+    const v = data[d];
+    const hd = v != null;
+    const hit = hd && (hib ? v >= goal : v <= goal);
+    const bg = iw ? C.gray : hd ? hit ? C.green : C.red : C.blueLight;
+    const txt = iw ? C.grayDark : hd ? C.white : C.darkBlue;
+    return /*#__PURE__*/React.createElement("div", {
+      key: ci,
+      title: hd ? `${monthName.slice(0, 3)} ${d}: ${pct(v)}` : iw ? "Weekend" : "No data",
+      style: {
+        aspectRatio: "1",
+        borderRadius: 4,
+        background: bg,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
         fontSize: 11,
-        color: C.grayDark,
         fontWeight: 700,
+        color: txt,
         fontFamily: FONT
       }
-    }, d);
-  })), rows.map(function (row, ri) {
-    return /*#__PURE__*/React.createElement("div", {
-      key: ri,
+    }, /*#__PURE__*/React.createElement("span", null, d), hd && !iw && /*#__PURE__*/React.createElement("span", {
       style: {
-        display: "grid",
-        gridTemplateColumns: "repeat(7,1fr)",
-        gap: 4,
-        marginBottom: 4
+        fontSize: 8,
+        fontWeight: 400
       }
-    }, row.map(function (d, ci) {
-      if (!d) return /*#__PURE__*/React.createElement("div", {
-        key: ci,
-        style: {
-          aspectRatio: "1"
-        }
-      });
-      var iw = weekendSet.has(d);
-      var v = data[d];
-      var hd = v != null;
-      var hit = hd && (hib ? v >= goal : v <= goal);
-      var bg = iw ? C.gray : hd ? hit ? C.green : C.red : C.blueLight;
-      var txt = iw ? C.grayDark : hd ? C.white : C.darkBlue;
-      return /*#__PURE__*/React.createElement("div", {
-        key: ci,
-        title: hd ? "".concat(monthName.slice(0, 3), " ").concat(d, ": ").concat(pct(v)) : iw ? "Weekend" : "No data",
-        style: {
-          aspectRatio: "1",
-          borderRadius: 4,
-          background: bg,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          fontSize: 11,
-          fontWeight: 700,
-          color: txt,
-          fontFamily: FONT
-        }
-      }, /*#__PURE__*/React.createElement("span", null, d), hd && !iw && /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontSize: 8,
-          fontWeight: 400
-        }
-      }, pct(v)));
-    }));
-  }));
+    }, pct(v)));
+  }))));
 }
-function PCalendar(_ref5) {
-  var data = _ref5.data,
-    goal = _ref5.goal,
-    _ref5$hib = _ref5.hib,
-    hib = _ref5$hib === void 0 ? true : _ref5$hib;
-  var ROWS = 6,
+function PCalendar(_ref1) {
+  let data = _ref1.data,
+    goal = _ref1.goal,
+    _ref1$hib = _ref1.hib,
+    hib = _ref1$hib === void 0 ? true : _ref1$hib;
+  const ROWS = 6,
     COLS = 7;
-  var inP = function inP(r, c) {
+  const inP = (r, c) => {
     if (c === 0) return true;
     if (r === 0 && c >= 1 && c <= 5) return true;
     if (c === 6 && r <= 2) return true;
@@ -1318,18 +1129,18 @@ function PCalendar(_ref5) {
     if (r === 5 && c === 1) return true;
     return false;
   };
-  var pc = [];
-  for (var r = 0; r < ROWS; r++) for (var c = 0; c < COLS; c++) if (inP(r, c)) pc.push({
-    r: r,
-    c: c
+  const pc = [];
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (inP(r, c)) pc.push({
+    r,
+    c
   });
-  var dm = {};
-  pc.forEach(function (_ref6, i) {
-    var r = _ref6.r,
-      c = _ref6.c;
-    dm["".concat(r, "-").concat(c)] = i + 1;
+  const dm = {};
+  pc.forEach((_ref10, i) => {
+    let r = _ref10.r,
+      c = _ref10.c;
+    dm[`${r}-${c}`] = i + 1;
   });
-  var CE = 42,
+  const CE = 42,
     G = 5;
   return /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1338,76 +1149,74 @@ function PCalendar(_ref5) {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
-      gridTemplateColumns: "repeat(".concat(COLS, ",").concat(CE, "px)"),
-      gridTemplateRows: "repeat(".concat(ROWS, ",").concat(CE, "px)"),
+      gridTemplateColumns: `repeat(${COLS},${CE}px)`,
+      gridTemplateRows: `repeat(${ROWS},${CE}px)`,
       gap: G
     }
   }, Array.from({
     length: ROWS
-  }, function (_, r) {
-    return Array.from({
-      length: COLS
-    }, function (_, c) {
-      var k = "".concat(r, "-").concat(c);
-      if (!inP(r, c)) return /*#__PURE__*/React.createElement("div", {
-        key: k,
-        style: {
-          width: CE,
-          height: CE
-        }
-      });
-      var d = dm[k];
-      if (!d || d > 31) return /*#__PURE__*/React.createElement("div", {
-        key: k,
-        style: {
-          width: CE,
-          height: CE,
-          background: C.blueLight,
-          borderRadius: 5,
-          opacity: 0.3
-        }
-      });
-      var iw = isMarchWeekend(d);
-      var v = data[d];
-      var hd = v != null;
-      var hit = hd && (hib ? v >= goal : v <= goal);
-      var bg = iw ? C.gray : hd ? hit ? C.green : C.red : C.blueLight;
-      var txt = iw ? C.grayDark : hd ? C.white : C.darkBlue;
-      return /*#__PURE__*/React.createElement("div", {
-        key: k,
-        title: hd ? "Mar ".concat(d, ": ").concat(pct(v)) : iw ? "Weekend" : "No data",
-        style: {
-          width: CE,
-          height: CE,
-          borderRadius: 5,
-          background: bg,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          fontFamily: FONT
-        }
-      }, /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontSize: 11,
-          color: txt,
-          fontWeight: 700,
-          lineHeight: 1
-        }
-      }, d), hd && !iw && /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontSize: 8.5,
-          color: C.white,
-          lineHeight: 1.3
-        }
-      }, pct(v)), iw && /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontSize: 7.5,
-          color: C.grayDark
-        }
-      }, "W/E"));
+  }, (_, r) => Array.from({
+    length: COLS
+  }, (_, c) => {
+    const k = `${r}-${c}`;
+    if (!inP(r, c)) return /*#__PURE__*/React.createElement("div", {
+      key: k,
+      style: {
+        width: CE,
+        height: CE
+      }
     });
-  })), /*#__PURE__*/React.createElement("div", {
+    const d = dm[k];
+    if (!d || d > 31) return /*#__PURE__*/React.createElement("div", {
+      key: k,
+      style: {
+        width: CE,
+        height: CE,
+        background: C.blueLight,
+        borderRadius: 5,
+        opacity: 0.3
+      }
+    });
+    const iw = isMarchWeekend(d);
+    const v = data[d];
+    const hd = v != null;
+    const hit = hd && (hib ? v >= goal : v <= goal);
+    const bg = iw ? C.gray : hd ? hit ? C.green : C.red : C.blueLight;
+    const txt = iw ? C.grayDark : hd ? C.white : C.darkBlue;
+    return /*#__PURE__*/React.createElement("div", {
+      key: k,
+      title: hd ? `Mar ${d}: ${pct(v)}` : iw ? "Weekend" : "No data",
+      style: {
+        width: CE,
+        height: CE,
+        borderRadius: 5,
+        background: bg,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: FONT
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 11,
+        color: txt,
+        fontWeight: 700,
+        lineHeight: 1
+      }
+    }, d), hd && !iw && /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 8.5,
+        color: C.white,
+        lineHeight: 1.3
+      }
+    }, pct(v)), iw && /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 7.5,
+        color: C.grayDark
+      }
+    }, "W/E"));
+  }))), /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 6,
       fontSize: 11,
@@ -1417,12 +1226,12 @@ function PCalendar(_ref5) {
     }
   }, "31 days \xB7 weekends grayed"));
 }
-function DCalendar(_ref7) {
-  var data = _ref7.data,
-    goal = _ref7.goal;
-  var ROWS = 6,
+function DCalendar(_ref11) {
+  let data = _ref11.data,
+    goal = _ref11.goal;
+  const ROWS = 6,
     COLS = 6;
-  var inD = function inD(r, c) {
+  const inD = (r, c) => {
     if (c === 0) return true;
     if (r === 0 && c >= 1 && c <= 4) return true;
     if (r === 5 && c >= 1 && c <= 4) return true;
@@ -1433,18 +1242,18 @@ function DCalendar(_ref7) {
     }
     return false;
   };
-  var pc = [];
-  for (var r = 0; r < ROWS; r++) for (var c = 0; c < COLS; c++) if (inD(r, c)) pc.push({
-    r: r,
-    c: c
+  const pc = [];
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (inD(r, c)) pc.push({
+    r,
+    c
   });
-  var dm = {};
-  pc.forEach(function (_ref8, i) {
-    var r = _ref8.r,
-      c = _ref8.c;
-    dm["".concat(r, "-").concat(c)] = i + 1;
+  const dm = {};
+  pc.forEach((_ref12, i) => {
+    let r = _ref12.r,
+      c = _ref12.c;
+    dm[`${r}-${c}`] = i + 1;
   });
-  var CE = 42,
+  const CE = 42,
     G = 5;
   return /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1453,75 +1262,73 @@ function DCalendar(_ref7) {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
-      gridTemplateColumns: "repeat(".concat(COLS, ",").concat(CE, "px)"),
-      gridTemplateRows: "repeat(".concat(ROWS, ",").concat(CE, "px)"),
+      gridTemplateColumns: `repeat(${COLS},${CE}px)`,
+      gridTemplateRows: `repeat(${ROWS},${CE}px)`,
       gap: G
     }
   }, Array.from({
     length: ROWS
-  }, function (_, r) {
-    return Array.from({
-      length: COLS
-    }, function (_, c) {
-      var k = "".concat(r, "-").concat(c);
-      if (!inD(r, c)) return /*#__PURE__*/React.createElement("div", {
-        key: k,
-        style: {
-          width: CE,
-          height: CE
-        }
-      });
-      var d = dm[k];
-      if (!d || d > 31) return /*#__PURE__*/React.createElement("div", {
-        key: k,
-        style: {
-          width: CE,
-          height: CE,
-          background: C.blueLight,
-          borderRadius: 5,
-          opacity: 0.3
-        }
-      });
-      var iw = isMarchWeekend(d);
-      var v = data[d];
-      var hd = v != null;
-      var hit = hd && v >= goal;
-      var bg = iw ? C.gray : hd ? hit ? C.green : C.red : C.blueLight;
-      var txt = iw ? C.grayDark : hd ? C.white : C.darkBlue;
-      return /*#__PURE__*/React.createElement("div", {
-        key: k,
-        style: {
-          width: CE,
-          height: CE,
-          borderRadius: 5,
-          background: bg,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          fontFamily: FONT
-        }
-      }, /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontSize: 11,
-          color: txt,
-          fontWeight: 700,
-          lineHeight: 1
-        }
-      }, d), hd && !iw && /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontSize: 8.5,
-          color: C.white,
-          lineHeight: 1.3
-        }
-      }, pct(v)), iw && /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontSize: 7.5,
-          color: C.grayDark
-        }
-      }, "W/E"));
+  }, (_, r) => Array.from({
+    length: COLS
+  }, (_, c) => {
+    const k = `${r}-${c}`;
+    if (!inD(r, c)) return /*#__PURE__*/React.createElement("div", {
+      key: k,
+      style: {
+        width: CE,
+        height: CE
+      }
     });
-  })), /*#__PURE__*/React.createElement("div", {
+    const d = dm[k];
+    if (!d || d > 31) return /*#__PURE__*/React.createElement("div", {
+      key: k,
+      style: {
+        width: CE,
+        height: CE,
+        background: C.blueLight,
+        borderRadius: 5,
+        opacity: 0.3
+      }
+    });
+    const iw = isMarchWeekend(d);
+    const v = data[d];
+    const hd = v != null;
+    const hit = hd && v >= goal;
+    const bg = iw ? C.gray : hd ? hit ? C.green : C.red : C.blueLight;
+    const txt = iw ? C.grayDark : hd ? C.white : C.darkBlue;
+    return /*#__PURE__*/React.createElement("div", {
+      key: k,
+      style: {
+        width: CE,
+        height: CE,
+        borderRadius: 5,
+        background: bg,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: FONT
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 11,
+        color: txt,
+        fontWeight: 700,
+        lineHeight: 1
+      }
+    }, d), hd && !iw && /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 8.5,
+        color: C.white,
+        lineHeight: 1.3
+      }
+    }, pct(v)), iw && /*#__PURE__*/React.createElement("span", {
+      style: {
+        fontSize: 7.5,
+        color: C.grayDark
+      }
+    }, "W/E"));
+  }))), /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 6,
       fontSize: 11,
@@ -1531,22 +1338,19 @@ function DCalendar(_ref7) {
     }
   }, "31 days \xB7 weekends grayed"));
 }
-function MetricCard(_ref9) {
-  var _metric$hib;
-  var id = _ref9.id,
-    metric = _ref9.metric,
-    _onClick = _ref9.onClick,
-    selected = _ref9.selected;
-  var hib = (_metric$hib = metric.hib) !== null && _metric$hib !== void 0 ? _metric$hib : true;
-  var gap = metric.mtd.actual - metric.mtd.standard;
-  var hit = hib ? gap >= 0 : gap <= 0;
+function MetricCard(_ref13) {
+  let id = _ref13.id,
+    metric = _ref13.metric,
+    onClick = _ref13.onClick,
+    selected = _ref13.selected;
+  const hib = metric.hib ?? true;
+  const gap = metric.mtd.actual - metric.mtd.standard;
+  const hit = hib ? gap >= 0 : gap <= 0;
   return /*#__PURE__*/React.createElement("div", {
-    onClick: function onClick() {
-      return _onClick(id);
-    },
+    onClick: () => onClick(id),
     style: {
       background: selected ? C.darkBlue : C.white,
-      border: selected ? "2px solid ".concat(C.blue) : "1px solid ".concat(C.gray),
+      border: selected ? `2px solid ${C.blue}` : `1px solid ${C.gray}`,
       borderRadius: 9,
       padding: "12px 14px",
       cursor: "pointer",
@@ -1626,50 +1430,50 @@ function MetricCard(_ref9) {
     }
   }, hit ? "▲ +" : "▼ ", (Math.abs(gap) * 100).toFixed(2), "pp")));
 }
-function Card(_ref0) {
-  var title = _ref0.title,
-    children = _ref0.children,
-    _ref0$noTitleBorder = _ref0.noTitleBorder,
-    noTitleBorder = _ref0$noTitleBorder === void 0 ? false : _ref0$noTitleBorder;
+function Card(_ref14) {
+  let title = _ref14.title,
+    children = _ref14.children,
+    _ref14$noTitleBorder = _ref14.noTitleBorder,
+    noTitleBorder = _ref14$noTitleBorder === void 0 ? false : _ref14$noTitleBorder;
   return /*#__PURE__*/React.createElement("div", {
     style: {
       background: C.white,
       borderRadius: 9,
       padding: "16px 18px",
       marginBottom: 14,
-      border: "1px solid ".concat(C.gray),
+      border: `1px solid ${C.gray}`,
       boxShadow: "0 1px 4px rgba(0,47,86,0.06)"
     }
   }, title && /*#__PURE__*/React.createElement("div", {
-    style: _objectSpread({
+    style: {
       fontSize: 12,
       color: C.darkBlue,
       fontWeight: 700,
       textTransform: "uppercase",
       letterSpacing: "0.06em",
-      marginBottom: 12
-    }, !noTitleBorder && {
-      borderBottom: "2px solid ".concat(C.blue),
-      paddingBottom: 8
-    })
+      marginBottom: 12,
+      ...(!noTitleBorder && {
+        borderBottom: `2px solid ${C.blue}`,
+        paddingBottom: 8
+      })
+    }
   }, title), children);
 }
-function TrendView(_ref1) {
-  var _metric$hib2;
-  var metric = _ref1.metric,
-    metricId = _ref1.metricId;
-  var _useState = useState("March"),
+function TrendView(_ref15) {
+  let metric = _ref15.metric,
+    metricId = _ref15.metricId;
+  const _useState = useState("March"),
     _useState2 = _slicedToArray(_useState, 2),
     sel = _useState2[0],
     setSel = _useState2[1];
-  var hib = (_metric$hib2 = metric.hib) !== null && _metric$hib2 !== void 0 ? _metric$hib2 : true;
-  var td = sel === "January" ? metric.januaryTrend || {} : sel === "February" ? metric.februaryTrend || {} : metric.dailyTrend;
-  var _getMonthInfo2 = getMonthInfo(sel, 2026),
+  const hib = metric.hib ?? true;
+  const td = sel === "January" ? metric.januaryTrend || {} : sel === "February" ? metric.februaryTrend || {} : metric.dailyTrend;
+  const _getMonthInfo2 = getMonthInfo(sel, 2026),
     weekendSet = _getMonthInfo2.weekendSet,
     daysInMonth = _getMonthInfo2.daysInMonth;
-  var hmd = ["January", "February", "March"].includes(sel);
-  var useP = ["OT", "Scanning", "POD", "Call", "Shortages", "Preschedule", "CES", "RNS"].includes(metricId) && sel === "March";
-  var useD = metricId === "COT" && sel === "March";
+  const hmd = ["January", "February", "March"].includes(sel);
+  const useP = ["OT", "Scanning", "POD", "Call", "Shortages", "Preschedule", "CES", "RNS"].includes(metricId) && sel === "March";
+  const useD = metricId === "COT" && sel === "March";
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Card, {
     title: "Monthly Performance"
   }, /*#__PURE__*/React.createElement("div", {
@@ -1677,26 +1481,24 @@ function TrendView(_ref1) {
       display: "flex",
       gap: 5
     }
-  }, MONTHS.map(function (mo, idx) {
-    var v = metric.monthly[mo];
-    var pv = idx > 0 ? metric.monthly[MONTHS[idx - 1]] : null;
-    var dv = v !== null && v !== void 0 ? v : mo === "March" ? metric.mtd.actual : null;
-    var hit = dv != null && (hib ? dv >= metric.goal : dv <= metric.goal);
-    var bg = dv == null ? C.blueLight : hit ? C.green : C.red;
-    var isSel = sel === mo;
-    var impr = dv != null && pv != null ? hib ? dv > pv : dv < pv : null;
+  }, MONTHS.map((mo, idx) => {
+    const v = metric.monthly[mo];
+    const pv = idx > 0 ? metric.monthly[MONTHS[idx - 1]] : null;
+    const dv = v ?? (mo === "March" ? metric.mtd.actual : null);
+    const hit = dv != null && (hib ? dv >= metric.goal : dv <= metric.goal);
+    const bg = dv == null ? C.blueLight : hit ? C.green : C.red;
+    const isSel = sel === mo;
+    const impr = dv != null && pv != null ? hib ? dv > pv : dv < pv : null;
     return /*#__PURE__*/React.createElement("div", {
       key: mo,
-      onClick: function onClick() {
-        return (v != null || mo === "March") && setSel(mo);
-      },
+      onClick: () => (v != null || mo === "March") && setSel(mo),
       style: {
         flex: 1,
         borderRadius: 6,
         padding: "8px 2px",
         textAlign: "center",
         background: bg,
-        border: isSel ? "2px solid ".concat(C.darkBlue) : "1px solid ".concat(dv == null ? C.gray : bg),
+        border: isSel ? `2px solid ${C.darkBlue}` : `1px solid ${dv == null ? C.gray : bg}`,
         cursor: v != null || mo === "March" ? "pointer" : "default",
         transform: isSel ? "translateY(-2px)" : "none",
         transition: "all 0.12s"
@@ -1721,7 +1523,7 @@ function TrendView(_ref1) {
       }
     }, impr ? "↑" : "↓"));
   }))), /*#__PURE__*/React.createElement(Card, {
-    title: "".concat(sel, " 2026 \u2014 Daily Trend")
+    title: `${sel} 2026 — Daily Trend`
   }, hmd ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(MiniChart, {
     data: td,
     goal: metric.goal,
@@ -1738,10 +1540,10 @@ function TrendView(_ref1) {
       color: C.grayDark,
       flexWrap: "wrap"
     }
-  }, [[C.green, "Hit Target"], [C.red, "Miss Target"], [C.blue, "Trend Line"]].map(function (_ref10) {
-    var _ref11 = _slicedToArray(_ref10, 2),
-      col = _ref11[0],
-      lbl = _ref11[1];
+  }, [[C.green, "Hit Target"], [C.red, "Miss Target"], [C.blue, "Trend Line"]].map(_ref16 => {
+    let _ref17 = _slicedToArray(_ref16, 2),
+      col = _ref17[0],
+      lbl = _ref17[1];
     return /*#__PURE__*/React.createElement("span", {
       key: lbl,
       style: {
@@ -1765,7 +1567,7 @@ function TrendView(_ref1) {
       padding: "16px 0"
     }
   }, "No data for ", sel, ".")), /*#__PURE__*/React.createElement(Card, {
-    title: useP ? "Calendar \u2014 \"P\" Shape (March 2026)" : useD ? "Calendar \u2014 \"D\" Shape (March 2026)" : "Calendar \u2014 ".concat(sel, " 2026")
+    title: useP ? `Calendar — "P" Shape (March 2026)` : useD ? `Calendar — "D" Shape (March 2026)` : `Calendar — ${sel} 2026`
   }, useP ? /*#__PURE__*/React.createElement(PCalendar, {
     data: td,
     goal: metric.goal,
@@ -1792,10 +1594,10 @@ function TrendView(_ref1) {
       fontSize: 11,
       flexWrap: "wrap"
     }
-  }, [[C.green, "Hit Target"], [C.red, "Miss Target"], [C.gray, "Weekend"], [C.blueLight, "No Data"]].map(function (_ref12) {
-    var _ref13 = _slicedToArray(_ref12, 2),
-      bg = _ref13[0],
-      lbl = _ref13[1];
+  }, [[C.green, "Hit Target"], [C.red, "Miss Target"], [C.gray, "Weekend"], [C.blueLight, "No Data"]].map(_ref18 => {
+    let _ref19 = _slicedToArray(_ref18, 2),
+      bg = _ref19[0],
+      lbl = _ref19[1];
     return /*#__PURE__*/React.createElement("span", {
       key: lbl,
       style: {
@@ -1819,51 +1621,48 @@ function TrendView(_ref1) {
     }, lbl));
   }))));
 }
-function ParetoView(_ref14) {
-  var metric = _ref14.metric,
-    ps = _ref14.ps,
-    setPs = _ref14.setPs;
-  var _useState3 = useState([]),
+function ParetoView(_ref20) {
+  let metric = _ref20.metric,
+    ps = _ref20.ps,
+    setPs = _ref20.setPs;
+  const _useState3 = useState([]),
     _useState4 = _slicedToArray(_useState3, 2),
     customCodes = _useState4[0],
     setCustomCodes = _useState4[1];
-  var _useState5 = useState([]),
+  const _useState5 = useState([]),
     _useState6 = _slicedToArray(_useState5, 2),
     removedBuiltIn = _useState6[0],
     setRemovedBuiltIn = _useState6[1];
-  var _useState7 = useState(""),
+  const _useState7 = useState(""),
     _useState8 = _slicedToArray(_useState7, 2),
     newCode = _useState8[0],
     setNewCode = _useState8[1];
-  var _useState9 = useState(""),
+  const _useState9 = useState(""),
     _useState0 = _slicedToArray(_useState9, 2),
     addMsg = _useState0[0],
     setAddMsg = _useState0[1];
-  var builtInRs = Object.keys(metric.pareto || {});
-  var rs = [].concat(_toConsumableArray(builtInRs.filter(function (k) {
-    return !removedBuiltIn.includes(k);
-  })), _toConsumableArray(customCodes));
-  var sv = ps[0] || rs.reduce(function (a, k) {
-    return _objectSpread(_objectSpread({}, a), {}, _defineProperty({}, k, 0));
-  }, {});
-  var _useState1 = useState(_objectSpread({}, sv)),
+  const builtInRs = Object.keys(metric.pareto || {});
+  const rs = [...builtInRs.filter(k => !removedBuiltIn.includes(k)), ...customCodes];
+  const sv = ps[0] || rs.reduce((a, k) => ({
+    ...a,
+    [k]: 0
+  }), {});
+  const _useState1 = useState({
+      ...sv
+    }),
     _useState10 = _slicedToArray(_useState1, 2),
     dr = _useState10[0],
     setDr = _useState10[1];
-  var _useState11 = useState(false),
+  const _useState11 = useState(false),
     _useState12 = _slicedToArray(_useState11, 2),
     msg = _useState12[0],
     setMsg = _useState12[1];
-  var tot = Object.values(sv).reduce(function (s, v) {
-    return s + v;
-  }, 0);
-  var srt = _toConsumableArray(rs).sort(function (a, b) {
-    return (sv[b] || 0) - (sv[a] || 0);
-  });
-  var bc = [C.darkBlue, C.blue, "#5b8db8", "#7aafcf", "#9eb8cc", C.grayDark, "#a0aec0"];
-  var is = {
+  const tot = Object.values(sv).reduce((s, v) => s + v, 0);
+  const srt = [...rs].sort((a, b) => (sv[b] || 0) - (sv[a] || 0));
+  const bc = [C.darkBlue, C.blue, "#5b8db8", "#7aafcf", "#9eb8cc", C.grayDark, "#a0aec0"];
+  const is = {
     background: C.offWhite,
-    border: "1px solid ".concat(C.gray),
+    border: `1px solid ${C.gray}`,
     borderRadius: 5,
     color: C.darkBlue,
     padding: "6px 8px",
@@ -1872,55 +1671,46 @@ function ParetoView(_ref14) {
     boxSizing: "border-box",
     fontFamily: FONT
   };
-  var save = function save() {
-    setPs([_objectSpread({}, dr)]);
+  const save = () => {
+    setPs([{
+      ...dr
+    }]);
     setMsg(true);
-    setTimeout(function () {
-      return setMsg(false);
-    }, 2000);
+    setTimeout(() => setMsg(false), 2000);
   };
-  var addCode = function addCode() {
-    var trimmed = newCode.trim();
+  const addCode = () => {
+    const trimmed = newCode.trim();
     if (!trimmed) return;
     if (rs.includes(trimmed)) {
       setAddMsg("Already exists");
-      setTimeout(function () {
-        return setAddMsg("");
-      }, 2000);
+      setTimeout(() => setAddMsg(""), 2000);
       return;
     }
-    setCustomCodes(function (prev) {
-      return [].concat(_toConsumableArray(prev), [trimmed]);
-    });
-    setDr(function (prev) {
-      return _objectSpread(_objectSpread({}, prev), {}, _defineProperty({}, trimmed, 0));
-    });
+    setCustomCodes(prev => [...prev, trimmed]);
+    setDr(prev => ({
+      ...prev,
+      [trimmed]: 0
+    }));
     setNewCode("");
     setAddMsg("Added!");
-    setTimeout(function () {
-      return setAddMsg("");
-    }, 2000);
+    setTimeout(() => setAddMsg(""), 2000);
   };
-  var removeCode = function removeCode(code) {
+  const removeCode = code => {
     if (builtInRs.includes(code)) {
-      setRemovedBuiltIn(function (prev) {
-        return [].concat(_toConsumableArray(prev), [code]);
-      });
+      setRemovedBuiltIn(prev => [...prev, code]);
     } else {
-      setCustomCodes(function (prev) {
-        return prev.filter(function (c) {
-          return c !== code;
-        });
-      });
+      setCustomCodes(prev => prev.filter(c => c !== code));
     }
-    setDr(function (prev) {
-      var n = _objectSpread({}, prev);
+    setDr(prev => {
+      const n = {
+        ...prev
+      };
       delete n[code];
       return n;
     });
-    setPs([Object.fromEntries(Object.entries(ps[0] || {}).filter(function (_ref15) {
-      var _ref16 = _slicedToArray(_ref15, 1),
-        k = _ref16[0];
+    setPs([Object.fromEntries(Object.entries(ps[0] || {}).filter(_ref21 => {
+      let _ref22 = _slicedToArray(_ref21, 1),
+        k = _ref22[0];
       return k !== code;
     }))]);
   };
@@ -1940,55 +1730,49 @@ function ParetoView(_ref14) {
       gap: 10,
       marginBottom: 14
     }
-  }, rs.map(function (r) {
-    var _dr$r;
-    return /*#__PURE__*/React.createElement("div", {
-      key: r,
-      style: {
-        position: "relative"
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: 3
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        color: C.darkBlue,
-        fontWeight: 600
-      }
-    }, r), /*#__PURE__*/React.createElement("button", {
-      onClick: function onClick() {
-        return removeCode(r);
-      },
-      title: "Remove reason code",
-      style: {
-        background: "none",
-        border: "none",
-        color: C.red,
-        cursor: "pointer",
-        fontSize: 16,
-        padding: "0 4px",
-        lineHeight: 1,
-        opacity: 0.7
-      }
-    }, "\xD7")), /*#__PURE__*/React.createElement("input", {
-      type: "number",
-      min: 0,
-      value: (_dr$r = dr[r]) !== null && _dr$r !== void 0 ? _dr$r : 0,
-      onChange: function onChange(e) {
-        return setDr(function (p) {
-          return _objectSpread(_objectSpread({}, p), {}, _defineProperty({}, r, parseInt(e.target.value) || 0));
-        });
-      },
-      style: is
-    }));
-  })), /*#__PURE__*/React.createElement("div", {
+  }, rs.map(r => /*#__PURE__*/React.createElement("div", {
+    key: r,
     style: {
-      borderTop: "1px solid ".concat(C.gray),
+      position: "relative"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 3
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      color: C.darkBlue,
+      fontWeight: 600
+    }
+  }, r), /*#__PURE__*/React.createElement("button", {
+    onClick: () => removeCode(r),
+    title: "Remove reason code",
+    style: {
+      background: "none",
+      border: "none",
+      color: C.red,
+      cursor: "pointer",
+      fontSize: 16,
+      padding: "0 4px",
+      lineHeight: 1,
+      opacity: 0.7
+    }
+  }, "\xD7")), /*#__PURE__*/React.createElement("input", {
+    type: "number",
+    min: 0,
+    value: dr[r] ?? 0,
+    onChange: e => setDr(p => ({
+      ...p,
+      [r]: parseInt(e.target.value) || 0
+    })),
+    style: is
+  })))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      borderTop: `1px solid ${C.gray}`,
       paddingTop: 14,
       marginTop: 4
     }
@@ -2010,17 +1794,14 @@ function ParetoView(_ref14) {
   }, /*#__PURE__*/React.createElement("input", {
     type: "text",
     value: newCode,
-    onChange: function onChange(e) {
-      return setNewCode(e.target.value);
-    },
-    onKeyDown: function onKeyDown(e) {
-      return e.key === "Enter" && addCode();
-    },
+    onChange: e => setNewCode(e.target.value),
+    onKeyDown: e => e.key === "Enter" && addCode(),
     placeholder: "e.g. Weather, Equipment Failure\u2026",
-    style: _objectSpread(_objectSpread({}, is), {}, {
+    style: {
+      ...is,
       flex: 1,
       padding: "7px 10px"
-    })
+    }
   }), /*#__PURE__*/React.createElement("button", {
     onClick: addCode,
     style: {
@@ -2071,18 +1852,14 @@ function ParetoView(_ref14) {
   }, "\u2713 Saved!"))), tot > 0 && /*#__PURE__*/React.createElement(Card, {
     title: "Pareto Analysis",
     noTitleBorder: true
-  }, function () {
-    var visItems = srt.filter(function (r) {
-      return (sv[r] || 0) > 0;
-    });
-    var maxV = Math.max.apply(Math, _toConsumableArray(visItems.map(function (r) {
-      return sv[r] || 0;
-    })));
-    var CHART_H = 220;
-    var BAR_AREA = 0.7;
+  }, (() => {
+    const visItems = srt.filter(r => (sv[r] || 0) > 0);
+    const maxV = Math.max(...visItems.map(r => sv[r] || 0));
+    const CHART_H = 220;
+    const BAR_AREA = 0.7;
     // Cumulative % points for line
-    var cumPct = 0;
-    var cumPts = visItems.map(function (r) {
+    let cumPct = 0;
+    const cumPts = visItems.map(r => {
       cumPct += (sv[r] || 0) / tot * 100;
       return cumPct;
     });
@@ -2100,13 +1877,13 @@ function ParetoView(_ref14) {
         bottom: 28,
         pointerEvents: "none"
       }
-    }, [0, 25, 50, 75, 100].map(function (pv) {
-      var yPct = 100 - pv;
+    }, [0, 25, 50, 75, 100].map(pv => {
+      const yPct = 100 - pv;
       return /*#__PURE__*/React.createElement("div", {
         key: pv,
         style: {
           position: "absolute",
-          top: "".concat(yPct, "%"),
+          top: `${yPct}%`,
           left: 0,
           right: 0,
           display: "flex",
@@ -2124,7 +1901,7 @@ function ParetoView(_ref14) {
       }, pv), /*#__PURE__*/React.createElement("div", {
         style: {
           flex: 1,
-          borderTop: "1px solid ".concat(pv === 0 ? "#ccc" : "#eee")
+          borderTop: `1px solid ${pv === 0 ? "#ccc" : "#eee"}`
         }
       }));
     })), /*#__PURE__*/React.createElement("div", {
@@ -2136,13 +1913,13 @@ function ParetoView(_ref14) {
         width: 36,
         pointerEvents: "none"
       }
-    }, [0, 25, 50, 75, 100].map(function (pv) {
-      var yPct = 100 - pv;
+    }, [0, 25, 50, 75, 100].map(pv => {
+      const yPct = 100 - pv;
       return /*#__PURE__*/React.createElement("div", {
         key: pv,
         style: {
           position: "absolute",
-          top: "".concat(yPct, "%"),
+          top: `${yPct}%`,
           right: 0,
           transform: "translateY(-50%)"
         }
@@ -2167,20 +1944,20 @@ function ParetoView(_ref14) {
         display: "block",
         overflow: "visible"
       }
-    }, function () {
-      var n = visItems.length;
-      var barW = Math.min(60, BAR_AREA / n * 100);
-      var gap = (100 - barW * n) / (n + 1);
-      return visItems.map(function (r, i) {
-        var v = sv[r] || 0;
-        var barH = v / maxV * CHART_H * 0.85;
-        var x = "".concat(gap * (i + 1) + barW * i, "%");
-        var bw = "".concat(barW, "%");
-        var barColor = bc[i] || C.grayDark;
-        var cx = "".concat(gap * (i + 1) + barW * i + barW / 2, "%");
-        var lineY = CHART_H - cumPts[i] / 100 * CHART_H;
-        var prevY = i > 0 ? CHART_H - cumPts[i - 1] / 100 * CHART_H : null;
-        var prevCx = i > 0 ? "".concat(gap * i + barW * (i - 1) + barW / 2, "%") : null;
+    }, (() => {
+      const n = visItems.length;
+      const barW = Math.min(60, BAR_AREA / n * 100);
+      const gap = (100 - barW * n) / (n + 1);
+      return visItems.map((r, i) => {
+        const v = sv[r] || 0;
+        const barH = v / maxV * CHART_H * 0.85;
+        const x = `${gap * (i + 1) + barW * i}%`;
+        const bw = `${barW}%`;
+        const barColor = bc[i] || C.grayDark;
+        const cx = `${gap * (i + 1) + barW * i + barW / 2}%`;
+        const lineY = CHART_H - cumPts[i] / 100 * CHART_H;
+        const prevY = i > 0 ? CHART_H - cumPts[i - 1] / 100 * CHART_H : null;
+        const prevCx = i > 0 ? `${gap * i + barW * (i - 1) + barW / 2}%` : null;
         return /*#__PURE__*/React.createElement("g", {
           key: r
         }, /*#__PURE__*/React.createElement("rect", {
@@ -2223,7 +2000,7 @@ function ParetoView(_ref14) {
           fontFamily: FONT
         }, cumPts[i].toFixed(0), "%"));
       });
-    }()), /*#__PURE__*/React.createElement("div", {
+    })()), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         position: "absolute",
@@ -2231,18 +2008,18 @@ function ParetoView(_ref14) {
         left: 0,
         right: 0
       }
-    }, visItems.map(function (r, i) {
-      var n = visItems.length;
-      var barW = Math.min(60, BAR_AREA / n * 100);
-      var gap = (100 - barW * n) / (n + 1);
+    }, visItems.map((r, i) => {
+      const n = visItems.length;
+      const barW = Math.min(60, BAR_AREA / n * 100);
+      const gap = (100 - barW * n) / (n + 1);
       return /*#__PURE__*/React.createElement("div", {
         key: r,
         style: {
           position: "absolute",
-          left: "".concat(gap * (i + 1) + barW * i + barW / 2, "%"),
+          left: `${gap * (i + 1) + barW * i + barW / 2}%`,
           transform: "translateX(-50%)",
           textAlign: "center",
-          width: "".concat(barW + gap + 4, "%")
+          width: `${barW + gap + 4}%`
         }
       }, /*#__PURE__*/React.createElement("span", {
         style: {
@@ -2262,7 +2039,7 @@ function ParetoView(_ref14) {
         gap: 20,
         marginTop: 32,
         paddingTop: 10,
-        borderTop: "1px solid ".concat(C.gray),
+        borderTop: `1px solid ${C.gray}`,
         flexWrap: "wrap",
         alignItems: "center"
       }
@@ -2309,17 +2086,17 @@ function ParetoView(_ref14) {
         fontFamily: FONT
       }
     }, "Total: ", tot)));
-  }()));
+  })()));
 }
-function CILogView(_ref17) {
-  var ciLog = _ref17.ciLog,
-    setCiLog = _ref17.setCiLog,
-    regionKey = _ref17.regionKey,
-    _ref17$saving = _ref17.saving,
-    saving = _ref17$saving === void 0 ? false : _ref17$saving,
-    _ref17$saveMsg = _ref17.saveMsg,
-    saveMsg = _ref17$saveMsg === void 0 ? "" : _ref17$saveMsg;
-  var REGION_OWNERS = {
+function CILogView(_ref23) {
+  let ciLog = _ref23.ciLog,
+    setCiLog = _ref23.setCiLog,
+    regionKey = _ref23.regionKey,
+    _ref23$saving = _ref23.saving,
+    saving = _ref23$saving === void 0 ? false : _ref23$saving,
+    _ref23$saveMsg = _ref23.saveMsg,
+    saveMsg = _ref23$saveMsg === void 0 ? "" : _ref23$saveMsg;
+  const REGION_OWNERS = {
     Northeast: ["Scot C."],
     "Mid-Atlantic": ["Nicole K."],
     Southeast: ["Kyle S."],
@@ -2327,16 +2104,16 @@ function CILogView(_ref17) {
     Gulf: ["Jeff C.", "John S."],
     Midwest: ["Luke L.", "Robbie W."]
   };
-  var owners = regionKey && REGION_OWNERS[regionKey] ? REGION_OWNERS[regionKey] : [];
-  var sts = ["Problem Identified", "Root Cause Identified", "Countermeasure Implemented", "Impact Verified", "Complete"];
-  var sc = {
+  const owners = regionKey && REGION_OWNERS[regionKey] ? REGION_OWNERS[regionKey] : [];
+  const sts = ["Problem Identified", "Root Cause Identified", "Countermeasure Implemented", "Impact Verified", "Complete"];
+  const sc = {
     "Problem Identified": C.red,
     "Root Cause Identified": C.blue,
     "Countermeasure Implemented": C.amber,
     "Impact Verified": C.blue,
     "Complete": C.green
   };
-  var bl = {
+  const bl = {
     date: "",
     issue: "",
     actionItem: "",
@@ -2345,37 +2122,37 @@ function CILogView(_ref17) {
     status: "Problem Identified",
     updates: []
   };
-  var _useState13 = useState(bl),
+  const _useState13 = useState(bl),
     _useState14 = _slicedToArray(_useState13, 2),
     form = _useState14[0],
     setForm = _useState14[1];
-  var _useState15 = useState("date"),
+  const _useState15 = useState("date"),
     _useState16 = _slicedToArray(_useState15, 2),
     sb = _useState16[0],
     setSb = _useState16[1];
-  var _useState17 = useState(false),
+  const _useState17 = useState(false),
     _useState18 = _slicedToArray(_useState17, 2),
     hc = _useState18[0],
     setHc = _useState18[1];
-  var _useState19 = useState(null),
+  const _useState19 = useState(null),
     _useState20 = _slicedToArray(_useState19, 2),
     ei = _useState20[0],
     setEi = _useState20[1];
-  var _useState21 = useState(""),
+  const _useState21 = useState(""),
     _useState22 = _slicedToArray(_useState21, 2),
     ut = _useState22[0],
     setUt = _useState22[1];
-  var _useState23 = useState(null),
+  const _useState23 = useState(null),
     _useState24 = _slicedToArray(_useState23, 2),
     cd = _useState24[0],
     setCd = _useState24[1];
-  var _useState25 = useState(false),
+  const _useState25 = useState(false),
     _useState26 = _slicedToArray(_useState25, 2),
     clearConfirm = _useState26[0],
     setClearConfirm = _useState26[1];
-  var is = {
+  const is = {
     background: C.offWhite,
-    border: "1px solid ".concat(C.gray),
+    border: `1px solid ${C.gray}`,
     borderRadius: 5,
     color: C.darkBlue,
     padding: "6px 9px",
@@ -2384,64 +2161,57 @@ function CILogView(_ref17) {
     boxSizing: "border-box",
     fontFamily: FONT
   };
-  var addE = function addE() {
+  const addE = () => {
     if (!form.date || !form.issue) return;
-    setCiLog([].concat(_toConsumableArray(ciLog), [_objectSpread(_objectSpread({}, form), {}, {
+    setCiLog([...ciLog, {
+      ...form,
       updates: []
-    })]));
-    setForm(_objectSpread(_objectSpread({}, bl), {}, {
+    }]);
+    setForm({
+      ...bl,
       owner: owners[0] || ""
-    }));
+    });
   };
-  var delE = function delE(i) {
-    setCiLog(ciLog.filter(function (_, x) {
-      return x !== i;
-    }));
+  const delE = i => {
+    setCiLog(ciLog.filter((_, x) => x !== i));
     if (ei === i) setEi(null);
     setCd(null);
   };
-  var uf = function uf(i, f, v) {
-    return setCiLog(ciLog.map(function (e, x) {
-      return x === i ? _objectSpread(_objectSpread({}, e), {}, _defineProperty({}, f, v)) : e;
-    }));
-  };
-  var au = function au(i) {
+  const uf = (i, f, v) => setCiLog(ciLog.map((e, x) => x === i ? {
+    ...e,
+    [f]: v
+  } : e));
+  const au = i => {
     if (!ut.trim()) return;
-    setCiLog(ciLog.map(function (e, x) {
-      return x === i ? _objectSpread(_objectSpread({}, e), {}, {
-        updates: [].concat(_toConsumableArray(e.updates || []), [{
-          ts: new Date().toISOString().slice(0, 10),
-          text: ut.trim()
-        }])
-      }) : e;
-    }));
+    setCiLog(ciLog.map((e, x) => x === i ? {
+      ...e,
+      updates: [...(e.updates || []), {
+        ts: new Date().toISOString().slice(0, 10),
+        text: ut.trim()
+      }]
+    } : e));
     setUt("");
   };
-  var sf = function sf(a, b) {
+  const sf = (a, b) => {
     if (sb === "status") return sts.indexOf(a.status) - sts.indexOf(b.status);
     if (sb === "dueDate") return (a.dueDate || "").localeCompare(b.dueDate || "");
     if (sb === "owner") return (a.owner || "").localeCompare(b.owner || "");
     return (a.date || "").localeCompare(b.date || "");
   };
-  var dp = ciLog.map(function (e, i) {
-    return _objectSpread(_objectSpread({}, e), {}, {
-      _i: i
-    });
-  }).filter(function (e) {
-    return !(hc && e.status === "Complete");
-  }).sort(sf);
-  var SB = function SB(_ref18) {
-    var v = _ref18.v,
-      l = _ref18.l;
+  const dp = ciLog.map((e, i) => ({
+    ...e,
+    _i: i
+  })).filter(e => !(hc && e.status === "Complete")).sort(sf);
+  const SB = _ref24 => {
+    let v = _ref24.v,
+      l = _ref24.l;
     return /*#__PURE__*/React.createElement("button", {
-      onClick: function onClick() {
-        return setSb(v);
-      },
+      onClick: () => setSb(v),
       style: {
         fontSize: 11,
         padding: "4px 10px",
         borderRadius: 5,
-        border: "1px solid ".concat(sb === v ? C.blue : C.gray),
+        border: `1px solid ${sb === v ? C.blue : C.gray}`,
         background: sb === v ? C.blue : C.white,
         color: sb === v ? C.white : C.grayDark,
         cursor: "pointer",
@@ -2467,11 +2237,10 @@ function CILogView(_ref17) {
   }, "DATE OF ENTRY"), /*#__PURE__*/React.createElement("input", {
     type: "date",
     value: form.date,
-    onChange: function onChange(e) {
-      return setForm(_objectSpread(_objectSpread({}, form), {}, {
-        date: e.target.value
-      }));
-    },
+    onChange: e => setForm({
+      ...form,
+      date: e.target.value
+    }),
     style: is
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -2482,25 +2251,21 @@ function CILogView(_ref17) {
     }
   }, "OWNER"), owners.length > 0 ? /*#__PURE__*/React.createElement("select", {
     value: form.owner,
-    onChange: function onChange(e) {
-      return setForm(_objectSpread(_objectSpread({}, form), {}, {
-        owner: e.target.value
-      }));
-    },
+    onChange: e => setForm({
+      ...form,
+      owner: e.target.value
+    }),
     style: is
-  }, owners.map(function (o) {
-    return /*#__PURE__*/React.createElement("option", {
-      key: o,
-      value: o
-    }, o);
-  })) : /*#__PURE__*/React.createElement("input", {
+  }, owners.map(o => /*#__PURE__*/React.createElement("option", {
+    key: o,
+    value: o
+  }, o))) : /*#__PURE__*/React.createElement("input", {
     type: "text",
     value: form.owner,
-    onChange: function onChange(e) {
-      return setForm(_objectSpread(_objectSpread({}, form), {}, {
-        owner: e.target.value
-      }));
-    },
+    onChange: e => setForm({
+      ...form,
+      owner: e.target.value
+    }),
     placeholder: "Owner name",
     style: is
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
@@ -2513,11 +2278,10 @@ function CILogView(_ref17) {
   }, "DUE DATE"), /*#__PURE__*/React.createElement("input", {
     type: "date",
     value: form.dueDate,
-    onChange: function onChange(e) {
-      return setForm(_objectSpread(_objectSpread({}, form), {}, {
-        dueDate: e.target.value
-      }));
-    },
+    onChange: e => setForm({
+      ...form,
+      dueDate: e.target.value
+    }),
     style: is
   })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -2528,17 +2292,14 @@ function CILogView(_ref17) {
     }
   }, "STATUS"), /*#__PURE__*/React.createElement("select", {
     value: form.status,
-    onChange: function onChange(e) {
-      return setForm(_objectSpread(_objectSpread({}, form), {}, {
-        status: e.target.value
-      }));
-    },
+    onChange: e => setForm({
+      ...form,
+      status: e.target.value
+    }),
     style: is
-  }, sts.map(function (s) {
-    return /*#__PURE__*/React.createElement("option", {
-      key: s
-    }, s);
-  }))), /*#__PURE__*/React.createElement("div", {
+  }, sts.map(s => /*#__PURE__*/React.createElement("option", {
+    key: s
+  }, s)))), /*#__PURE__*/React.createElement("div", {
     style: {
       gridColumn: "1/-1"
     }
@@ -2551,11 +2312,10 @@ function CILogView(_ref17) {
     }
   }, "ISSUE"), /*#__PURE__*/React.createElement("input", {
     value: form.issue,
-    onChange: function onChange(e) {
-      return setForm(_objectSpread(_objectSpread({}, form), {}, {
-        issue: e.target.value
-      }));
-    },
+    onChange: e => setForm({
+      ...form,
+      issue: e.target.value
+    }),
     placeholder: "Describe the issue\u2026",
     style: is
   })), /*#__PURE__*/React.createElement("div", {
@@ -2571,11 +2331,10 @@ function CILogView(_ref17) {
     }
   }, "ACTION ITEM"), /*#__PURE__*/React.createElement("input", {
     value: form.actionItem,
-    onChange: function onChange(e) {
-      return setForm(_objectSpread(_objectSpread({}, form), {}, {
-        actionItem: e.target.value
-      }));
-    },
+    onChange: e => setForm({
+      ...form,
+      actionItem: e.target.value
+    }),
     placeholder: "Countermeasure\u2026",
     style: is
   }))), /*#__PURE__*/React.createElement("button", {
@@ -2642,19 +2401,15 @@ function CILogView(_ref17) {
   }, /*#__PURE__*/React.createElement("input", {
     type: "checkbox",
     checked: hc,
-    onChange: function onChange(e) {
-      return setHc(e.target.checked);
-    },
+    onChange: e => setHc(e.target.checked),
     style: {
       accentColor: C.darkBlue
     }
   }), "Hide Complete"), !clearConfirm ? /*#__PURE__*/React.createElement("button", {
-    onClick: function onClick() {
-      return setClearConfirm(true);
-    },
+    onClick: () => setClearConfirm(true),
     style: {
       background: "none",
-      border: "1px solid ".concat(C.red),
+      border: `1px solid ${C.red}`,
       borderRadius: 5,
       padding: "4px 12px",
       color: C.red,
@@ -2676,7 +2431,7 @@ function CILogView(_ref17) {
       fontWeight: 600
     }
   }, "Clear all entries?"), /*#__PURE__*/React.createElement("button", {
-    onClick: function onClick() {
+    onClick: () => {
       setCiLog([]);
       setClearConfirm(false);
       setEi(null);
@@ -2693,12 +2448,10 @@ function CILogView(_ref17) {
       fontFamily: FONT
     }
   }, "Yes, Clear"), /*#__PURE__*/React.createElement("button", {
-    onClick: function onClick() {
-      return setClearConfirm(false);
-    },
+    onClick: () => setClearConfirm(false),
     style: {
       background: C.white,
-      border: "1px solid ".concat(C.gray),
+      border: `1px solid ${C.gray}`,
       borderRadius: 5,
       padding: "4px 12px",
       color: C.grayDark,
@@ -2719,21 +2472,21 @@ function CILogView(_ref17) {
       fontSize: 13,
       padding: "24px 0"
     }
-  }, "No entries to display.") : dp.map(function (e) {
-    var i = e._i;
-    var op = ei === i;
-    var s = sc[e.status] || C.blue;
+  }, "No entries to display.") : dp.map(e => {
+    const i = e._i;
+    const op = ei === i;
+    const s = sc[e.status] || C.blue;
     return /*#__PURE__*/React.createElement("div", {
       key: i,
       style: {
         background: C.white,
         borderRadius: 8,
-        border: "1px solid ".concat(C.gray),
-        borderLeft: "4px solid ".concat(s),
+        border: `1px solid ${C.gray}`,
+        borderLeft: `4px solid ${s}`,
         overflow: "hidden"
       }
     }, /*#__PURE__*/React.createElement("div", {
-      onClick: function onClick() {
+      onClick: () => {
         setEi(op ? null : i);
         setUt("");
       },
@@ -2755,7 +2508,7 @@ function CILogView(_ref17) {
         color: C.grayDark,
         marginBottom: 3
       }
-    }, e.date, e.owner && " \xB7 ".concat(e.owner), e.dueDate && " \xB7 Due: ".concat(e.dueDate)), /*#__PURE__*/React.createElement("div", {
+    }, e.date, e.owner && ` · ${e.owner}`, e.dueDate && ` · Due: ${e.dueDate}`), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 13,
         color: C.darkBlue,
@@ -2774,35 +2527,31 @@ function CILogView(_ref17) {
       }
     }, /*#__PURE__*/React.createElement("select", {
       value: e.status,
-      onChange: function onChange(ev) {
+      onChange: ev => {
         ev.stopPropagation();
         uf(i, "status", ev.target.value);
       },
-      onClick: function onClick(ev) {
-        return ev.stopPropagation();
-      },
+      onClick: ev => ev.stopPropagation(),
       style: {
         fontSize: 10,
         color: s,
         fontWeight: 700,
-        background: "".concat(s, "18"),
+        background: `${s}18`,
         padding: "3px 18px 3px 7px",
         borderRadius: 4,
-        border: "1px solid ".concat(s, "66"),
+        border: `1px solid ${s}66`,
         cursor: "pointer",
         outline: "none",
         appearance: "none",
         WebkitAppearance: "none",
         fontFamily: FONT,
-        backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%236b7280'/%3E%3C/svg%3E\")",
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%236b7280'/%3E%3C/svg%3E")`,
         backgroundRepeat: "no-repeat",
         backgroundPosition: "right 5px center"
       }
-    }, sts.map(function (st) {
-      return /*#__PURE__*/React.createElement("option", {
-        key: st
-      }, st);
-    })), /*#__PURE__*/React.createElement("span", {
+    }, sts.map(st => /*#__PURE__*/React.createElement("option", {
+      key: st
+    }, st))), /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 14,
         color: C.grayDark,
@@ -2812,7 +2561,7 @@ function CILogView(_ref17) {
       }
     }, "\u25BE"))), op && /*#__PURE__*/React.createElement("div", {
       style: {
-        borderTop: "1px solid ".concat(C.gray),
+        borderTop: `1px solid ${C.gray}`,
         padding: "14px 16px",
         background: C.offWhite
       }
@@ -2834,12 +2583,11 @@ function CILogView(_ref17) {
     }, "DATE OF ENTRY"), /*#__PURE__*/React.createElement("input", {
       type: "date",
       value: e.date || "",
-      onChange: function onChange(ev) {
-        return uf(i, "date", ev.target.value);
-      },
-      style: _objectSpread(_objectSpread({}, is), {}, {
+      onChange: ev => uf(i, "date", ev.target.value),
+      style: {
+        ...is,
         background: C.white
-      })
+      }
     })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 10,
@@ -2850,26 +2598,22 @@ function CILogView(_ref17) {
       }
     }, "OWNER"), owners.length > 0 ? /*#__PURE__*/React.createElement("select", {
       value: e.owner || "",
-      onChange: function onChange(ev) {
-        return uf(i, "owner", ev.target.value);
-      },
-      style: _objectSpread(_objectSpread({}, is), {}, {
+      onChange: ev => uf(i, "owner", ev.target.value),
+      style: {
+        ...is,
         background: C.white
-      })
-    }, owners.map(function (o) {
-      return /*#__PURE__*/React.createElement("option", {
-        key: o,
-        value: o
-      }, o);
-    })) : /*#__PURE__*/React.createElement("input", {
+      }
+    }, owners.map(o => /*#__PURE__*/React.createElement("option", {
+      key: o,
+      value: o
+    }, o))) : /*#__PURE__*/React.createElement("input", {
       type: "text",
       value: e.owner || "",
-      onChange: function onChange(ev) {
-        return uf(i, "owner", ev.target.value);
-      },
-      style: _objectSpread(_objectSpread({}, is), {}, {
+      onChange: ev => uf(i, "owner", ev.target.value),
+      style: {
+        ...is,
         background: C.white
-      })
+      }
     })), /*#__PURE__*/React.createElement("div", {
       style: {
         gridColumn: "1/-1"
@@ -2885,12 +2629,11 @@ function CILogView(_ref17) {
     }, "ISSUE"), /*#__PURE__*/React.createElement("input", {
       type: "text",
       value: e.issue || "",
-      onChange: function onChange(ev) {
-        return uf(i, "issue", ev.target.value);
-      },
-      style: _objectSpread(_objectSpread({}, is), {}, {
+      onChange: ev => uf(i, "issue", ev.target.value),
+      style: {
+        ...is,
         background: C.white
-      })
+      }
     })), /*#__PURE__*/React.createElement("div", {
       style: {
         gridColumn: "1/-1"
@@ -2906,12 +2649,11 @@ function CILogView(_ref17) {
     }, "ACTION ITEM"), /*#__PURE__*/React.createElement("input", {
       type: "text",
       value: e.actionItem || "",
-      onChange: function onChange(ev) {
-        return uf(i, "actionItem", ev.target.value);
-      },
-      style: _objectSpread(_objectSpread({}, is), {}, {
+      onChange: ev => uf(i, "actionItem", ev.target.value),
+      style: {
+        ...is,
         background: C.white
-      })
+      }
     })), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 10,
@@ -2923,12 +2665,11 @@ function CILogView(_ref17) {
     }, "DUE DATE"), /*#__PURE__*/React.createElement("input", {
       type: "date",
       value: e.dueDate || "",
-      onChange: function onChange(ev) {
-        return uf(i, "dueDate", ev.target.value);
-      },
-      style: _objectSpread(_objectSpread({}, is), {}, {
+      onChange: ev => uf(i, "dueDate", ev.target.value),
+      style: {
+        ...is,
         background: C.white
-      })
+      }
     }))), /*#__PURE__*/React.createElement("div", {
       style: {
         marginBottom: 12
@@ -2948,23 +2689,21 @@ function CILogView(_ref17) {
         fontStyle: "italic",
         marginBottom: 6
       }
-    }, "No updates yet.") : (e.updates || []).map(function (u, ui) {
-      return /*#__PURE__*/React.createElement("div", {
-        key: ui,
-        style: {
-          fontSize: 12,
-          color: C.darkBlue,
-          borderLeft: "2px solid ".concat(C.blue),
-          paddingLeft: 8,
-          marginBottom: 5
-        }
-      }, /*#__PURE__*/React.createElement("span", {
-        style: {
-          color: C.grayDark,
-          marginRight: 6
-        }
-      }, u.ts), u.text);
-    }), /*#__PURE__*/React.createElement("div", {
+    }, "No updates yet.") : (e.updates || []).map((u, ui) => /*#__PURE__*/React.createElement("div", {
+      key: ui,
+      style: {
+        fontSize: 12,
+        color: C.darkBlue,
+        borderLeft: `2px solid ${C.blue}`,
+        paddingLeft: 8,
+        marginBottom: 5
+      }
+    }, /*#__PURE__*/React.createElement("span", {
+      style: {
+        color: C.grayDark,
+        marginRight: 6
+      }
+    }, u.ts), u.text)), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 7,
@@ -2972,21 +2711,16 @@ function CILogView(_ref17) {
       }
     }, /*#__PURE__*/React.createElement("input", {
       value: ut,
-      onChange: function onChange(ev) {
-        return setUt(ev.target.value);
-      },
-      onKeyDown: function onKeyDown(ev) {
-        return ev.key === "Enter" && au(i);
-      },
+      onChange: ev => setUt(ev.target.value),
+      onKeyDown: ev => ev.key === "Enter" && au(i),
       placeholder: "Add a note\u2026",
-      style: _objectSpread(_objectSpread({}, is), {}, {
+      style: {
+        ...is,
         flex: 1,
         background: C.white
-      })
+      }
     }), /*#__PURE__*/React.createElement("button", {
-      onClick: function onClick() {
-        return au(i);
-      },
+      onClick: () => au(i),
       style: {
         background: C.blue,
         border: "none",
@@ -3001,18 +2735,16 @@ function CILogView(_ref17) {
     }, "+ Add"))), /*#__PURE__*/React.createElement("div", {
       style: {
         paddingTop: 10,
-        borderTop: "1px solid ".concat(C.gray),
+        borderTop: `1px solid ${C.gray}`,
         display: "flex",
         alignItems: "center",
         gap: 10
       }
     }, cd !== i ? /*#__PURE__*/React.createElement("button", {
-      onClick: function onClick() {
-        return setCd(i);
-      },
+      onClick: () => setCd(i),
       style: {
         background: "none",
-        border: "1px solid ".concat(C.red),
+        border: `1px solid ${C.red}`,
         borderRadius: 5,
         padding: "5px 12px",
         color: C.red,
@@ -3027,9 +2759,7 @@ function CILogView(_ref17) {
         color: C.darkBlue
       }
     }, "Delete this entry?"), /*#__PURE__*/React.createElement("button", {
-      onClick: function onClick() {
-        return delE(i);
-      },
+      onClick: () => delE(i),
       style: {
         background: C.red,
         border: "none",
@@ -3042,12 +2772,10 @@ function CILogView(_ref17) {
         fontFamily: FONT
       }
     }, "Yes"), /*#__PURE__*/React.createElement("button", {
-      onClick: function onClick() {
-        return setCd(null);
-      },
+      onClick: () => setCd(null),
       style: {
         background: C.white,
-        border: "1px solid ".concat(C.gray),
+        border: `1px solid ${C.gray}`,
         borderRadius: 5,
         padding: "5px 12px",
         color: C.grayDark,
@@ -3058,7 +2786,7 @@ function CILogView(_ref17) {
     }, "Cancel")))));
   })));
 }
-var SAMPLE_DATA = [{
+const SAMPLE_DATA = [{
   order: "1001423",
   status: "Success",
   date: "2026-03-03",
@@ -3563,65 +3291,50 @@ var SAMPLE_DATA = [{
   schedOnDate: "2026-03-30",
   presActualReceiveDate: "2026-03-30"
 }];
-var _allN = SAMPLE_DATA.map(function (r) {
-  return new Date(r.date).getTime() / 86400000;
-});
-var DN_MIN_ = Math.floor(Math.min.apply(Math, _toConsumableArray(_allN)));
-var DN_MAX_ = Math.ceil(Math.max.apply(Math, _toConsumableArray(_allN)));
+const _allN = SAMPLE_DATA.map(r => new Date(r.date).getTime() / 86400000);
+const DN_MIN_ = Math.floor(Math.min(..._allN));
+const DN_MAX_ = Math.ceil(Math.max(..._allN));
 // Use _ suffix internally to avoid conflict; expose as DN_MIN/DN_MAX
-var DN_MIN = DN_MIN_;
-var DN_MAX = DN_MAX_;
-var n2d = function n2d(n) {
-  return new Date(Math.round(n) * 86400000).toISOString().slice(0, 10);
-};
-function DataView(_ref19) {
-  var metricId = _ref19.metricId;
-  var _useState27 = useState("All"),
+const DN_MIN = DN_MIN_;
+const DN_MAX = DN_MAX_;
+const n2d = n => new Date(Math.round(n) * 86400000).toISOString().slice(0, 10);
+function DataView(_ref25) {
+  let metricId = _ref25.metricId;
+  const _useState27 = useState("All"),
     _useState28 = _slicedToArray(_useState27, 2),
     filterStatus = _useState28[0],
     setFilterStatus = _useState28[1];
-  var _useState29 = useState("All"),
+  const _useState29 = useState("All"),
     _useState30 = _slicedToArray(_useState29, 2),
     filterFacility = _useState30[0],
     setFilterFacility = _useState30[1];
-  var _useState31 = useState("date"),
+  const _useState31 = useState("date"),
     _useState32 = _slicedToArray(_useState31, 2),
     sortCol = _useState32[0],
     setSortCol = _useState32[1];
-  var _useState33 = useState("asc"),
+  const _useState33 = useState("asc"),
     _useState34 = _slicedToArray(_useState33, 2),
     sortDir = _useState34[0],
     setSortDir = _useState34[1];
-  var _useState35 = useState([DN_MAX - 13, DN_MAX]),
+  const _useState35 = useState([DN_MAX - 13, DN_MAX]),
     _useState36 = _slicedToArray(_useState35, 2),
     dateRange = _useState36[0],
     setDateRange = _useState36[1];
-  var facilities = ["All"].concat(_toConsumableArray(Array.from(new Set(SAMPLE_DATA.map(function (r) {
-    return r.facility;
-  }))).sort()));
-  var rs = n2d(dateRange[0]);
-  var re = n2d(dateRange[1]);
-  var filtered = SAMPLE_DATA.filter(function (r) {
-    return filterStatus === "All" || r.status === filterStatus;
-  }).filter(function (r) {
-    return filterFacility === "All" || r.facility === filterFacility;
-  }).filter(function (r) {
-    return r.date >= rs && r.date <= re;
-  }).sort(function (a, b) {
-    var _a$sortCol, _b$sortCol;
-    var av = (_a$sortCol = a[sortCol]) !== null && _a$sortCol !== void 0 ? _a$sortCol : "",
-      bv = (_b$sortCol = b[sortCol]) !== null && _b$sortCol !== void 0 ? _b$sortCol : "";
+  const facilities = ["All", ...Array.from(new Set(SAMPLE_DATA.map(r => r.facility))).sort()];
+  const rs = n2d(dateRange[0]);
+  const re = n2d(dateRange[1]);
+  const filtered = SAMPLE_DATA.filter(r => filterStatus === "All" || r.status === filterStatus).filter(r => filterFacility === "All" || r.facility === filterFacility).filter(r => r.date >= rs && r.date <= re).sort((a, b) => {
+    const av = a[sortCol] ?? "",
+      bv = b[sortCol] ?? "";
     return sortDir === "asc" ? av.localeCompare(bv) : bv.localeCompare(av);
   });
-  var handleSort = function handleSort(col) {
-    if (sortCol === col) setSortDir(function (d) {
-      return d === "asc" ? "desc" : "asc";
-    });else {
+  const handleSort = col => {
+    if (sortCol === col) setSortDir(d => d === "asc" ? "desc" : "asc");else {
       setSortCol(col);
       setSortDir("asc");
     }
   };
-  var thStyle = {
+  const thStyle = {
     padding: "9px 12px",
     textAlign: "left",
     fontSize: 11,
@@ -3630,21 +3343,21 @@ function DataView(_ref19) {
     background: C.darkBlue,
     cursor: "pointer",
     userSelect: "none",
-    borderRight: "1px solid ".concat(C.darkBlue4),
+    borderRight: `1px solid ${C.darkBlue4}`,
     whiteSpace: "nowrap",
     fontFamily: FONT
   };
-  var tdStyle = {
+  const tdStyle = {
     padding: "8px 12px",
     fontSize: 12,
     color: C.darkBlue,
-    borderBottom: "1px solid ".concat(C.gray),
+    borderBottom: `1px solid ${C.gray}`,
     verticalAlign: "middle",
     fontFamily: FONT
   };
-  var inputStyle = {
+  const inputStyle = {
     background: C.offWhite,
-    border: "1px solid ".concat(C.gray),
+    border: `1px solid ${C.gray}`,
     borderRadius: 5,
     color: C.darkBlue,
     padding: "5px 8px",
@@ -3652,14 +3365,12 @@ function DataView(_ref19) {
     fontFamily: FONT,
     boxSizing: "border-box"
   };
-  var SortIcon = function SortIcon(_ref20) {
-    var col = _ref20.col;
+  const SortIcon = _ref26 => {
+    let col = _ref26.col;
     return sortCol === col ? sortDir === "asc" ? " ▲" : " ▼" : " ⇅";
   };
-  var fp = function fp(v) {
-    return (v - DN_MIN) / (DN_MAX - DN_MIN) * 100;
-  };
-  var rib = {
+  const fp = v => (v - DN_MIN) / (DN_MAX - DN_MIN) * 100;
+  const rib = {
     position: "absolute",
     width: "100%",
     height: 6,
@@ -3678,14 +3389,10 @@ function DataView(_ref19) {
       gap: 8,
       marginBottom: 14
     }
-  }, [["".concat(filtered.length, " Total"), C.darkBlue], ["".concat(filtered.filter(function (r) {
-    return r.status === "Success";
-  }).length, " Success"), C.green], ["".concat(filtered.filter(function (r) {
-    return r.status === "Failure";
-  }).length, " Failure"), C.red]].map(function (_ref21) {
-    var _ref22 = _slicedToArray(_ref21, 2),
-      lbl = _ref22[0],
-      col = _ref22[1];
+  }, [[`${filtered.length} Total`, C.darkBlue], [`${filtered.filter(r => r.status === "Success").length} Success`, C.green], [`${filtered.filter(r => r.status === "Failure").length} Failure`, C.red]].map(_ref27 => {
+    let _ref28 = _slicedToArray(_ref27, 2),
+      lbl = _ref28[0],
+      col = _ref28[1];
     return /*#__PURE__*/React.createElement("div", {
       key: lbl,
       style: {
@@ -3718,24 +3425,20 @@ function DataView(_ref19) {
       color: C.grayDark,
       fontWeight: 600
     }
-  }, "Status:"), ["All", "Success", "Failure"].map(function (s) {
-    return /*#__PURE__*/React.createElement("button", {
-      key: s,
-      onClick: function onClick() {
-        return setFilterStatus(s);
-      },
-      style: {
-        fontSize: 11,
-        padding: "4px 10px",
-        borderRadius: 4,
-        border: "1px solid ".concat(filterStatus === s ? C.blue : C.gray),
-        background: filterStatus === s ? C.blue : C.white,
-        color: filterStatus === s ? C.white : C.grayDark,
-        cursor: "pointer",
-        fontFamily: FONT
-      }
-    }, s);
-  })), /*#__PURE__*/React.createElement("div", {
+  }, "Status:"), ["All", "Success", "Failure"].map(s => /*#__PURE__*/React.createElement("button", {
+    key: s,
+    onClick: () => setFilterStatus(s),
+    style: {
+      fontSize: 11,
+      padding: "4px 10px",
+      borderRadius: 4,
+      border: `1px solid ${filterStatus === s ? C.blue : C.gray}`,
+      background: filterStatus === s ? C.blue : C.white,
+      color: filterStatus === s ? C.white : C.grayDark,
+      cursor: "pointer",
+      fontFamily: FONT
+    }
+  }, s))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
@@ -3749,17 +3452,14 @@ function DataView(_ref19) {
     }
   }, "Facility:"), /*#__PURE__*/React.createElement("select", {
     value: filterFacility,
-    onChange: function onChange(e) {
-      return setFilterFacility(e.target.value);
-    },
-    style: _objectSpread(_objectSpread({}, inputStyle), {}, {
+    onChange: e => setFilterFacility(e.target.value),
+    style: {
+      ...inputStyle,
       minWidth: 140
-    })
-  }, facilities.map(function (f) {
-    return /*#__PURE__*/React.createElement("option", {
-      key: f
-    }, f);
-  }))), /*#__PURE__*/React.createElement("div", {
+    }
+  }, facilities.map(f => /*#__PURE__*/React.createElement("option", {
+    key: f
+  }, f)))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       flexDirection: "column",
@@ -3797,8 +3497,8 @@ function DataView(_ref19) {
       height: "100%",
       background: C.blue,
       borderRadius: 3,
-      left: "".concat(fp(dateRange[0]), "%"),
-      right: "".concat(100 - fp(dateRange[1]), "%")
+      left: `${fp(dateRange[0])}%`,
+      right: `${100 - fp(dateRange[1])}%`
     }
   }), /*#__PURE__*/React.createElement("input", {
     type: "range",
@@ -3806,30 +3506,28 @@ function DataView(_ref19) {
     max: DN_MAX,
     step: 1,
     value: dateRange[0],
-    onChange: function onChange(e) {
-      return setDateRange([Math.min(Number(e.target.value), dateRange[1] - 1), dateRange[1]]);
-    },
-    style: _objectSpread(_objectSpread({}, rib), {}, {
+    onChange: e => setDateRange([Math.min(Number(e.target.value), dateRange[1] - 1), dateRange[1]]),
+    style: {
+      ...rib,
       pointerEvents: "all",
       zIndex: 3
-    })
+    }
   }), /*#__PURE__*/React.createElement("input", {
     type: "range",
     min: DN_MIN,
     max: DN_MAX,
     step: 1,
     value: dateRange[1],
-    onChange: function onChange(e) {
-      return setDateRange([dateRange[0], Math.max(Number(e.target.value), dateRange[0] + 1)]);
-    },
-    style: _objectSpread(_objectSpread({}, rib), {}, {
+    onChange: e => setDateRange([dateRange[0], Math.max(Number(e.target.value), dateRange[0] + 1)]),
+    style: {
+      ...rib,
       pointerEvents: "all",
       zIndex: 4
-    })
+    }
   })))), /*#__PURE__*/React.createElement("div", {
     style: {
       background: C.white,
-      border: "1px solid ".concat(C.gray),
+      border: `1px solid ${C.gray}`,
       borderRadius: 8,
       overflow: "hidden"
     }
@@ -3842,104 +3540,105 @@ function DataView(_ref19) {
       width: "100%",
       borderCollapse: "collapse"
     }
-  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, [["order", "System #"], ["status", "Status"], ["facility", "Facility"], ["billTo", "Bill To"], ["manufacturer", "Manufacturer"], ["driver", "Driver"]].concat(_toConsumableArray(metricId === "RNS" ? [["receiveDT", "Receive Date & Time"], ["deliveryDT", "Scheduled Delivery Date"]] : metricId === "Dwell" ? [] : [["deliveryDT", "Delivery Date & Time"]]), _toConsumableArray(metricId === "OT" ? [["tfStart", "Timeframe Start"], ["tfEnd", "Timeframe End"]] : []), _toConsumableArray(metricId === "Scanning" ? [["scanType", "Scan Type"]] : []), _toConsumableArray(metricId === "Shortages" ? [["totalItems", "Total Items"], ["shortItems", "Short Items at Loadout"]] : []), _toConsumableArray(metricId === "CES" ? [["cesScore", "CES Score"], ["audited", "Audited"]] : []), _toConsumableArray(metricId === "Dwell" ? [["actualReceiveDate", "Actual Receive Date"], ["deliveryDT", "Delivery Date & Time"], ["dwellDays", "Dwell Days"]] : []), _toConsumableArray(metricId === "Preschedule" ? [["schedOnDate", "Scheduled On Date"], ["presActualReceiveDate", "Actual Receive Date"], ["deliveryDT", "Delivery Date & Time"]] : [])).map(function (_ref23) {
-    var _ref24 = _slicedToArray(_ref23, 2),
-      col = _ref24[0],
-      lbl = _ref24[1];
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, [["order", "System #"], ["status", "Status"], ["facility", "Facility"], ["billTo", "Bill To"], ["manufacturer", "Manufacturer"], ["driver", "Driver"], ...(metricId === "RNS" ? [["receiveDT", "Receive Date & Time"], ["deliveryDT", "Scheduled Delivery Date"]] : metricId === "Dwell" ? [] : [["deliveryDT", "Delivery Date & Time"]]), ...(metricId === "OT" ? [["tfStart", "Timeframe Start"], ["tfEnd", "Timeframe End"]] : []), ...(metricId === "Scanning" ? [["scanType", "Scan Type"]] : []), ...(metricId === "Shortages" ? [["totalItems", "Total Items"], ["shortItems", "Short Items at Loadout"]] : []), ...(metricId === "CES" ? [["cesScore", "CES Score"], ["audited", "Audited"]] : []), ...(metricId === "Dwell" ? [["actualReceiveDate", "Actual Receive Date"], ["deliveryDT", "Delivery Date & Time"], ["dwellDays", "Dwell Days"]] : []), ...(metricId === "Preschedule" ? [["schedOnDate", "Scheduled On Date"], ["presActualReceiveDate", "Actual Receive Date"], ["deliveryDT", "Delivery Date & Time"]] : [])].map(_ref29 => {
+    let _ref30 = _slicedToArray(_ref29, 2),
+      col = _ref30[0],
+      lbl = _ref30[1];
     return /*#__PURE__*/React.createElement("th", {
       key: col,
       style: thStyle,
-      onClick: function onClick() {
-        return handleSort(col);
-      }
+      onClick: () => handleSort(col)
     }, lbl, /*#__PURE__*/React.createElement(SortIcon, {
       col: col
     }));
   }))), /*#__PURE__*/React.createElement("tbody", null, filtered.length === 0 ? /*#__PURE__*/React.createElement("tr", null, /*#__PURE__*/React.createElement("td", {
     colSpan: metricId === "OT" ? 9 : metricId === "Scanning" ? 8 : metricId === "Shortages" ? 9 : metricId === "CES" ? 9 : metricId === "RNS" ? 8 : metricId === "Dwell" ? 9 : metricId === "Preschedule" ? 10 : 7,
-    style: _objectSpread(_objectSpread({}, tdStyle), {}, {
+    style: {
+      ...tdStyle,
       textAlign: "center",
       color: C.grayDark,
       padding: "20px"
-    })
-  }, "No records match filters.")) : filtered.map(function (row, i) {
-    var _row$totalItems, _row$shortItems, _row$cesScore;
-    return /*#__PURE__*/React.createElement("tr", {
-      key: i,
-      style: {
-        background: i % 2 === 0 ? C.white : C.offWhite
-      }
-    }, /*#__PURE__*/React.createElement("td", {
-      style: _objectSpread(_objectSpread({}, tdStyle), {}, {
-        fontWeight: 600
-      })
-    }, row.order), /*#__PURE__*/React.createElement("td", {
-      style: tdStyle
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        background: row.status === "Success" ? "".concat(C.green, "22") : "".concat(C.red, "22"),
-        color: row.status === "Success" ? C.green : C.red,
-        border: "1px solid ".concat(row.status === "Success" ? C.green : C.red, "55"),
-        borderRadius: 10,
-        padding: "2px 8px",
-        fontSize: 11,
-        fontWeight: 700
-      }
-    }, row.status)), /*#__PURE__*/React.createElement("td", {
-      style: tdStyle
-    }, row.facility), /*#__PURE__*/React.createElement("td", {
-      style: tdStyle
-    }, row.billTo), /*#__PURE__*/React.createElement("td", {
-      style: tdStyle
-    }, row.manufacturer), /*#__PURE__*/React.createElement("td", {
-      style: tdStyle
-    }, row.driver), metricId === "RNS" && /*#__PURE__*/React.createElement("td", {
-      style: tdStyle
-    }, row.receiveDT || "—"), metricId !== "Dwell" && /*#__PURE__*/React.createElement("td", {
-      style: tdStyle
-    }, row.deliveryDT || "—"), metricId === "Dwell" && /*#__PURE__*/React.createElement("td", {
-      style: tdStyle
-    }, row.actualReceiveDate || "—"), metricId === "Dwell" && /*#__PURE__*/React.createElement("td", {
-      style: tdStyle
-    }, row.deliveryDT || "—"), metricId === "Dwell" && /*#__PURE__*/React.createElement("td", {
-      style: _objectSpread(_objectSpread({}, tdStyle), {}, {
-        fontWeight: 700,
-        color: row.dwellDays > 6 ? C.red : C.green
-      })
-    }, row.dwellDays != null ? "".concat(row.dwellDays) : "—"), metricId === "Preschedule" && /*#__PURE__*/React.createElement("td", {
-      style: tdStyle
-    }, row.schedOnDate || "—"), metricId === "Preschedule" && /*#__PURE__*/React.createElement("td", {
-      style: tdStyle
-    }, row.presActualReceiveDate || "—"), metricId === "Preschedule" && /*#__PURE__*/React.createElement("td", {
-      style: tdStyle
-    }, row.deliveryDT || "—"), metricId === "OT" && /*#__PURE__*/React.createElement("td", {
-      style: tdStyle
-    }, row.tfStart || "—"), metricId === "OT" && /*#__PURE__*/React.createElement("td", {
-      style: tdStyle
-    }, row.tfEnd || "—"), metricId === "Scanning" && /*#__PURE__*/React.createElement("td", {
-      style: tdStyle
-    }, row.scanType || "—"), metricId === "Shortages" && /*#__PURE__*/React.createElement("td", {
-      style: tdStyle
-    }, (_row$totalItems = row.totalItems) !== null && _row$totalItems !== void 0 ? _row$totalItems : "-"), metricId === "Shortages" && /*#__PURE__*/React.createElement("td", {
-      style: _objectSpread(_objectSpread({}, tdStyle), {}, {
-        color: row.shortItems > 0 ? C.red : C.darkBlue,
-        fontWeight: row.shortItems > 0 ? 700 : 400
-      })
-    }, (_row$shortItems = row.shortItems) !== null && _row$shortItems !== void 0 ? _row$shortItems : "-"), metricId === "CES" && /*#__PURE__*/React.createElement("td", {
-      style: _objectSpread(_objectSpread({}, tdStyle), {}, {
-        fontWeight: 700,
-        fontSize: 14,
-        color: row.cesScore >= 5 ? C.green : C.red,
-        textAlign: "center"
-      })
-    }, (_row$cesScore = row.cesScore) !== null && _row$cesScore !== void 0 ? _row$cesScore : "-"), metricId === "CES" && /*#__PURE__*/React.createElement("td", {
-      style: _objectSpread(_objectSpread({}, tdStyle), {}, {
-        textAlign: "center",
-        fontWeight: 700,
-        color: row.audited === "Y" ? C.darkBlue : C.grayDark
-      })
-    }, row.audited || "-"));
-  }))))), /*#__PURE__*/React.createElement("div", {
+    }
+  }, "No records match filters.")) : filtered.map((row, i) => /*#__PURE__*/React.createElement("tr", {
+    key: i,
+    style: {
+      background: i % 2 === 0 ? C.white : C.offWhite
+    }
+  }, /*#__PURE__*/React.createElement("td", {
+    style: {
+      ...tdStyle,
+      fontWeight: 600
+    }
+  }, row.order), /*#__PURE__*/React.createElement("td", {
+    style: tdStyle
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      background: row.status === "Success" ? `${C.green}22` : `${C.red}22`,
+      color: row.status === "Success" ? C.green : C.red,
+      border: `1px solid ${row.status === "Success" ? C.green : C.red}55`,
+      borderRadius: 10,
+      padding: "2px 8px",
+      fontSize: 11,
+      fontWeight: 700
+    }
+  }, row.status)), /*#__PURE__*/React.createElement("td", {
+    style: tdStyle
+  }, row.facility), /*#__PURE__*/React.createElement("td", {
+    style: tdStyle
+  }, row.billTo), /*#__PURE__*/React.createElement("td", {
+    style: tdStyle
+  }, row.manufacturer), /*#__PURE__*/React.createElement("td", {
+    style: tdStyle
+  }, row.driver), metricId === "RNS" && /*#__PURE__*/React.createElement("td", {
+    style: tdStyle
+  }, row.receiveDT || "—"), metricId !== "Dwell" && /*#__PURE__*/React.createElement("td", {
+    style: tdStyle
+  }, row.deliveryDT || "—"), metricId === "Dwell" && /*#__PURE__*/React.createElement("td", {
+    style: tdStyle
+  }, row.actualReceiveDate || "—"), metricId === "Dwell" && /*#__PURE__*/React.createElement("td", {
+    style: tdStyle
+  }, row.deliveryDT || "—"), metricId === "Dwell" && /*#__PURE__*/React.createElement("td", {
+    style: {
+      ...tdStyle,
+      fontWeight: 700,
+      color: row.dwellDays > 6 ? C.red : C.green
+    }
+  }, row.dwellDays != null ? `${row.dwellDays}` : "—"), metricId === "Preschedule" && /*#__PURE__*/React.createElement("td", {
+    style: tdStyle
+  }, row.schedOnDate || "—"), metricId === "Preschedule" && /*#__PURE__*/React.createElement("td", {
+    style: tdStyle
+  }, row.presActualReceiveDate || "—"), metricId === "Preschedule" && /*#__PURE__*/React.createElement("td", {
+    style: tdStyle
+  }, row.deliveryDT || "—"), metricId === "OT" && /*#__PURE__*/React.createElement("td", {
+    style: tdStyle
+  }, row.tfStart || "—"), metricId === "OT" && /*#__PURE__*/React.createElement("td", {
+    style: tdStyle
+  }, row.tfEnd || "—"), metricId === "Scanning" && /*#__PURE__*/React.createElement("td", {
+    style: tdStyle
+  }, row.scanType || "—"), metricId === "Shortages" && /*#__PURE__*/React.createElement("td", {
+    style: tdStyle
+  }, row.totalItems ?? "-"), metricId === "Shortages" && /*#__PURE__*/React.createElement("td", {
+    style: {
+      ...tdStyle,
+      color: row.shortItems > 0 ? C.red : C.darkBlue,
+      fontWeight: row.shortItems > 0 ? 700 : 400
+    }
+  }, row.shortItems ?? "-"), metricId === "CES" && /*#__PURE__*/React.createElement("td", {
+    style: {
+      ...tdStyle,
+      fontWeight: 700,
+      fontSize: 14,
+      color: row.cesScore >= 5 ? C.green : C.red,
+      textAlign: "center"
+    }
+  }, row.cesScore ?? "-"), metricId === "CES" && /*#__PURE__*/React.createElement("td", {
+    style: {
+      ...tdStyle,
+      textAlign: "center",
+      fontWeight: 700,
+      color: row.audited === "Y" ? C.darkBlue : C.grayDark
+    }
+  }, row.audited || "-"))))))), /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 6,
       fontSize: 11,
@@ -3947,136 +3646,74 @@ function DataView(_ref19) {
     }
   }, "Showing ", filtered.length, " of ", SAMPLE_DATA.length, " records \xB7 click headers to sort"));
 }
-function RegionDashboard(_ref25) {
-  var _mt$hib;
-  var region = _ref25.region,
-    regionKey = _ref25.regionKey,
-    sheetsData = _ref25.sheetsData;
-  var m = region.metrics;
-  var fk = Object.keys(m)[0];
-  var _useState37 = useState(fk),
+function RegionDashboard(_ref31) {
+  let region = _ref31.region,
+    regionKey = _ref31.regionKey,
+    sheetsData = _ref31.sheetsData;
+  const m = region.metrics;
+  const fk = Object.keys(m)[0];
+  const _useState37 = useState(fk),
     _useState38 = _slicedToArray(_useState37, 2),
     sm = _useState38[0],
     setSm = _useState38[1];
-  var _useState39 = useState("trend"),
+  const _useState39 = useState("trend"),
     _useState40 = _slicedToArray(_useState39, 2),
     tab = _useState40[0],
     setTab = _useState40[1];
-  var _useState41 = useState(Object.fromEntries(Object.keys(m).map(function (k) {
-      return [k, [Object.fromEntries(Object.keys(m[k].pareto || {}).map(function (r) {
-        return [r, 0];
-      }))]];
-    }))),
+  const _useState41 = useState(Object.fromEntries(Object.keys(m).map(k => [k, [Object.fromEntries(Object.keys(m[k].pareto || {}).map(r => [r, 0]))]]))),
     _useState42 = _slicedToArray(_useState41, 2),
     ps = _useState42[0],
-    _setPs = _useState42[1];
-  var _useState43 = useState(Object.fromEntries(Object.keys(m).map(function (k) {
-      return [k, m[k].ciLog || []];
-    }))),
+    setPs = _useState42[1];
+  const _useState43 = useState(Object.fromEntries(Object.keys(m).map(k => [k, m[k].ciLog || []]))),
     _useState44 = _slicedToArray(_useState43, 2),
     cl = _useState44[0],
     setCl = _useState44[1];
-  var _useState45 = useState(false),
+  const _useState45 = useState(false),
     _useState46 = _slicedToArray(_useState45, 2),
     sheetsSaving = _useState46[0],
     setSheetsSaving = _useState46[1];
-  var _useState47 = useState(""),
+  const _useState47 = useState(""),
     _useState48 = _slicedToArray(_useState47, 2),
     sheetsSaveMsg = _useState48[0],
     setSheetsSaveMsg = _useState48[1];
 
   // Load CI Log + Pareto from Sheets on mount (if connected)
-  React.useEffect(function () {
+  React.useEffect(() => {
     if (!sheetsConnected) return;
-    Object.keys(m).forEach(/*#__PURE__*/function () {
-      var _ref26 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee(mk) {
-        var _yield$Promise$all, _yield$Promise$all2, ciData, paretoData;
-        return _regenerator().w(function (_context) {
-          while (1) switch (_context.n) {
-            case 0:
-              _context.n = 1;
-              return Promise.all([loadCILog(regionKey, mk), loadPareto(regionKey, mk)]);
-            case 1:
-              _yield$Promise$all = _context.v;
-              _yield$Promise$all2 = _slicedToArray(_yield$Promise$all, 2);
-              ciData = _yield$Promise$all2[0];
-              paretoData = _yield$Promise$all2[1];
-              if (ciData) setCl(function (prev) {
-                return _objectSpread(_objectSpread({}, prev), {}, _defineProperty({}, mk, ciData));
-              });
-              if (paretoData) _setPs(function (prev) {
-                return _objectSpread(_objectSpread({}, prev), {}, _defineProperty({}, mk, [paretoData]));
-              });
-            case 2:
-              return _context.a(2);
-          }
-        }, _callee);
+    Object.keys(m).forEach(async mk => {
+      const _await$Promise$all = await Promise.all([loadCILog(regionKey, mk), loadPareto(regionKey, mk)]),
+        _await$Promise$all2 = _slicedToArray(_await$Promise$all, 2),
+        ciData = _await$Promise$all2[0],
+        paretoData = _await$Promise$all2[1];
+      if (ciData) setCl(prev => ({
+        ...prev,
+        [mk]: ciData
       }));
-      return function (_x14) {
-        return _ref26.apply(this, arguments);
-      };
-    }());
+      if (paretoData) setPs(prev => ({
+        ...prev,
+        [mk]: [paretoData]
+      }));
+    });
   }, [regionKey]);
 
   // Save CI Log to Sheets
-  var saveCIToSheets = /*#__PURE__*/function () {
-    var _ref27 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee2(mk, log) {
-      var ok;
-      return _regenerator().w(function (_context2) {
-        while (1) switch (_context2.n) {
-          case 0:
-            if (sheetsConnected) {
-              _context2.n = 1;
-              break;
-            }
-            return _context2.a(2);
-          case 1:
-            setSheetsSaving(true);
-            _context2.n = 2;
-            return saveCILog(regionKey, mk, log);
-          case 2:
-            ok = _context2.v;
-            setSheetsSaveMsg(ok ? "✓ Saved to Sheets" : "⚠ Save failed");
-            setSheetsSaving(false);
-            setTimeout(function () {
-              return setSheetsSaveMsg("");
-            }, 3000);
-          case 3:
-            return _context2.a(2);
-        }
-      }, _callee2);
-    }));
-    return function saveCIToSheets(_x15, _x16) {
-      return _ref27.apply(this, arguments);
-    };
-  }();
+  const saveCIToSheets = async (mk, log) => {
+    if (!sheetsConnected) return;
+    setSheetsSaving(true);
+    const ok = await saveCILog(regionKey, mk, log);
+    setSheetsSaveMsg(ok ? "✓ Saved to Sheets" : "⚠ Save failed");
+    setSheetsSaving(false);
+    setTimeout(() => setSheetsSaveMsg(""), 3000);
+  };
 
   // Save Pareto to Sheets
-  var saveParetoToSheets = /*#__PURE__*/function () {
-    var _ref28 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee3(mk, counts) {
-      return _regenerator().w(function (_context3) {
-        while (1) switch (_context3.n) {
-          case 0:
-            if (sheetsConnected) {
-              _context3.n = 1;
-              break;
-            }
-            return _context3.a(2);
-          case 1:
-            _context3.n = 2;
-            return savePareto(regionKey, mk, counts);
-          case 2:
-            return _context3.a(2);
-        }
-      }, _callee3);
-    }));
-    return function saveParetoToSheets(_x17, _x18) {
-      return _ref28.apply(this, arguments);
-    };
-  }();
-  var mt = m[sm];
-  var hib = (_mt$hib = mt.hib) !== null && _mt$hib !== void 0 ? _mt$hib : true;
-  var tabs = [{
+  const saveParetoToSheets = async (mk, counts) => {
+    if (!sheetsConnected) return;
+    await savePareto(regionKey, mk, counts);
+  };
+  const mt = m[sm];
+  const hib = mt.hib ?? true;
+  const tabs = [{
     id: "trend",
     l: "Trend"
   }, {
@@ -4098,7 +3735,7 @@ function RegionDashboard(_ref25) {
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       width: 270,
-      borderRight: "1px solid ".concat(C.gray),
+      borderRight: `1px solid ${C.gray}`,
       overflowY: "auto",
       padding: "14px 10px",
       background: C.offWhite,
@@ -4113,15 +3750,15 @@ function RegionDashboard(_ref25) {
       textTransform: "uppercase",
       marginBottom: 8
     }
-  }, "KPI Metrics"), Object.entries(m).map(function (_ref29) {
-    var _ref30 = _slicedToArray(_ref29, 2),
-      id = _ref30[0],
-      metric = _ref30[1];
+  }, "KPI Metrics"), Object.entries(m).map(_ref32 => {
+    let _ref33 = _slicedToArray(_ref32, 2),
+      id = _ref33[0],
+      metric = _ref33[1];
     return /*#__PURE__*/React.createElement(MetricCard, {
       key: id,
       id: id,
       metric: metric,
-      onClick: function onClick(id) {
+      onClick: id => {
         setSm(id);
         setTab("trend");
       },
@@ -4161,13 +3798,13 @@ function RegionDashboard(_ref25) {
       gap: 7,
       flexWrap: "wrap"
     }
-  }, [["Daily Tgt", mt.daily.standard, false], ["Daily Act", mt.daily.actual, true], ["MTD Tgt", mt.mtd.standard, false], ["MTD Act", mt.mtd.actual, true], ["MTD Gap", mt.mtd.actual - mt.mtd.standard, true]].map(function (_ref31) {
-    var _ref32 = _slicedToArray(_ref31, 3),
-      l = _ref32[0],
-      v = _ref32[1],
-      col = _ref32[2];
-    var ig = l === "MTD Gap";
-    var hit = ig ? hib ? v >= 0 : v <= 0 : hib ? v >= mt.goal : v <= mt.goal;
+  }, [["Daily Tgt", mt.daily.standard, false], ["Daily Act", mt.daily.actual, true], ["MTD Tgt", mt.mtd.standard, false], ["MTD Act", mt.mtd.actual, true], ["MTD Gap", mt.mtd.actual - mt.mtd.standard, true]].map(_ref34 => {
+    let _ref35 = _slicedToArray(_ref34, 3),
+      l = _ref35[0],
+      v = _ref35[1],
+      col = _ref35[2];
+    const ig = l === "MTD Gap";
+    const hit = ig ? hib ? v >= 0 : v <= 0 : hib ? v >= mt.goal : v <= mt.goal;
     return /*#__PURE__*/React.createElement("div", {
       key: l,
       style: {
@@ -4175,7 +3812,7 @@ function RegionDashboard(_ref25) {
         borderRadius: 8,
         padding: "7px 11px",
         textAlign: "center",
-        border: "1px solid ".concat(C.gray),
+        border: `1px solid ${C.gray}`,
         minWidth: 70
       }
     }, /*#__PURE__*/React.createElement("div", {
@@ -4192,50 +3829,48 @@ function RegionDashboard(_ref25) {
         fontWeight: 700,
         color: col ? perfColor(hit) : C.darkBlue
       }
-    }, ig ? "".concat((hib ? v >= 0 : v <= 0) ? "+" : "").concat((Math.abs(v) * 100).toFixed(2), "pp") : fmtM(sm, v)));
+    }, ig ? `${(hib ? v >= 0 : v <= 0) ? "+" : ""}${(Math.abs(v) * 100).toFixed(2)}pp` : fmtM(sm, v)));
   }))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       marginBottom: 18,
-      borderBottom: "2px solid ".concat(C.gray)
+      borderBottom: `2px solid ${C.gray}`
     }
-  }, tabs.map(function (t) {
-    return /*#__PURE__*/React.createElement("button", {
-      key: t.id,
-      onClick: function onClick() {
-        return setTab(t.id);
-      },
-      style: {
-        background: "none",
-        border: "none",
-        padding: "8px 18px",
-        fontSize: 13,
-        fontWeight: 700,
-        color: tab === t.id ? C.darkBlue : C.grayDark,
-        borderBottom: tab === t.id ? "3px solid ".concat(C.blue) : "3px solid transparent",
-        cursor: "pointer",
-        marginBottom: -2,
-        fontFamily: FONT
-      }
-    }, t.l);
-  })), tab === "trend" && /*#__PURE__*/React.createElement(TrendView, {
+  }, tabs.map(t => /*#__PURE__*/React.createElement("button", {
+    key: t.id,
+    onClick: () => setTab(t.id),
+    style: {
+      background: "none",
+      border: "none",
+      padding: "8px 18px",
+      fontSize: 13,
+      fontWeight: 700,
+      color: tab === t.id ? C.darkBlue : C.grayDark,
+      borderBottom: tab === t.id ? `3px solid ${C.blue}` : "3px solid transparent",
+      cursor: "pointer",
+      marginBottom: -2,
+      fontFamily: FONT
+    }
+  }, t.l))), tab === "trend" && /*#__PURE__*/React.createElement(TrendView, {
     metric: mt,
     metricId: sm
   }), tab === "pareto" && /*#__PURE__*/React.createElement(ParetoView, {
     metric: mt,
     ps: ps[sm],
-    setPs: function setPs(v) {
-      _setPs(function (p) {
-        return _objectSpread(_objectSpread({}, p), {}, _defineProperty({}, sm, v));
-      });
+    setPs: v => {
+      setPs(p => ({
+        ...p,
+        [sm]: v
+      }));
       if (v[0]) saveParetoToSheets(sm, v[0]);
     }
   }), tab === "ci" && /*#__PURE__*/React.createElement(CILogView, {
     ciLog: cl[sm],
-    setCiLog: function setCiLog(v) {
-      setCl(function (p) {
-        return _objectSpread(_objectSpread({}, p), {}, _defineProperty({}, sm, v));
-      });
+    setCiLog: v => {
+      setCl(p => ({
+        ...p,
+        [sm]: v
+      }));
       saveCIToSheets(sm, v);
     },
     regionKey: regionKey,
@@ -4247,7 +3882,7 @@ function RegionDashboard(_ref25) {
 }
 
 // Last 4 weeks of daily trend day buckets
-var WEEKS = [{
+const WEEKS = [{
   label: "Wk of 4/7",
   days: [3, 4, 5, 6]
 }, {
@@ -4261,58 +3896,46 @@ var WEEKS = [{
   days: [24, 25, 26, 27]
 }];
 function weekAvgForDays(metric, days) {
-  var vals = days.map(function (d) {
-    return metric.dailyTrend[d];
-  }).filter(function (v) {
-    return v != null;
-  });
+  const vals = days.map(d => metric.dailyTrend[d]).filter(v => v != null);
   if (!vals.length) return null;
-  return vals.reduce(function (s, v) {
-    return s + v;
-  }, 0) / vals.length;
+  return vals.reduce((s, v) => s + v, 0) / vals.length;
 }
 function TrendsView() {
-  var _useState49 = useState("byRegion"),
+  const _useState49 = useState("byRegion"),
     _useState50 = _slicedToArray(_useState49, 2),
     trendsView = _useState50[0],
     setTrendsView = _useState50[1];
 
   // Gray trend lines, colored dots
-  function Spark(_ref33) {
-    var values = _ref33.values,
-      goal = _ref33.goal,
-      _ref33$hib = _ref33.hib,
-      hib = _ref33$hib === void 0 ? true : _ref33$hib,
-      _ref33$width = _ref33.width,
-      width = _ref33$width === void 0 ? 90 : _ref33$width,
-      _ref33$height = _ref33.height,
-      height = _ref33$height === void 0 ? 36 : _ref33$height;
-    var valid = values.filter(function (v) {
-      return v != null;
-    });
+  function Spark(_ref36) {
+    let values = _ref36.values,
+      goal = _ref36.goal,
+      _ref36$hib = _ref36.hib,
+      hib = _ref36$hib === void 0 ? true : _ref36$hib,
+      _ref36$width = _ref36.width,
+      width = _ref36$width === void 0 ? 90 : _ref36$width,
+      _ref36$height = _ref36.height,
+      height = _ref36$height === void 0 ? 36 : _ref36$height;
+    const valid = values.filter(v => v != null);
     if (valid.length < 2) return /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 13,
         color: C.grayDark
       }
     }, "\u2014");
-    var mn = Math.min.apply(Math, _toConsumableArray(valid)) * 0.995;
-    var mx = Math.max.apply(Math, _toConsumableArray(valid)) * 1.005;
-    var rng = mx - mn || 0.01;
-    var W = width,
+    const mn = Math.min(...valid) * 0.995;
+    const mx = Math.max(...valid) * 1.005;
+    const rng = mx - mn || 0.01;
+    const W = width,
       H = height;
-    var pts = values.map(function (v, i) {
-      return v != null ? {
-        x: i / (values.length - 1) * W,
-        y: H - (v - mn) / rng * (H - 4) + 2
-      } : null;
-    }).filter(Boolean);
-    var path = pts.map(function (p, i) {
-      return "".concat(i === 0 ? "M" : "L").concat(p.x.toFixed(1), ",").concat(p.y.toFixed(1));
-    }).join(" ");
-    var goalY = goal != null ? H - (goal - mn) / rng * (H - 4) + 2 : null;
+    const pts = values.map((v, i) => v != null ? {
+      x: i / (values.length - 1) * W,
+      y: H - (v - mn) / rng * (H - 4) + 2
+    } : null).filter(Boolean);
+    const path = pts.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+    const goalY = goal != null ? H - (goal - mn) / rng * (H - 4) + 2 : null;
     return /*#__PURE__*/React.createElement("svg", {
-      viewBox: "0 0 ".concat(W, " ").concat(H),
+      viewBox: `0 0 ${W} ${H}`,
       style: {
         width: W,
         height: H,
@@ -4335,9 +3958,9 @@ function TrendsView() {
       strokeWidth: 2.5,
       strokeLinecap: "round",
       strokeLinejoin: "round"
-    }), pts.map(function (p, i) {
-      var v = values[i];
-      var h = v != null && (hib ? v >= goal : v <= goal);
+    }), pts.map((p, i) => {
+      const v = values[i];
+      const h = v != null && (hib ? v >= goal : v <= goal);
       return /*#__PURE__*/React.createElement("circle", {
         key: i,
         cx: p.x,
@@ -4351,16 +3974,16 @@ function TrendsView() {
   }
 
   // Overall overperformance summary: for each week, avg normalised score across ALL regions & their metrics
-  var overallWkPerf = WEEKS.map(function (w) {
-    var total = 0;
-    var count = 0;
-    Object.entries(REGIONS).forEach(function (_ref34) {
-      var _ref35 = _slicedToArray(_ref34, 2),
-        rk = _ref35[0],
-        region = _ref35[1];
-      REGION_METRIC_KEYS[rk].forEach(function (mk) {
-        var metric = region.metrics[mk];
-        var v = weekAvgForDays(metric, w.days);
+  const overallWkPerf = WEEKS.map(w => {
+    let total = 0;
+    let count = 0;
+    Object.entries(REGIONS).forEach(_ref37 => {
+      let _ref38 = _slicedToArray(_ref37, 2),
+        rk = _ref38[0],
+        region = _ref38[1];
+      REGION_METRIC_KEYS[rk].forEach(mk => {
+        const metric = region.metrics[mk];
+        const v = weekAvgForDays(metric, w.days);
         if (v != null) {
           total += normScore(mk, v);
           count++;
@@ -4369,7 +3992,7 @@ function TrendsView() {
     });
     return count > 0 ? total / count : null;
   });
-  var vl = "1px solid ".concat(C.gray); // vertical gridline
+  const vl = `1px solid ${C.gray}`; // vertical gridline
 
   return /*#__PURE__*/React.createElement("div", {
     style: {
@@ -4397,7 +4020,7 @@ function TrendsView() {
     style: {
       background: C.white,
       borderRadius: 10,
-      border: "1px solid ".concat(C.gray),
+      border: `1px solid ${C.gray}`,
       padding: "20px 24px",
       marginBottom: 28,
       boxShadow: "0 1px 4px rgba(0,47,86,0.06)"
@@ -4411,7 +4034,7 @@ function TrendsView() {
       letterSpacing: "0.06em",
       marginBottom: 16,
       paddingBottom: 10,
-      borderBottom: "2px solid ".concat(C.blue)
+      borderBottom: `2px solid ${C.blue}`
     }
   }, "Overall Performance by Region \u2014 Last 4 Weeks"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -4433,25 +4056,23 @@ function TrendsView() {
       fontSize: 12,
       fontWeight: 700,
       color: C.white,
-      borderRight: "1px solid ".concat(C.darkBlue4),
+      borderRight: `1px solid ${C.darkBlue4}`,
       fontFamily: FONT,
       whiteSpace: "nowrap"
     }
-  }, "Region"), WEEKS.map(function (w, wi) {
-    return /*#__PURE__*/React.createElement("th", {
-      key: w.label,
-      style: {
-        padding: "7px 12px",
-        textAlign: "center",
-        fontSize: 12,
-        fontWeight: 700,
-        color: C.white,
-        borderRight: "1px solid ".concat(C.darkBlue4),
-        fontFamily: FONT,
-        whiteSpace: "nowrap"
-      }
-    }, w.label);
-  }), /*#__PURE__*/React.createElement("th", {
+  }, "Region"), WEEKS.map((w, wi) => /*#__PURE__*/React.createElement("th", {
+    key: w.label,
+    style: {
+      padding: "7px 12px",
+      textAlign: "center",
+      fontSize: 12,
+      fontWeight: 700,
+      color: C.white,
+      borderRight: `1px solid ${C.darkBlue4}`,
+      fontFamily: FONT,
+      whiteSpace: "nowrap"
+    }
+  }, w.label)), /*#__PURE__*/React.createElement("th", {
     style: {
       padding: "7px 12px",
       textAlign: "center",
@@ -4469,10 +4090,10 @@ function TrendsView() {
       fontWeight: 700,
       color: C.white,
       fontFamily: FONT,
-      borderLeft: "1px solid ".concat(C.darkBlue4)
+      borderLeft: `1px solid ${C.darkBlue4}`
     }
-  }, "Target"))), /*#__PURE__*/React.createElement("tbody", null, function () {
-    var hit = overallWkPerf[overallWkPerf.length - 1] != null && overallWkPerf[overallWkPerf.length - 1] >= 0.95;
+  }, "Target"))), /*#__PURE__*/React.createElement("tbody", null, (() => {
+    const hit = overallWkPerf[overallWkPerf.length - 1] != null && overallWkPerf[overallWkPerf.length - 1] >= 0.95;
     return /*#__PURE__*/React.createElement("tr", {
       style: {
         background: C.darkBlue3
@@ -4483,12 +4104,12 @@ function TrendsView() {
         fontSize: 13,
         fontWeight: 700,
         color: C.white,
-        borderBottom: "1px solid ".concat(C.darkBlue4),
-        borderRight: "1px solid ".concat(C.darkBlue4),
+        borderBottom: `1px solid ${C.darkBlue4}`,
+        borderRight: `1px solid ${C.darkBlue4}`,
         fontFamily: FONT
       }
-    }, "All Regions"), overallWkPerf.map(function (v, wi) {
-      var h = v != null && v >= 0.95;
+    }, "All Regions"), overallWkPerf.map((v, wi) => {
+      const h = v != null && v >= 0.95;
       return /*#__PURE__*/React.createElement("td", {
         key: wi,
         style: {
@@ -4497,8 +4118,8 @@ function TrendsView() {
           fontSize: 13,
           fontWeight: 700,
           color: v != null ? perfColor(h) : "#ccc",
-          borderBottom: "1px solid ".concat(C.darkBlue4),
-          borderRight: "1px solid ".concat(C.darkBlue4),
+          borderBottom: `1px solid ${C.darkBlue4}`,
+          borderRight: `1px solid ${C.darkBlue4}`,
           fontFamily: FONT
         }
       }, v != null ? pct(v) : "—");
@@ -4506,8 +4127,8 @@ function TrendsView() {
       style: {
         padding: "6px 12px",
         textAlign: "center",
-        borderBottom: "1px solid ".concat(C.darkBlue4),
-        borderRight: "1px solid ".concat(C.darkBlue4)
+        borderBottom: `1px solid ${C.darkBlue4}`,
+        borderRight: `1px solid ${C.darkBlue4}`
       }
     }, /*#__PURE__*/React.createElement(Spark, {
       values: overallWkPerf,
@@ -4521,24 +4142,17 @@ function TrendsView() {
         textAlign: "center",
         fontSize: 12,
         color: C.grayMid,
-        borderBottom: "1px solid ".concat(C.darkBlue4),
+        borderBottom: `1px solid ${C.darkBlue4}`,
         fontFamily: FONT
       }
     }, "95.0%"));
-  }(), Object.entries(REGIONS).map(function (_ref36, ri) {
-    var _ref37 = _slicedToArray(_ref36, 2),
-      rk = _ref37[0],
-      region = _ref37[1];
-    var wkScores = WEEKS.map(function (w) {
-      var vals = REGION_METRIC_KEYS[rk].map(function (mk) {
-        var _weekAvgForDays;
-        return normScore(mk, (_weekAvgForDays = weekAvgForDays(region.metrics[mk], w.days)) !== null && _weekAvgForDays !== void 0 ? _weekAvgForDays : weeklyAvg(region.metrics[mk]));
-      }).filter(function (v) {
-        return v != null;
-      });
-      return vals.length ? vals.reduce(function (s, v) {
-        return s + v;
-      }, 0) / vals.length : null;
+  })(), Object.entries(REGIONS).map((_ref39, ri) => {
+    let _ref40 = _slicedToArray(_ref39, 2),
+      rk = _ref40[0],
+      region = _ref40[1];
+    const wkScores = WEEKS.map(w => {
+      const vals = REGION_METRIC_KEYS[rk].map(mk => normScore(mk, weekAvgForDays(region.metrics[mk], w.days) ?? weeklyAvg(region.metrics[mk]))).filter(v => v != null);
+      return vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
     });
     return /*#__PURE__*/React.createElement("tr", {
       key: rk,
@@ -4551,12 +4165,12 @@ function TrendsView() {
         fontSize: 13,
         fontWeight: 700,
         color: C.darkBlue,
-        borderBottom: "1px solid ".concat(C.gray),
-        borderRight: "1px solid ".concat(C.gray),
+        borderBottom: `1px solid ${C.gray}`,
+        borderRight: `1px solid ${C.gray}`,
         fontFamily: FONT
       }
-    }, region.label), wkScores.map(function (v, wi) {
-      var h = v != null && v >= 0.95;
+    }, region.label), wkScores.map((v, wi) => {
+      const h = v != null && v >= 0.95;
       return /*#__PURE__*/React.createElement("td", {
         key: wi,
         style: {
@@ -4565,8 +4179,8 @@ function TrendsView() {
           fontSize: 13,
           fontWeight: 700,
           color: v != null ? perfColor(h) : C.grayMid,
-          borderBottom: "1px solid ".concat(C.gray),
-          borderRight: "1px solid ".concat(C.gray),
+          borderBottom: `1px solid ${C.gray}`,
+          borderRight: `1px solid ${C.gray}`,
           fontFamily: FONT
         }
       }, v != null ? pct(v) : "—");
@@ -4574,8 +4188,8 @@ function TrendsView() {
       style: {
         padding: "6px 12px",
         textAlign: "center",
-        borderBottom: "1px solid ".concat(C.gray),
-        borderRight: "1px solid ".concat(C.gray)
+        borderBottom: `1px solid ${C.gray}`,
+        borderRight: `1px solid ${C.gray}`
       }
     }, /*#__PURE__*/React.createElement(Spark, {
       values: wkScores,
@@ -4589,7 +4203,7 @@ function TrendsView() {
         textAlign: "center",
         fontSize: 12,
         color: C.grayDark,
-        borderBottom: "1px solid ".concat(C.gray),
+        borderBottom: `1px solid ${C.gray}`,
         fontFamily: FONT
       }
     }, "95.0%"));
@@ -4614,9 +4228,7 @@ function TrendsView() {
       gap: 6
     }
   }, /*#__PURE__*/React.createElement("button", {
-    onClick: function onClick() {
-      return setTrendsView("byRegion");
-    },
+    onClick: () => setTrendsView("byRegion"),
     style: {
       padding: "6px 16px",
       borderRadius: 6,
@@ -4624,14 +4236,12 @@ function TrendsView() {
       fontWeight: 600,
       cursor: "pointer",
       fontFamily: FONT,
-      border: "1px solid ".concat(trendsView === "byRegion" ? C.blue : C.gray),
+      border: `1px solid ${trendsView === "byRegion" ? C.blue : C.gray}`,
       background: trendsView === "byRegion" ? C.blue : C.white,
       color: trendsView === "byRegion" ? C.white : C.grayDark
     }
   }, "By Region"), /*#__PURE__*/React.createElement("button", {
-    onClick: function onClick() {
-      return setTrendsView("byMetric");
-    },
+    onClick: () => setTrendsView("byMetric"),
     style: {
       padding: "6px 16px",
       borderRadius: 6,
@@ -4639,7 +4249,7 @@ function TrendsView() {
       fontWeight: 600,
       cursor: "pointer",
       fontFamily: FONT,
-      border: "1px solid ".concat(trendsView === "byMetric" ? C.blue : C.gray),
+      border: `1px solid ${trendsView === "byMetric" ? C.blue : C.gray}`,
       background: trendsView === "byMetric" ? C.blue : C.white,
       color: trendsView === "byMetric" ? C.white : C.grayDark
     }
@@ -4649,17 +4259,17 @@ function TrendsView() {
       gridTemplateColumns: "repeat(2,1fr)",
       gap: 18
     }
-  }, Object.entries(REGIONS).map(function (_ref38) {
-    var _ref39 = _slicedToArray(_ref38, 2),
-      rk = _ref39[0],
-      region = _ref39[1];
-    var mks = REGION_METRIC_KEYS[rk];
+  }, Object.entries(REGIONS).map(_ref41 => {
+    let _ref42 = _slicedToArray(_ref41, 2),
+      rk = _ref42[0],
+      region = _ref42[1];
+    const mks = REGION_METRIC_KEYS[rk];
     return /*#__PURE__*/React.createElement("div", {
       key: rk,
       style: {
         background: C.white,
         borderRadius: 10,
-        border: "1px solid ".concat(C.gray),
+        border: `1px solid ${C.gray}`,
         padding: "16px 18px",
         boxShadow: "0 1px 4px rgba(0,47,86,0.06)"
       }
@@ -4670,7 +4280,7 @@ function TrendsView() {
         color: C.darkBlue,
         marginBottom: 12,
         paddingBottom: 10,
-        borderBottom: "2px solid ".concat(C.blue)
+        borderBottom: `2px solid ${C.blue}`
       }
     }, region.label), /*#__PURE__*/React.createElement("div", {
       style: {
@@ -4692,34 +4302,32 @@ function TrendsView() {
         fontWeight: 700,
         textAlign: "left",
         padding: "5px 8px",
-        borderBottom: "2px solid ".concat(C.gray),
+        borderBottom: `2px solid ${C.gray}`,
         borderRight: vl,
         fontFamily: FONT,
         whiteSpace: "nowrap"
       }
-    }, "Metric"), WEEKS.map(function (w, wi) {
-      return /*#__PURE__*/React.createElement("th", {
-        key: w.label,
-        style: {
-          fontSize: 12,
-          color: C.darkBlue,
-          fontWeight: 700,
-          textAlign: "center",
-          padding: "5px 8px",
-          borderBottom: "2px solid ".concat(C.gray),
-          borderRight: wi < WEEKS.length - 1 ? vl : "none",
-          fontFamily: FONT,
-          whiteSpace: "nowrap"
-        }
-      }, w.label);
-    }), /*#__PURE__*/React.createElement("th", {
+    }, "Metric"), WEEKS.map((w, wi) => /*#__PURE__*/React.createElement("th", {
+      key: w.label,
       style: {
         fontSize: 12,
         color: C.darkBlue,
         fontWeight: 700,
         textAlign: "center",
         padding: "5px 8px",
-        borderBottom: "2px solid ".concat(C.gray),
+        borderBottom: `2px solid ${C.gray}`,
+        borderRight: wi < WEEKS.length - 1 ? vl : "none",
+        fontFamily: FONT,
+        whiteSpace: "nowrap"
+      }
+    }, w.label)), /*#__PURE__*/React.createElement("th", {
+      style: {
+        fontSize: 12,
+        color: C.darkBlue,
+        fontWeight: 700,
+        textAlign: "center",
+        padding: "5px 8px",
+        borderBottom: `2px solid ${C.gray}`,
         fontFamily: FONT
       }
     }, "Trend"), /*#__PURE__*/React.createElement("th", {
@@ -4729,17 +4337,15 @@ function TrendsView() {
         fontWeight: 700,
         textAlign: "center",
         padding: "5px 8px",
-        borderBottom: "2px solid ".concat(C.gray),
+        borderBottom: `2px solid ${C.gray}`,
         borderLeft: vl,
         fontFamily: FONT
       }
-    }, "Target"))), /*#__PURE__*/React.createElement("tbody", null, mks.map(function (mk, mki) {
-      var metric = region.metrics[mk];
-      var d = METRIC_DEFS[mk];
-      var wv = WEEKS.map(function (w) {
-        return weekAvgForDays(metric, w.days);
-      });
-      var rowBg = mki % 2 === 0 ? C.white : C.offWhite;
+    }, "Target"))), /*#__PURE__*/React.createElement("tbody", null, mks.map((mk, mki) => {
+      const metric = region.metrics[mk];
+      const d = METRIC_DEFS[mk];
+      const wv = WEEKS.map(w => weekAvgForDays(metric, w.days));
+      const rowBg = mki % 2 === 0 ? C.white : C.offWhite;
       return /*#__PURE__*/React.createElement("tr", {
         key: mk,
         style: {
@@ -4751,12 +4357,12 @@ function TrendsView() {
           color: C.grayDark,
           padding: "5px 8px",
           fontFamily: FONT,
-          borderBottom: "1px solid ".concat(C.gray),
+          borderBottom: `1px solid ${C.gray}`,
           borderRight: vl,
           whiteSpace: "nowrap"
         }
-      }, d.label), wv.map(function (v, wi) {
-        var h = v != null && (d.hib ? v >= d.goal : v <= d.goal);
+      }, d.label), wv.map((v, wi) => {
+        const h = v != null && (d.hib ? v >= d.goal : v <= d.goal);
         return /*#__PURE__*/React.createElement("td", {
           key: wi,
           style: {
@@ -4765,7 +4371,7 @@ function TrendsView() {
             fontWeight: 700,
             color: v != null ? perfColor(h) : C.grayMid,
             padding: "5px 8px",
-            borderBottom: "1px solid ".concat(C.gray),
+            borderBottom: `1px solid ${C.gray}`,
             borderRight: wi < wv.length - 1 ? vl : "none",
             fontFamily: FONT
           }
@@ -4774,7 +4380,7 @@ function TrendsView() {
         style: {
           textAlign: "center",
           padding: "4px 8px",
-          borderBottom: "1px solid ".concat(C.gray)
+          borderBottom: `1px solid ${C.gray}`
         }
       }, /*#__PURE__*/React.createElement(Spark, {
         values: wv,
@@ -4786,7 +4392,7 @@ function TrendsView() {
           fontSize: 12,
           color: C.grayDark,
           padding: "5px 8px",
-          borderBottom: "1px solid ".concat(C.gray),
+          borderBottom: `1px solid ${C.gray}`,
           borderLeft: vl,
           fontFamily: FONT
         }
@@ -4798,15 +4404,11 @@ function TrendsView() {
       gridTemplateColumns: "repeat(2,1fr)",
       gap: 18
     }
-  }, ["OT", "COT", "Scanning", "POD", "Call", "Shortages", "Preschedule", "CES", "RNS", "Dwell"].filter(function (mk) {
-    return Object.values(REGIONS).some(function (r) {
-      return r.metrics[mk];
-    });
-  }).map(function (mk) {
-    var d = METRIC_DEFS[mk];
-    var regions = Object.entries(REGIONS).filter(function (_ref40) {
-      var _ref41 = _slicedToArray(_ref40, 1),
-        rk = _ref41[0];
+  }, ["OT", "COT", "Scanning", "POD", "Call", "Shortages", "Preschedule", "CES", "RNS", "Dwell"].filter(mk => Object.values(REGIONS).some(r => r.metrics[mk])).map(mk => {
+    const d = METRIC_DEFS[mk];
+    const regions = Object.entries(REGIONS).filter(_ref43 => {
+      let _ref44 = _slicedToArray(_ref43, 1),
+        rk = _ref44[0];
       return REGION_METRIC_KEYS[rk].includes(mk);
     });
     return /*#__PURE__*/React.createElement("div", {
@@ -4814,7 +4416,7 @@ function TrendsView() {
       style: {
         background: C.white,
         borderRadius: 10,
-        border: "1px solid ".concat(C.gray),
+        border: `1px solid ${C.gray}`,
         padding: "16px 18px",
         boxShadow: "0 1px 4px rgba(0,47,86,0.06)"
       }
@@ -4825,7 +4427,7 @@ function TrendsView() {
         alignItems: "baseline",
         marginBottom: 12,
         paddingBottom: 10,
-        borderBottom: "2px solid ".concat(C.blue)
+        borderBottom: `2px solid ${C.blue}`
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
@@ -4869,44 +4471,40 @@ function TrendsView() {
         fontWeight: 700,
         textAlign: "left",
         padding: "5px 8px",
-        borderBottom: "2px solid ".concat(C.gray),
+        borderBottom: `2px solid ${C.gray}`,
         borderRight: vl,
         fontFamily: FONT,
         whiteSpace: "nowrap"
       }
-    }, "Region"), WEEKS.map(function (w, wi) {
-      return /*#__PURE__*/React.createElement("th", {
-        key: w.label,
-        style: {
-          fontSize: 12,
-          color: C.darkBlue,
-          fontWeight: 700,
-          textAlign: "center",
-          padding: "5px 8px",
-          borderBottom: "2px solid ".concat(C.gray),
-          borderRight: wi < WEEKS.length - 1 ? vl : "none",
-          fontFamily: FONT,
-          whiteSpace: "nowrap"
-        }
-      }, w.label);
-    }), /*#__PURE__*/React.createElement("th", {
+    }, "Region"), WEEKS.map((w, wi) => /*#__PURE__*/React.createElement("th", {
+      key: w.label,
       style: {
         fontSize: 12,
         color: C.darkBlue,
         fontWeight: 700,
         textAlign: "center",
         padding: "5px 8px",
-        borderBottom: "2px solid ".concat(C.gray),
+        borderBottom: `2px solid ${C.gray}`,
+        borderRight: wi < WEEKS.length - 1 ? vl : "none",
+        fontFamily: FONT,
+        whiteSpace: "nowrap"
+      }
+    }, w.label)), /*#__PURE__*/React.createElement("th", {
+      style: {
+        fontSize: 12,
+        color: C.darkBlue,
+        fontWeight: 700,
+        textAlign: "center",
+        padding: "5px 8px",
+        borderBottom: `2px solid ${C.gray}`,
         fontFamily: FONT
       }
-    }, "Trend"))), /*#__PURE__*/React.createElement("tbody", null, regions.map(function (_ref42, ri) {
-      var _ref43 = _slicedToArray(_ref42, 2),
-        rk = _ref43[0],
-        region = _ref43[1];
-      var metric = region.metrics[mk];
-      var wv = WEEKS.map(function (w) {
-        return weekAvgForDays(metric, w.days);
-      });
+    }, "Trend"))), /*#__PURE__*/React.createElement("tbody", null, regions.map((_ref45, ri) => {
+      let _ref46 = _slicedToArray(_ref45, 2),
+        rk = _ref46[0],
+        region = _ref46[1];
+      const metric = region.metrics[mk];
+      const wv = WEEKS.map(w => weekAvgForDays(metric, w.days));
       return /*#__PURE__*/React.createElement("tr", {
         key: rk,
         style: {
@@ -4918,13 +4516,13 @@ function TrendsView() {
           color: C.grayDark,
           padding: "5px 8px",
           fontFamily: FONT,
-          borderBottom: "1px solid ".concat(C.gray),
+          borderBottom: `1px solid ${C.gray}`,
           borderRight: vl,
           whiteSpace: "nowrap",
           fontWeight: 600
         }
-      }, region.label), wv.map(function (v, wi) {
-        var h = v != null && (d.hib ? v >= d.goal : v <= d.goal);
+      }, region.label), wv.map((v, wi) => {
+        const h = v != null && (d.hib ? v >= d.goal : v <= d.goal);
         return /*#__PURE__*/React.createElement("td", {
           key: wi,
           style: {
@@ -4933,7 +4531,7 @@ function TrendsView() {
             fontWeight: 700,
             color: v != null ? perfColor(h) : C.grayMid,
             padding: "5px 8px",
-            borderBottom: "1px solid ".concat(C.gray),
+            borderBottom: `1px solid ${C.gray}`,
             borderRight: wi < wv.length - 1 ? vl : "none",
             fontFamily: FONT
           }
@@ -4942,7 +4540,7 @@ function TrendsView() {
         style: {
           textAlign: "center",
           padding: "4px 8px",
-          borderBottom: "1px solid ".concat(C.gray)
+          borderBottom: `1px solid ${C.gray}`
         }
       }, /*#__PURE__*/React.createElement(Spark, {
         values: wv,
@@ -4952,24 +4550,22 @@ function TrendsView() {
     })))));
   })));
 }
-function SummaryView(_ref44) {
-  var onDrillDown = _ref44.onDrillDown;
-  var _useState51 = useState("byRegion"),
+function SummaryView(_ref47) {
+  let onDrillDown = _ref47.onDrillDown;
+  const _useState51 = useState("byRegion"),
     _useState52 = _slicedToArray(_useState51, 2),
     summaryView = _useState52[0],
     setSummaryView = _useState52[1];
-  var ranked = Object.entries(REGIONS).map(function (_ref45) {
-    var _ref46 = _slicedToArray(_ref45, 2),
-      k = _ref46[0],
-      r = _ref46[1];
+  const ranked = Object.entries(REGIONS).map(_ref48 => {
+    let _ref49 = _slicedToArray(_ref48, 2),
+      k = _ref49[0],
+      r = _ref49[1];
     return {
-      k: k,
-      r: r,
+      k,
+      r,
       s: overallScore(r.metrics)
     };
-  }).sort(function (a, b) {
-    return b.s - a.s;
-  });
+  }).sort((a, b) => b.s - a.s);
   return /*#__PURE__*/React.createElement("div", {
     style: {
       overflowY: "auto",
@@ -4999,34 +4595,30 @@ function SummaryView(_ref44) {
       gap: 14,
       marginBottom: 28
     }
-  }, ranked.map(function (_ref47, rank) {
-    var k = _ref47.k,
-      r = _ref47.r,
-      s = _ref47.s;
-    var mks = REGION_METRIC_KEYS[k];
-    var mh = mks.filter(function (mk) {
-      return metricHit(mk, weeklyAvg(r.metrics[mk]));
-    }).length;
-    var sc = s >= 0.95 ? C.green : s >= 0.90 ? C.amber : C.red;
+  }, ranked.map((_ref50, rank) => {
+    let k = _ref50.k,
+      r = _ref50.r,
+      s = _ref50.s;
+    const mks = REGION_METRIC_KEYS[k];
+    const mh = mks.filter(mk => metricHit(mk, weeklyAvg(r.metrics[mk]))).length;
+    const sc = s >= 0.95 ? C.green : s >= 0.90 ? C.amber : C.red;
     return /*#__PURE__*/React.createElement("div", {
       key: k,
-      onClick: function onClick() {
-        return onDrillDown(k);
-      },
+      onClick: () => onDrillDown(k),
       style: {
         background: C.white,
         borderRadius: 10,
         padding: "16px 18px",
-        border: "2px solid ".concat(sc),
+        border: `2px solid ${sc}`,
         cursor: "pointer",
         position: "relative",
         transition: "transform 0.12s,box-shadow 0.12s"
       },
-      onMouseEnter: function onMouseEnter(e) {
+      onMouseEnter: e => {
         e.currentTarget.style.transform = "translateY(-2px)";
         e.currentTarget.style.boxShadow = "0 6px 18px rgba(0,47,86,0.15)";
       },
-      onMouseLeave: function onMouseLeave(e) {
+      onMouseLeave: e => {
         e.currentTarget.style.transform = "none";
         e.currentTarget.style.boxShadow = "none";
       }
@@ -5070,10 +4662,10 @@ function SummaryView(_ref44) {
         flexDirection: "column",
         gap: 4
       }
-    }, mks.map(function (mk) {
-      var v = weeklyAvg(r.metrics[mk]);
-      var h = metricHit(mk, v);
-      var def = METRIC_DEFS[mk];
+    }, mks.map(mk => {
+      const v = weeklyAvg(r.metrics[mk]);
+      const h = metricHit(mk, v);
+      const def = METRIC_DEFS[mk];
       return /*#__PURE__*/React.createElement("div", {
         key: mk,
         style: {
@@ -5127,9 +4719,7 @@ function SummaryView(_ref44) {
       gap: 6
     }
   }, /*#__PURE__*/React.createElement("button", {
-    onClick: function onClick() {
-      return setSummaryView("byRegion");
-    },
+    onClick: () => setSummaryView("byRegion"),
     style: {
       padding: "5px 14px",
       borderRadius: 6,
@@ -5137,14 +4727,12 @@ function SummaryView(_ref44) {
       fontWeight: 600,
       cursor: "pointer",
       fontFamily: FONT,
-      border: "1px solid ".concat(summaryView === "byRegion" ? C.blue : C.gray),
+      border: `1px solid ${summaryView === "byRegion" ? C.blue : C.gray}`,
       background: summaryView === "byRegion" ? C.blue : C.white,
       color: summaryView === "byRegion" ? C.white : C.grayDark
     }
   }, "By Region"), /*#__PURE__*/React.createElement("button", {
-    onClick: function onClick() {
-      return setSummaryView("byMetric");
-    },
+    onClick: () => setSummaryView("byMetric"),
     style: {
       padding: "5px 14px",
       borderRadius: 6,
@@ -5152,198 +4740,184 @@ function SummaryView(_ref44) {
       fontWeight: 600,
       cursor: "pointer",
       fontFamily: FONT,
-      border: "1px solid ".concat(summaryView === "byMetric" ? C.blue : C.gray),
+      border: `1px solid ${summaryView === "byMetric" ? C.blue : C.gray}`,
       background: summaryView === "byMetric" ? C.blue : C.white,
       color: summaryView === "byMetric" ? C.white : C.grayDark
     }
-  }, "By Metric"))), summaryView === "byRegion" && REGION_GROUPS.map(function (grp) {
-    return /*#__PURE__*/React.createElement("div", {
-      key: grp.label,
-      style: {
-        marginBottom: 24
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12,
-        fontWeight: 700,
-        color: C.darkBlue,
-        marginBottom: 8,
-        textTransform: "uppercase",
-        letterSpacing: "0.06em",
-        display: "flex",
-        alignItems: "center",
-        gap: 8
-      }
-    }, /*#__PURE__*/React.createElement("span", null, grp.label), /*#__PURE__*/React.createElement("div", {
-      style: {
-        flex: 1,
-        height: 1,
-        background: C.gray
-      }
-    })), /*#__PURE__*/React.createElement("div", {
-      style: {
-        background: C.white,
-        borderRadius: 9,
-        border: "1px solid ".concat(C.gray),
-        overflow: "hidden"
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        overflowX: "auto"
-      }
-    }, /*#__PURE__*/React.createElement("table", {
-      style: {
-        width: "100%",
-        borderCollapse: "collapse"
-      }
-    }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
-      style: {
-        background: C.darkBlue
-      }
-    }, /*#__PURE__*/React.createElement("th", {
-      style: {
-        padding: "9px 16px",
-        textAlign: "left",
-        fontSize: 11,
-        fontWeight: 700,
-        color: C.white,
-        borderRight: "1px solid ".concat(C.darkBlue4),
-        whiteSpace: "nowrap",
-        fontFamily: FONT
-      }
-    }, "Region"), grp.metricKeys.map(function (k) {
-      var d = METRIC_DEFS[k];
-      return /*#__PURE__*/React.createElement("th", {
-        key: k,
-        style: {
-          padding: "9px 10px",
-          textAlign: "center",
-          fontSize: 10,
-          fontWeight: 700,
-          color: C.white,
-          borderRight: "1px solid ".concat(C.darkBlue4),
-          whiteSpace: "nowrap",
-          fontFamily: FONT
-        }
-      }, d.label, !d.hib && /*#__PURE__*/React.createElement("span", {
-        style: {
-          display: "block",
-          fontSize: 8,
-          color: C.grayMid,
-          fontWeight: 400
-        }
-      }, "\u2193 lower=better"));
-    }), /*#__PURE__*/React.createElement("th", {
+  }, "By Metric"))), summaryView === "byRegion" && REGION_GROUPS.map(grp => /*#__PURE__*/React.createElement("div", {
+    key: grp.label,
+    style: {
+      marginBottom: 24
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 700,
+      color: C.darkBlue,
+      marginBottom: 8,
+      textTransform: "uppercase",
+      letterSpacing: "0.06em",
+      display: "flex",
+      alignItems: "center",
+      gap: 8
+    }
+  }, /*#__PURE__*/React.createElement("span", null, grp.label), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      height: 1,
+      background: C.gray
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      background: C.white,
+      borderRadius: 9,
+      border: `1px solid ${C.gray}`,
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      overflowX: "auto"
+    }
+  }, /*#__PURE__*/React.createElement("table", {
+    style: {
+      width: "100%",
+      borderCollapse: "collapse"
+    }
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
+    style: {
+      background: C.darkBlue
+    }
+  }, /*#__PURE__*/React.createElement("th", {
+    style: {
+      padding: "9px 16px",
+      textAlign: "left",
+      fontSize: 11,
+      fontWeight: 700,
+      color: C.white,
+      borderRight: `1px solid ${C.darkBlue4}`,
+      whiteSpace: "nowrap",
+      fontFamily: FONT
+    }
+  }, "Region"), grp.metricKeys.map(k => {
+    const d = METRIC_DEFS[k];
+    return /*#__PURE__*/React.createElement("th", {
+      key: k,
       style: {
         padding: "9px 10px",
         textAlign: "center",
-        fontSize: 11,
+        fontSize: 10,
         fontWeight: 700,
-        color: C.blue,
+        color: C.white,
+        borderRight: `1px solid ${C.darkBlue4}`,
+        whiteSpace: "nowrap",
         fontFamily: FONT
       }
-    }, "Overall")), /*#__PURE__*/React.createElement("tr", {
+    }, d.label, !d.hib && /*#__PURE__*/React.createElement("span", {
       style: {
-        background: C.darkBlue3
+        display: "block",
+        fontSize: 8,
+        color: C.grayMid,
+        fontWeight: 400
       }
+    }, "\u2193 lower=better"));
+  }), /*#__PURE__*/React.createElement("th", {
+    style: {
+      padding: "9px 10px",
+      textAlign: "center",
+      fontSize: 11,
+      fontWeight: 700,
+      color: C.blue,
+      fontFamily: FONT
+    }
+  }, "Overall")), /*#__PURE__*/React.createElement("tr", {
+    style: {
+      background: C.darkBlue3
+    }
+  }, /*#__PURE__*/React.createElement("td", {
+    style: {
+      padding: "3px 16px",
+      fontSize: 10,
+      color: C.grayMid,
+      fontStyle: "italic",
+      fontFamily: FONT
+    }
+  }, "Target"), grp.metricKeys.map(k => /*#__PURE__*/React.createElement("td", {
+    key: k,
+    style: {
+      padding: "3px 10px",
+      textAlign: "center",
+      fontSize: 10,
+      color: C.grayMid,
+      fontFamily: FONT
+    }
+  }, fmtM(k, METRIC_DEFS[k].goal))), /*#__PURE__*/React.createElement("td", {
+    style: {
+      padding: "3px 10px",
+      textAlign: "center",
+      fontSize: 10,
+      color: C.grayMid,
+      fontFamily: FONT
+    }
+  }, "\u226595.0%"))), /*#__PURE__*/React.createElement("tbody", null, grp.keys.map((rk, i) => {
+    const r = REGIONS[rk];
+    const s = overallScore(r.metrics);
+    return /*#__PURE__*/React.createElement("tr", {
+      key: rk,
+      style: {
+        background: i % 2 === 0 ? C.white : C.offWhite,
+        cursor: "pointer"
+      },
+      onClick: () => onDrillDown(rk),
+      onMouseEnter: e => e.currentTarget.style.background = C.blueLight,
+      onMouseLeave: e => e.currentTarget.style.background = i % 2 === 0 ? C.white : C.offWhite
     }, /*#__PURE__*/React.createElement("td", {
       style: {
-        padding: "3px 16px",
-        fontSize: 10,
-        color: C.grayMid,
-        fontStyle: "italic",
+        padding: "9px 16px",
+        fontSize: 13,
+        fontWeight: 700,
+        color: C.darkBlue,
+        borderBottom: `1px solid ${C.gray}`,
+        borderRight: `1px solid ${C.gray}`,
         fontFamily: FONT
       }
-    }, "Target"), grp.metricKeys.map(function (k) {
+    }, r.label), grp.metricKeys.map(mk => {
+      const v = weeklyAvg(r.metrics[mk]);
+      const h = metricHit(mk, v);
       return /*#__PURE__*/React.createElement("td", {
-        key: k,
-        style: {
-          padding: "3px 10px",
-          textAlign: "center",
-          fontSize: 10,
-          color: C.grayMid,
-          fontFamily: FONT
-        }
-      }, fmtM(k, METRIC_DEFS[k].goal));
-    }), /*#__PURE__*/React.createElement("td", {
-      style: {
-        padding: "3px 10px",
-        textAlign: "center",
-        fontSize: 10,
-        color: C.grayMid,
-        fontFamily: FONT
-      }
-    }, "\u226595.0%"))), /*#__PURE__*/React.createElement("tbody", null, grp.keys.map(function (rk, i) {
-      var r = REGIONS[rk];
-      var s = overallScore(r.metrics);
-      return /*#__PURE__*/React.createElement("tr", {
-        key: rk,
-        style: {
-          background: i % 2 === 0 ? C.white : C.offWhite,
-          cursor: "pointer"
-        },
-        onClick: function onClick() {
-          return onDrillDown(rk);
-        },
-        onMouseEnter: function onMouseEnter(e) {
-          return e.currentTarget.style.background = C.blueLight;
-        },
-        onMouseLeave: function onMouseLeave(e) {
-          return e.currentTarget.style.background = i % 2 === 0 ? C.white : C.offWhite;
-        }
-      }, /*#__PURE__*/React.createElement("td", {
-        style: {
-          padding: "9px 16px",
-          fontSize: 13,
-          fontWeight: 700,
-          color: C.darkBlue,
-          borderBottom: "1px solid ".concat(C.gray),
-          borderRight: "1px solid ".concat(C.gray),
-          fontFamily: FONT
-        }
-      }, r.label), grp.metricKeys.map(function (mk) {
-        var v = weeklyAvg(r.metrics[mk]);
-        var h = metricHit(mk, v);
-        return /*#__PURE__*/React.createElement("td", {
-          key: mk,
-          style: {
-            padding: "9px 10px",
-            textAlign: "center",
-            fontSize: 13,
-            fontWeight: 700,
-            color: perfColor(h),
-            borderBottom: "1px solid ".concat(C.gray),
-            borderRight: "1px solid ".concat(C.gray),
-            fontFamily: FONT
-          }
-        }, fmtM(mk, v));
-      }), /*#__PURE__*/React.createElement("td", {
+        key: mk,
         style: {
           padding: "9px 10px",
           textAlign: "center",
           fontSize: 13,
           fontWeight: 700,
-          color: s >= 0.95 ? C.green : s >= 0.90 ? C.amber : C.red,
-          borderBottom: "1px solid ".concat(C.gray),
+          color: perfColor(h),
+          borderBottom: `1px solid ${C.gray}`,
+          borderRight: `1px solid ${C.gray}`,
           fontFamily: FONT
         }
-      }, pct(s)));
-    }))))));
-  }), summaryView === "byMetric" && /*#__PURE__*/React.createElement("div", {
+      }, fmtM(mk, v));
+    }), /*#__PURE__*/React.createElement("td", {
+      style: {
+        padding: "9px 10px",
+        textAlign: "center",
+        fontSize: 13,
+        fontWeight: 700,
+        color: s >= 0.95 ? C.green : s >= 0.90 ? C.amber : C.red,
+        borderBottom: `1px solid ${C.gray}`,
+        fontFamily: FONT
+      }
+    }, pct(s)));
+  }))))))), summaryView === "byMetric" && /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
       gridTemplateColumns: "repeat(2,1fr)",
       gap: 16
     }
-  }, ["OT", "COT", "Scanning", "POD", "Call", "Shortages", "Preschedule", "CES", "RNS", "Dwell"].filter(function (mk) {
-    return Object.values(REGIONS).some(function (r) {
-      return r.metrics[mk];
-    });
-  }).map(function (mk) {
-    var d = METRIC_DEFS[mk];
-    var applicableRegions = Object.entries(REGIONS).filter(function (_ref48) {
-      var _ref49 = _slicedToArray(_ref48, 1),
-        rk = _ref49[0];
+  }, ["OT", "COT", "Scanning", "POD", "Call", "Shortages", "Preschedule", "CES", "RNS", "Dwell"].filter(mk => Object.values(REGIONS).some(r => r.metrics[mk])).map(mk => {
+    const d = METRIC_DEFS[mk];
+    const applicableRegions = Object.entries(REGIONS).filter(_ref51 => {
+      let _ref52 = _slicedToArray(_ref51, 1),
+        rk = _ref52[0];
       return REGION_METRIC_KEYS[rk].includes(mk);
     });
     return /*#__PURE__*/React.createElement("div", {
@@ -5351,7 +4925,7 @@ function SummaryView(_ref44) {
       style: {
         background: C.white,
         borderRadius: 9,
-        border: "1px solid ".concat(C.gray),
+        border: `1px solid ${C.gray}`,
         overflow: "hidden"
       }
     }, /*#__PURE__*/React.createElement("div", {
@@ -5418,36 +4992,30 @@ function SummaryView(_ref44) {
         color: C.grayMid,
         fontFamily: FONT
       }
-    }, "vs Target"))), /*#__PURE__*/React.createElement("tbody", null, applicableRegions.map(function (_ref50, i) {
-      var _ref51 = _slicedToArray(_ref50, 2),
-        rk = _ref51[0],
-        r = _ref51[1];
-      var v = weeklyAvg(r.metrics[mk]);
-      var h = metricHit(mk, v);
-      var gap = d.hib ? v - d.goal : d.goal - v;
+    }, "vs Target"))), /*#__PURE__*/React.createElement("tbody", null, applicableRegions.map((_ref53, i) => {
+      let _ref54 = _slicedToArray(_ref53, 2),
+        rk = _ref54[0],
+        r = _ref54[1];
+      const v = weeklyAvg(r.metrics[mk]);
+      const h = metricHit(mk, v);
+      const gap = d.hib ? v - d.goal : d.goal - v;
       return /*#__PURE__*/React.createElement("tr", {
         key: rk,
         style: {
           background: i % 2 === 0 ? C.white : C.offWhite,
           cursor: "pointer"
         },
-        onClick: function onClick() {
-          return onDrillDown(rk);
-        },
-        onMouseEnter: function onMouseEnter(e) {
-          return e.currentTarget.style.background = C.blueLight;
-        },
-        onMouseLeave: function onMouseLeave(e) {
-          return e.currentTarget.style.background = i % 2 === 0 ? C.white : C.offWhite;
-        }
+        onClick: () => onDrillDown(rk),
+        onMouseEnter: e => e.currentTarget.style.background = C.blueLight,
+        onMouseLeave: e => e.currentTarget.style.background = i % 2 === 0 ? C.white : C.offWhite
       }, /*#__PURE__*/React.createElement("td", {
         style: {
           padding: "8px 16px",
           fontSize: 13,
           fontWeight: 700,
           color: C.darkBlue,
-          borderBottom: "1px solid ".concat(C.gray),
-          borderRight: "1px solid ".concat(C.gray),
+          borderBottom: `1px solid ${C.gray}`,
+          borderRight: `1px solid ${C.gray}`,
           fontFamily: FONT
         }
       }, r.label), /*#__PURE__*/React.createElement("td", {
@@ -5457,8 +5025,8 @@ function SummaryView(_ref44) {
           fontSize: 13,
           fontWeight: 700,
           color: perfColor(h),
-          borderBottom: "1px solid ".concat(C.gray),
-          borderRight: "1px solid ".concat(C.gray),
+          borderBottom: `1px solid ${C.gray}`,
+          borderRight: `1px solid ${C.gray}`,
           fontFamily: FONT
         }
       }, fmtM(mk, v)), /*#__PURE__*/React.createElement("td", {
@@ -5468,7 +5036,7 @@ function SummaryView(_ref44) {
           fontSize: 12,
           fontWeight: 700,
           color: perfColor(h),
-          borderBottom: "1px solid ".concat(C.gray),
+          borderBottom: `1px solid ${C.gray}`,
           fontFamily: FONT
         }
       }, gap >= 0 ? "+" : "", (gap * 100).toFixed(2), "pp"));
@@ -5477,62 +5045,43 @@ function SummaryView(_ref44) {
 }
 function App() {
   var _REGIONS$view, _REGION_METRIC_KEYS$v;
-  var _useState53 = useState("summary"),
+  const _useState53 = useState("summary"),
     _useState54 = _slicedToArray(_useState53, 2),
     view = _useState54[0],
     setView = _useState54[1];
-  var _useState55 = useState("demo"),
+  const _useState55 = useState("demo"),
     _useState56 = _slicedToArray(_useState55, 2),
     sheetsStatus = _useState56[0],
     setSheetsStatus = _useState56[1]; // demo|loading|connected|error
-  var _useState57 = useState(null),
+  const _useState57 = useState(null),
     _useState58 = _slicedToArray(_useState57, 2),
     sheetsData = _useState58[0],
     setSheetsData = _useState58[1]; // overrides loaded from Sheets
-  var isConfigured = SHEETS_CONFIG.WEB_APP_URL && !SHEETS_CONFIG.WEB_APP_URL.includes("YOUR_APPS");
-  React.useEffect(function () {
+  const isConfigured = SHEETS_CONFIG.WEB_APP_URL && !SHEETS_CONFIG.WEB_APP_URL.includes("YOUR_APPS");
+  React.useEffect(() => {
     if (!isConfigured) return;
     setSheetsStatus("loading");
-    var tryLoad = /*#__PURE__*/function () {
-      var _ref52 = _asyncToGenerator(/*#__PURE__*/_regenerator().m(function _callee4() {
-        var _yield$Promise$all3, _yield$Promise$all4, kpiData, trendData, _t;
-        return _regenerator().w(function (_context4) {
-          while (1) switch (_context4.p = _context4.n) {
-            case 0:
-              _context4.p = 0;
-              _context4.n = 1;
-              return Promise.all([loadKPIMetrics(), loadDailyTrends()]);
-            case 1:
-              _yield$Promise$all3 = _context4.v;
-              _yield$Promise$all4 = _slicedToArray(_yield$Promise$all3, 2);
-              kpiData = _yield$Promise$all4[0];
-              trendData = _yield$Promise$all4[1];
-              if (kpiData || trendData) {
-                setSheetsData({
-                  kpi: kpiData,
-                  trends: trendData
-                });
-                setSheetsStatus("connected");
-                sheetsConnected = true;
-              } else {
-                setSheetsStatus("demo");
-              }
-              _context4.n = 3;
-              break;
-            case 2:
-              _context4.p = 2;
-              _t = _context4.v;
-              sheetsError = _t.message || String(_t);
-              setSheetsStatus("error");
-            case 3:
-              return _context4.a(2);
-          }
-        }, _callee4, null, [[0, 2]]);
-      }));
-      return function tryLoad() {
-        return _ref52.apply(this, arguments);
-      };
-    }();
+    const tryLoad = async () => {
+      try {
+        const _await$Promise$all3 = await Promise.all([loadKPIMetrics(), loadDailyTrends()]),
+          _await$Promise$all4 = _slicedToArray(_await$Promise$all3, 2),
+          kpiData = _await$Promise$all4[0],
+          trendData = _await$Promise$all4[1];
+        if (kpiData || trendData) {
+          setSheetsData({
+            kpi: kpiData,
+            trends: trendData
+          });
+          setSheetsStatus("connected");
+          sheetsConnected = true;
+        } else {
+          setSheetsStatus("demo");
+        }
+      } catch (e) {
+        sheetsError = e.message || String(e);
+        setSheetsStatus("error");
+      }
+    };
     tryLoad();
   }, []);
   return /*#__PURE__*/React.createElement("div", {
@@ -5596,18 +5145,12 @@ function App() {
     }
   }, /*#__PURE__*/React.createElement(SheetsStatus, {
     status: sheetsStatus,
-    onExport: sheetsConnected ? function () {
-      return exportAllToSheet(REGIONS, SAMPLE_DATA).then(function () {
-        return alert("✅ Data exported to Google Sheet!");
-      });
-    } : null
+    onExport: sheetsConnected ? () => exportAllToSheet(REGIONS, SAMPLE_DATA).then(() => alert("✅ Data exported to Google Sheet!")) : null
   }), /*#__PURE__*/React.createElement("button", {
-    onClick: function onClick() {
-      return setView("summary");
-    },
+    onClick: () => setView("summary"),
     style: {
       background: view === "summary" ? C.blue : "transparent",
-      border: "1px solid ".concat(view === "summary" ? C.blue : C.darkBlue4),
+      border: `1px solid ${view === "summary" ? C.blue : C.darkBlue4}`,
       borderRadius: 6,
       padding: "5px 12px",
       color: C.white,
@@ -5617,12 +5160,10 @@ function App() {
       fontFamily: FONT
     }
   }, "\uD83D\uDCCA Weekly Summary"), /*#__PURE__*/React.createElement("button", {
-    onClick: function onClick() {
-      return setView("trends");
-    },
+    onClick: () => setView("trends"),
     style: {
       background: view === "trends" ? C.blue : "transparent",
-      border: "1px solid ".concat(view === "trends" ? C.blue : C.darkBlue4),
+      border: `1px solid ${view === "trends" ? C.blue : C.darkBlue4}`,
       borderRadius: 6,
       padding: "5px 12px",
       color: C.white,
@@ -5638,42 +5179,36 @@ function App() {
       background: C.darkBlue4,
       margin: "0 3px"
     }
-  }), REGION_GROUPS.map(function (grp, gi) {
-    return /*#__PURE__*/React.createElement("div", {
-      key: gi,
-      style: {
-        display: "flex",
-        gap: 3,
-        alignItems: "center"
-      }
-    }, gi > 0 && /*#__PURE__*/React.createElement("div", {
-      style: {
-        width: 1,
-        height: 16,
-        background: C.darkBlue4,
-        margin: "0 2px"
-      }
-    }), grp.keys.map(function (k) {
-      return /*#__PURE__*/React.createElement("button", {
-        key: k,
-        onClick: function onClick() {
-          return setView(k);
-        },
-        style: {
-          background: view === k ? C.blue : "transparent",
-          border: "1px solid ".concat(view === k ? C.blue : C.darkBlue4),
-          borderRadius: 6,
-          padding: "5px 9px",
-          color: C.white,
-          fontSize: 11,
-          fontWeight: 600,
-          cursor: "pointer",
-          whiteSpace: "nowrap",
-          fontFamily: FONT
-        }
-      }, REGIONS[k].label);
-    }));
-  }))), /*#__PURE__*/React.createElement("div", {
+  }), REGION_GROUPS.map((grp, gi) => /*#__PURE__*/React.createElement("div", {
+    key: gi,
+    style: {
+      display: "flex",
+      gap: 3,
+      alignItems: "center"
+    }
+  }, gi > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 1,
+      height: 16,
+      background: C.darkBlue4,
+      margin: "0 2px"
+    }
+  }), grp.keys.map(k => /*#__PURE__*/React.createElement("button", {
+    key: k,
+    onClick: () => setView(k),
+    style: {
+      background: view === k ? C.blue : "transparent",
+      border: `1px solid ${view === k ? C.blue : C.darkBlue4}`,
+      borderRadius: 6,
+      padding: "5px 9px",
+      color: C.white,
+      fontSize: 11,
+      fontWeight: 600,
+      cursor: "pointer",
+      whiteSpace: "nowrap",
+      fontFamily: FONT
+    }
+  }, REGIONS[k].label)))))), /*#__PURE__*/React.createElement("div", {
     style: {
       height: 3,
       background: C.blue,
@@ -5690,9 +5225,7 @@ function App() {
       flexWrap: "wrap"
     }
   }, /*#__PURE__*/React.createElement("button", {
-    onClick: function onClick() {
-      return setView("summary");
-    },
+    onClick: () => setView("summary"),
     style: {
       background: "none",
       border: "none",
@@ -5719,17 +5252,13 @@ function App() {
       color: C.grayMid,
       marginLeft: 4
     }
-  }, (_REGION_METRIC_KEYS$v = REGION_METRIC_KEYS[view]) === null || _REGION_METRIC_KEYS$v === void 0 ? void 0 : _REGION_METRIC_KEYS$v.map(function (k) {
-    return METRIC_DEFS[k].label;
-  }).join(" · "))), /*#__PURE__*/React.createElement("div", {
+  }, (_REGION_METRIC_KEYS$v = REGION_METRIC_KEYS[view]) === null || _REGION_METRIC_KEYS$v === void 0 ? void 0 : _REGION_METRIC_KEYS$v.map(k => METRIC_DEFS[k].label).join(" · "))), /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1,
       overflow: "hidden"
     }
   }, view === "summary" ? /*#__PURE__*/React.createElement(SummaryView, {
-    onDrillDown: function onDrillDown(k) {
-      return setView(k);
-    }
+    onDrillDown: k => setView(k)
   }) : view === "trends" ? /*#__PURE__*/React.createElement(TrendsView, null) : REGIONS[view] && /*#__PURE__*/React.createElement(RegionDashboard, {
     key: view,
     region: REGIONS[view],
@@ -5739,6 +5268,8 @@ function App() {
 }
 ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(App, null));
 
+  })();
+})();
 </script>
 </body>
 </html>
