@@ -77,7 +77,7 @@ async function sheetPost(action) {
     if (!json.ok) throw new Error(json.error || 'Sheet write failed');
     return json.data;
   } catch (e) {
-    throw new Error('Sheet response error: ' + text.slice(0, 200));
+    throw new Error('Sheet response: ' + text.slice(0, 200));
   }
 }
 
@@ -169,6 +169,9 @@ async function exportAllToSheet(regions, sampleData) {
 // ── SHEETS STATUS INDICATOR ───────────────────────────────────────────────────
 function SheetsStatus(_ref7) {
   let status = _ref7.status,
+    refreshing = _ref7.refreshing,
+    lastRefresh = _ref7.lastRefresh,
+    onRefresh = _ref7.onRefresh,
     onExport = _ref7.onExport;
   const cfg = {
     loading: {
@@ -196,11 +199,30 @@ function SheetsStatus(_ref7) {
     icon: "📋",
     text: "Demo Data"
   };
+  const fmtTime = d => {
+    if (!d) return null;
+    return d.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+  const btnStyle = {
+    fontSize: 11,
+    padding: "3px 8px",
+    borderRadius: 5,
+    border: "1px solid rgba(255,255,255,0.3)",
+    background: "rgba(255,255,255,0.1)",
+    color: "#fff",
+    cursor: "pointer",
+    fontFamily: "'Calibri','Carlito','Segoe UI',Arial,sans-serif",
+    opacity: refreshing ? 0.6 : 1
+  };
   return /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       alignItems: "center",
-      gap: 8
+      gap: 6,
+      flexWrap: "wrap"
     }
   }, /*#__PURE__*/React.createElement("div", {
     title: status === "error" ? sheetsError || "" : "",
@@ -215,24 +237,26 @@ function SheetsStatus(_ref7) {
       padding: "3px 8px",
       fontFamily: "'Calibri','Carlito','Segoe UI',Arial,sans-serif"
     }
-  }, /*#__PURE__*/React.createElement("span", null, cfg.icon), /*#__PURE__*/React.createElement("span", {
+  }, /*#__PURE__*/React.createElement("span", null, refreshing ? "⏳" : cfg.icon), /*#__PURE__*/React.createElement("span", {
     style: {
       color: cfg.color,
       fontWeight: 700
     }
-  }, cfg.text)), status === "connected" && onExport && /*#__PURE__*/React.createElement("button", {
-    onClick: onExport,
-    title: "Export current data to Google Sheet",
+  }, refreshing ? "Refreshing…" : cfg.text)), lastRefresh && !refreshing && /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11,
-      padding: "3px 8px",
-      borderRadius: 5,
-      border: "1px solid rgba(255,255,255,0.3)",
-      background: "rgba(255,255,255,0.1)",
-      color: "#fff",
-      cursor: "pointer",
+      fontSize: 10,
+      color: "rgba(255,255,255,0.55)",
       fontFamily: "'Calibri','Carlito','Segoe UI',Arial,sans-serif"
     }
+  }, "Updated ", fmtTime(lastRefresh)), onRefresh && /*#__PURE__*/React.createElement("button", {
+    onClick: onRefresh,
+    disabled: refreshing,
+    title: "Refresh data from Google Sheet",
+    style: btnStyle
+  }, refreshing ? "…" : "↻ Refresh"), status === "connected" && onExport && /*#__PURE__*/React.createElement("button", {
+    onClick: onExport,
+    title: "Export current data to Google Sheet",
+    style: btnStyle
   }, "\u2191 Export to Sheet"));
 }
 const C = {
@@ -5064,31 +5088,51 @@ function App() {
     sheetsData = _useState58[0],
     setSheetsData = _useState58[1]; // overrides loaded from Sheets
   const isConfigured = SHEETS_CONFIG.WEB_APP_URL && !SHEETS_CONFIG.WEB_APP_URL.includes("YOUR_APPS");
+  const _React$useState = React.useState(null),
+    _React$useState2 = _slicedToArray(_React$useState, 2),
+    lastRefresh = _React$useState2[0],
+    setLastRefresh = _React$useState2[1];
+  const _React$useState3 = React.useState(false),
+    _React$useState4 = _slicedToArray(_React$useState3, 2),
+    refreshing = _React$useState4[0],
+    setRefreshing = _React$useState4[1];
+  const loadFromSheets = async () => {
+    if (!isConfigured) return;
+    setRefreshing(true);
+    setSheetsStatus("loading");
+    try {
+      const _await$Promise$all3 = await Promise.all([loadKPIMetrics(), loadDailyTrends()]),
+        _await$Promise$all4 = _slicedToArray(_await$Promise$all3, 2),
+        kpiData = _await$Promise$all4[0],
+        trendData = _await$Promise$all4[1];
+      if (kpiData || trendData) {
+        setSheetsData({
+          kpi: kpiData,
+          trends: trendData
+        });
+        setSheetsStatus("connected");
+        sheetsConnected = true;
+        setLastRefresh(new Date());
+      } else {
+        setSheetsStatus("demo");
+      }
+    } catch (e) {
+      sheetsError = e.message || String(e);
+      setSheetsStatus("error");
+    }
+    setRefreshing(false);
+  };
+
+  // Load on mount
+  React.useEffect(() => {
+    loadFromSheets();
+  }, []);
+
+  // Auto-refresh every 5 minutes
   React.useEffect(() => {
     if (!isConfigured) return;
-    setSheetsStatus("loading");
-    const tryLoad = async () => {
-      try {
-        const _await$Promise$all3 = await Promise.all([loadKPIMetrics(), loadDailyTrends()]),
-          _await$Promise$all4 = _slicedToArray(_await$Promise$all3, 2),
-          kpiData = _await$Promise$all4[0],
-          trendData = _await$Promise$all4[1];
-        if (kpiData || trendData) {
-          setSheetsData({
-            kpi: kpiData,
-            trends: trendData
-          });
-          setSheetsStatus("connected");
-          sheetsConnected = true;
-        } else {
-          setSheetsStatus("demo");
-        }
-      } catch (e) {
-        sheetsError = e.message || String(e);
-        setSheetsStatus("error");
-      }
-    };
-    tryLoad();
+    const interval = setInterval(loadFromSheets, 5 * 60 * 1000);
+    return () => clearInterval(interval);
   }, []);
   return /*#__PURE__*/React.createElement("div", {
     style: {
@@ -5151,6 +5195,9 @@ function App() {
     }
   }, /*#__PURE__*/React.createElement(SheetsStatus, {
     status: sheetsStatus,
+    refreshing: refreshing,
+    lastRefresh: lastRefresh,
+    onRefresh: isConfigured ? loadFromSheets : null,
     onExport: sheetsConnected ? () => exportAllToSheet(REGIONS, SAMPLE_DATA).then(() => alert("✅ Data exported to Google Sheet!")).catch(e => alert("❌ Export failed: " + (e && e.message || String(e)))) : null
   }), /*#__PURE__*/React.createElement("button", {
     onClick: () => setView("summary"),
