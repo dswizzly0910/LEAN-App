@@ -23,12 +23,9 @@ button { font-family: inherit; }
 <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
 <script>
-(function waitForReact() {
-  if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
-    setTimeout(waitForReact, 50);
-    return;
-  }
-  (function() {
+(function waitForReact(){
+  if(typeof React==='undefined'||typeof ReactDOM==='undefined'){setTimeout(waitForReact,50);return;}
+  (function(){
 var useState=React.useState,useEffect=React.useEffect;
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -3355,8 +3352,9 @@ function DataView(_ref25) {
   const facilities = ["All", ...Array.from(new Set(SAMPLE_DATA.map(r => r.facility))).sort()];
   const rs = n2d(dateRange[0]);
   const re = n2d(dateRange[1]);
-  // Use sheet orders for this region if available, otherwise fall back to SAMPLE_DATA
-  const baseData = sheetsOrders && sheetsOrders.length > 0 ? sheetsOrders.filter(r => !regionKey || r.region === regionKey || !r.region) : SAMPLE_DATA;
+  // Use sheet orders if available and non-empty, otherwise fall back to SAMPLE_DATA
+  const regionOrders = sheetsOrders ? sheetsOrders.filter(r => !regionKey || !r.region || r.region === regionKey) : [];
+  const baseData = regionOrders.length > 0 ? regionOrders : SAMPLE_DATA;
   const filtered = baseData.filter(r => filterStatus === "All" || r.status === filterStatus).filter(r => filterFacility === "All" || r.facility === filterFacility).filter(r => r.date >= rs && r.date <= re).sort((a, b) => {
     const av = a[sortCol] ?? "",
       bv = b[sortCol] ?? "";
