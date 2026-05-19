@@ -63,16 +63,22 @@ async function sheetPost(action) {
   const resp = await fetch(SHEETS_CONFIG.WEB_APP_URL, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'text/plain'
     },
     body: JSON.stringify({
       action,
       ...payload
-    })
+    }),
+    redirect: 'follow'
   });
-  const json = await resp.json();
-  if (!json.ok) throw new Error(json.error || 'Sheet write failed');
-  return json.data;
+  const text = await resp.text();
+  try {
+    const json = JSON.parse(text);
+    if (!json.ok) throw new Error(json.error || 'Sheet write failed');
+    return json.data;
+  } catch (e) {
+    throw new Error('Sheet response error: ' + text.slice(0, 200));
+  }
 }
 
 // ── DATA LOADING ──────────────────────────────────────────────────────────────
@@ -5145,7 +5151,7 @@ function App() {
     }
   }, /*#__PURE__*/React.createElement(SheetsStatus, {
     status: sheetsStatus,
-    onExport: sheetsConnected ? () => exportAllToSheet(REGIONS, SAMPLE_DATA).then(() => alert("✅ Data exported to Google Sheet!")) : null
+    onExport: sheetsConnected ? () => exportAllToSheet(REGIONS, SAMPLE_DATA).then(() => alert("✅ Data exported to Google Sheet!")).catch(e => alert("❌ Export failed: " + (e && e.message || String(e)))) : null
   }), /*#__PURE__*/React.createElement("button", {
     onClick: () => setView("summary"),
     style: {
