@@ -20,267 +20,113 @@ button { font-family: inherit; }
 ::-webkit-scrollbar-track { background: #f4f7fb; }
 ::-webkit-scrollbar-thumb { background: #b0bec5; border-radius: 3px; }
 </style>
-<script src="https://apis.google.com/js/api.js"></script>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
 
-// ── GOOGLE SHEETS CONFIGURATION ──────────────────────────────────────────────
-// Replace these values with your own from the Setup Guide
+// ── APPS SCRIPT CONFIGURATION ───────────────────────────────────────────────
+// Paste your deployed Apps Script Web App URL here
 const SHEETS_CONFIG = {
-  SPREADSHEET_ID: "1vBNtQMP-MMB8j79GHarUsgBHVaWrNra2jwzPDj9jWHc",
-  API_KEY:        "AIzaSyBl76HPCENikPSSmVE900cgQFzskcs8asM",
-  CLIENT_ID:      "278320393972-ifcfbcg6vu268gcm87ga15jepbtrfqiv.apps.googleusercontent.com",
-  SCOPES:         "https://www.googleapis.com/auth/spreadsheets",
-  DISCOVERY_DOC:  "https://sheets.googleapis.com/$discovery/rest?version=v4",
+  WEB_APP_URL: "https://script.google.com/macros/s/AKfycby3G-4IZSLJt9F_o9nrg4KAInTxmFz4uigXQO1fviXMSsqmu2nWugR8QkS2ZYFYMPfPSg/exec",
 };
 
-// ── SHEETS API HELPERS ────────────────────────────────────────────────────────
-let gisInited = false;
-let gapiInited = false;
-let tokenClient = null;
+// ── API HELPERS ───────────────────────────────────────────────────────────────
 let sheetsConnected = false;
 let sheetsError = null;
 
-async function initGapi() {
-  return new Promise((resolve) => {
-    gapi.load('client', async () => {
-      try {
-        await gapi.client.init({
-          apiKey: SHEETS_CONFIG.API_KEY,
-          discoveryDocs: [SHEETS_CONFIG.DISCOVERY_DOC],
-        });
-        gapiInited = true;
-        resolve(true);
-      } catch(e) {
-        sheetsError = e.message || "GAPI init failed";
-        resolve(false);
-      }
-    });
+async function sheetGet(action, params = {}) {
+  if (!SHEETS_CONFIG.WEB_APP_URL || SHEETS_CONFIG.WEB_APP_URL.includes("YOUR_APPS")) return null;
+  const qs = new URLSearchParams({ action, ...params }).toString();
+  const resp = await fetch(`${SHEETS_CONFIG.WEB_APP_URL}?${qs}`);
+  const json = await resp.json();
+  if (!json.ok) throw new Error(json.error || 'Sheet read failed');
+  return json.data;
+}
+
+async function sheetPost(action, payload = {}) {
+  if (!SHEETS_CONFIG.WEB_APP_URL || SHEETS_CONFIG.WEB_APP_URL.includes("YOUR_APPS")) return null;
+  const resp = await fetch(SHEETS_CONFIG.WEB_APP_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action, ...payload }),
   });
+  const json = await resp.json();
+  if (!json.ok) throw new Error(json.error || 'Sheet write failed');
+  return json.data;
 }
 
-function initGis() {
-  tokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: SHEETS_CONFIG.CLIENT_ID,
-    scope: SHEETS_CONFIG.SCOPES,
-    callback: () => {},
-  });
-  gisInited = true;
-}
+// ── DATA LOADING ──────────────────────────────────────────────────────────────
+async function loadKPIMetrics()  { return sheetGet('getKPIMetrics'); }
+async function loadDailyTrends() { return sheetGet('getDailyTrends'); }
+async function loadCILog(region, metricKey)  { return sheetGet('getCILog',  { region, metricKey }); }
+async function loadPareto(region, metricKey) { return sheetGet('getPareto', { region, metricKey }); }
+async function loadOrders(region)            { return sheetGet('getOrders', { region }); }
 
-async function getAuthToken() {
-  return new Promise((resolve, reject) => {
-    tokenClient.callback = (resp) => {
-      if (resp.error) reject(resp);
-      else resolve(resp);
-    };
-    if (gapi.client.getToken() === null) {
-      tokenClient.requestAccessToken({ prompt: 'consent' });
-    } else {
-      tokenClient.requestAccessToken({ prompt: '' });
-    }
-  });
-}
-
-// Read a sheet range and return rows as arrays
-async function readSheet(range) {
-  const resp = await gapi.client.sheets.spreadsheets.values.get({
-    spreadsheetId: SHEETS_CONFIG.SPREADSHEET_ID,
-    range,
-  });
-  return resp.result.values || [];
-}
-
-// Append rows to a sheet
-async function appendRows(range, rows) {
-  await getAuthToken();
-  await gapi.client.sheets.spreadsheets.values.append({
-    spreadsheetId: SHEETS_CONFIG.SPREADSHEET_ID,
-    range,
-    valueInputOption: 'USER_ENTERED',
-    resource: { values: rows },
-  });
-}
-
-// Overwrite all data in a range (clear then write)
-async function writeSheet(range, rows) {
-  await getAuthToken();
-  await gapi.client.sheets.spreadsheets.values.clear({
-    spreadsheetId: SHEETS_CONFIG.SPREADSHEET_ID,
-    range,
-  });
-  if (rows.length > 0) {
-    await gapi.client.sheets.spreadsheets.values.update({
-      spreadsheetId: SHEETS_CONFIG.SPREADSHEET_ID,
-      range,
-      valueInputOption: 'USER_ENTERED',
-      resource: { values: rows },
-    });
-  }
-}
-
-// ── DATA LOADING FROM SHEETS ──────────────────────────────────────────────────
-async function loadKPIMetrics() {
-  try {
-    const rows = await readSheet('KPI_Metrics!A2:H');
-    if (!rows.length) return null;
-    // Build per-region metrics override from sheet data
-    const overrides = {};
-    rows.forEach(([region, metricKey, dailyStd, dailyAct, mtdStd, mtdAct, janVal, febVal]) => {
-      if (!region || !metricKey) return;
-      if (!overrides[region]) overrides[region] = {};
-      overrides[region][metricKey] = {
-        daily: { standard: parseFloat(dailyStd)||0, actual: parseFloat(dailyAct)||0 },
-        mtd:   { standard: parseFloat(mtdStd)||0,   actual: parseFloat(mtdAct)||0 },
-        monthly: {
-          January:  janVal ? parseFloat(janVal) : null,
-          February: febVal ? parseFloat(febVal) : null,
-        },
-      };
-    });
-    return overrides;
-  } catch(e) { console.error('loadKPIMetrics', e); return null; }
-}
-
-async function loadDailyTrends() {
-  try {
-    const rows = await readSheet('Daily_Trends!A2:D');
-    if (!rows.length) return null;
-    const trends = {};
-    rows.forEach(([region, metricKey, day, value]) => {
-      if (!region || !metricKey || !day) return;
-      if (!trends[region]) trends[region] = {};
-      if (!trends[region][metricKey]) trends[region][metricKey] = {};
-      trends[region][metricKey][parseInt(day)] = parseFloat(value)||0;
-    });
-    return trends;
-  } catch(e) { console.error('loadDailyTrends', e); return null; }
-}
-
-async function loadCILog(region, metricKey) {
-  try {
-    const [logRows, updateRows] = await Promise.all([
-      readSheet('CI_Log!A2:I'),
-      readSheet('CI_Updates!A2:E'),
-    ]);
-    // Build updates map: entryID -> array of updates
-    const updatesMap = {};
-    updateRows.forEach(([r, mk, entryID, ts, text]) => {
-      if (r !== region || mk !== metricKey) return;
-      if (!updatesMap[entryID]) updatesMap[entryID] = [];
-      updatesMap[entryID].push({ ts, text });
-    });
-    return logRows
-      .filter(([r, mk]) => r === region && mk === metricKey)
-      .map(([r, mk, entryID, date, issue, actionItem, owner, dueDate, status]) => ({
-        date, issue, actionItem, owner, dueDate,
-        status: status || 'Problem Identified',
-        updates: updatesMap[entryID] || [],
-        _sheetEntryID: entryID,
-      }));
-  } catch(e) { console.error('loadCILog', e); return null; }
-}
-
-async function loadPareto(region, metricKey) {
-  try {
-    const rows = await readSheet('Pareto!A2:D');
-    const result = {};
-    rows.forEach(([r, mk, code, count]) => {
-      if (r === region && mk === metricKey && code) {
-        result[code] = parseInt(count)||0;
-      }
-    });
-    return Object.keys(result).length ? result : null;
-  } catch(e) { console.error('loadPareto', e); return null; }
-}
-
-async function loadOrders(region) {
-  try {
-    const rows = await readSheet('Orders!A2:T');
-    return rows
-      .filter(r => r[0] === region)
-      .map(([reg, order, status, facility, billTo, manufacturer, driver,
-             deliveryDT, tfStart, tfEnd, receiveDT, actualReceiveDate,
-             dwellDays, schedOnDate, presActualReceiveDate, scanType,
-             totalItems, shortItems, cesScore, audited]) => ({
-        order, status, facility, billTo, manufacturer, driver,
-        deliveryDT, tfStart, tfEnd, receiveDT, actualReceiveDate,
-        dwellDays: dwellDays ? parseInt(dwellDays) : null,
-        schedOnDate, presActualReceiveDate, scanType,
-        totalItems: totalItems ? parseInt(totalItems) : null,
-        shortItems: shortItems ? parseInt(shortItems) : null,
-        cesScore: cesScore ? parseInt(cesScore) : null,
-        audited,
-      }));
-  } catch(e) { console.error('loadOrders', e); return null; }
-}
-
-// ── DATA SAVING TO SHEETS ─────────────────────────────────────────────────────
+// ── DATA SAVING ───────────────────────────────────────────────────────────────
 async function saveCILog(region, metricKey, ciLog) {
-  try {
-    // Read all existing rows, remove this region+metric, re-write
-    const allLog = await readSheet('CI_Log!A2:I');
-    const allUpdates = await readSheet('CI_Updates!A2:E');
-
-    const otherLog = allLog.filter(([r, mk]) => !(r === region && mk === metricKey));
-    const otherUpdates = allUpdates.filter(([r, mk]) => !(r === region && mk === metricKey));
-
-    const newLogRows = ciLog.map((e, i) => {
-      const entryID = `${region}_${metricKey}_${i}`;
-      return [region, metricKey, entryID, e.date||'', e.issue||'', e.actionItem||'', e.owner||'', e.dueDate||'', e.status||''];
-    });
-    const newUpdateRows = ciLog.flatMap((e, i) => {
-      const entryID = `${region}_${metricKey}_${i}`;
-      return (e.updates||[]).map(u => [region, metricKey, entryID, u.ts||'', u.text||'']);
-    });
-
-    await writeSheet('CI_Log!A2:I', [...otherLog, ...newLogRows]);
-    await writeSheet('CI_Updates!A2:E', [...otherUpdates, ...newUpdateRows]);
-    return true;
-  } catch(e) { console.error('saveCILog', e); return false; }
+  try { await sheetPost('saveCILog', { region, metricKey, payload: ciLog }); return true; }
+  catch(e) { console.error('saveCILog', e); return false; }
 }
-
 async function savePareto(region, metricKey, counts) {
-  try {
-    const allRows = await readSheet('Pareto!A2:D');
-    const otherRows = allRows.filter(([r, mk]) => !(r === region && mk === metricKey));
-    const newRows = Object.entries(counts)
-      .filter(([,v]) => v > 0)
-      .map(([code, count]) => [region, metricKey, code, count]);
-    await writeSheet('Pareto!A2:D', [...otherRows, ...newRows]);
-    return true;
-  } catch(e) { console.error('savePareto', e); return false; }
+  try { await sheetPost('savePareto', { region, metricKey, payload: counts }); return true; }
+  catch(e) { console.error('savePareto', e); return false; }
 }
 
-// ── SHEETS STATUS INDICATOR COMPONENT ────────────────────────────────────────
-function SheetsStatus({ status }) {
+// Export all current dashboard data to the sheet in one shot
+async function exportAllToSheet(regions, sampleData) {
+  const kpiMetrics = [];
+  const dailyTrends = [];
+  Object.entries(regions).forEach(([regionKey, region]) => {
+    Object.entries(region.metrics).forEach(([mk, metric]) => {
+      kpiMetrics.push([
+        regionKey, mk,
+        metric.daily.standard, metric.daily.actual,
+        metric.mtd.standard,   metric.mtd.actual,
+        metric.monthly?.January ?? '', metric.monthly?.February ?? '',
+      ]);
+      Object.entries(metric.dailyTrend || {}).forEach(([day, val]) => {
+        dailyTrends.push([regionKey, mk, day, val]);
+      });
+    });
+  });
+  const orders = sampleData.map(r => [
+    'Northeast', r.order, r.status, r.facility, r.billTo, r.manufacturer, r.driver,
+    r.deliveryDT||'', r.tfStart||'', r.tfEnd||'',
+    r.receiveDT||'', r.actualReceiveDate||'', r.dwellDays??'',
+    r.schedOnDate||'', r.presActualReceiveDate||'',
+    r.scanType||'', r.totalItems??'', r.shortItems??'', r.cesScore??'', r.audited||'',
+  ]);
+  return sheetPost('exportAll', { payload: { kpiMetrics, dailyTrends, orders } });
+}
+
+// ── SHEETS STATUS INDICATOR ───────────────────────────────────────────────────
+function SheetsStatus({ status, onExport }) {
   const cfg = {
-    loading:   { color: C.amber,   icon: "⏳", text: "Connecting to Sheets…" },
-    connected: { color: C.green,   icon: "🟢", text: "Google Sheets" },
-    error:     { color: C.red,     icon: "🔴", text: "Sheet Error" },
-    demo:      { color: C.grayDark,icon: "📋", text: "Demo Data" },
-  }[status] || { color: C.grayDark, icon: "📋", text: "Demo Data" };
+    loading:   { color: "#e07b00", icon: "⏳", text: "Connecting…" },
+    connected: { color: "#5db136", icon: "🟢", text: "Google Sheets" },
+    error:     { color: "#ea0029", icon: "🔴", text: "Sheet Error" },
+    demo:      { color: "#b0bec5", icon: "📋", text: "Demo Data" },
+  }[status] || { color: "#b0bec5", icon: "📋", text: "Demo Data" };
   return (
-    <div title={status === 'error' ? sheetsError||'' : ''}
-      style={{display:"flex",alignItems:"center",gap:5,fontSize:11,color:C.white,opacity:0.85,fontFamily:FONT,background:"rgba(255,255,255,0.1)",borderRadius:5,padding:"3px 8px"}}>
-      <span>{cfg.icon}</span>
-      <span style={{color:cfg.color,fontWeight:700}}>{cfg.text}</span>
+    <div style={{display:"flex",alignItems:"center",gap:8}}>
+      <div title={status==="error"?(sheetsError||""):""}
+        style={{display:"flex",alignItems:"center",gap:5,fontSize:11,color:"#fff",background:"rgba(255,255,255,0.1)",borderRadius:5,padding:"3px 8px",fontFamily:"'Calibri','Carlito','Segoe UI',Arial,sans-serif"}}>
+        <span>{cfg.icon}</span>
+        <span style={{color:cfg.color,fontWeight:700}}>{cfg.text}</span>
+      </div>
+      {status==="connected"&&onExport&&
+        <button onClick={onExport} title="Export current data to Google Sheet"
+          style={{fontSize:11,padding:"3px 8px",borderRadius:5,border:"1px solid rgba(255,255,255,0.3)",background:"rgba(255,255,255,0.1)",color:"#fff",cursor:"pointer",fontFamily:"'Calibri','Carlito','Segoe UI',Arial,sans-serif"}}>
+          ↑ Export to Sheet
+        </button>
+      }
     </div>
   );
 }
 
-const { useState } = React;
 
-const C = {
-  darkBlue:"#002f56",blue:"#2e97ed",red:"#ea0029",green:"#5db136",
-  gray:"#e0e0e0",darkBlue2:"#00213d",darkBlue3:"#003d70",darkBlue4:"#004a8a",
-  blueLight:"#d6eaf8",grayDark:"#6b7280",grayMid:"#b0bec5",
-  white:"#ffffff",offWhite:"#f4f7fb",amber:"#e07b00",
-};
-const FONT="'Calibri','Carlito','Segoe UI',Arial,sans-serif";
 const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
 const MARCH_WEEKENDS=new Set([1,7,8,14,15,21,22,28,29]);
 const isMarchWeekend=d=>MARCH_WEEKENDS.has(d);
@@ -1352,16 +1198,13 @@ function App(){
   const [view,setView]=useState("summary");
   const [sheetsStatus,setSheetsStatus]=useState("demo"); // demo|loading|connected|error
   const [sheetsData,setSheetsData]=useState(null); // overrides loaded from Sheets
-  const isConfigured = SHEETS_CONFIG.SPREADSHEET_ID !== "YOUR_SPREADSHEET_ID_HERE"
-                    && SHEETS_CONFIG.API_KEY !== "YOUR_API_KEY_HERE";
+  const isConfigured = SHEETS_CONFIG.WEB_APP_URL && !SHEETS_CONFIG.WEB_APP_URL.includes("YOUR_APPS");
 
   React.useEffect(() => {
     if (!isConfigured) return;
     setSheetsStatus("loading");
     const tryLoad = async () => {
       try {
-        await initGapi();
-        initGis();
         const [kpiData, trendData] = await Promise.all([
           loadKPIMetrics(),
           loadDailyTrends(),
@@ -1390,7 +1233,7 @@ function App(){
         </div>
       </div>
       <div style={{display:"flex",gap:3,alignItems:"center",flexWrap:"wrap"}}>
-        <SheetsStatus status={sheetsStatus}/>
+        <SheetsStatus status={sheetsStatus} onExport={sheetsConnected?()=>exportAllToSheet(REGIONS,SAMPLE_DATA).then(()=>alert("✅ Data exported to Google Sheet!")):null}/>
         <button onClick={()=>setView("summary")} style={{background:view==="summary"?C.blue:"transparent",border:`1px solid ${view==="summary"?C.blue:C.darkBlue4}`,borderRadius:6,padding:"5px 12px",color:C.white,fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:FONT}}>📊 Weekly Summary</button>
         <button onClick={()=>setView("trends")} style={{background:view==="trends"?C.blue:"transparent",border:`1px solid ${view==="trends"?C.blue:C.darkBlue4}`,borderRadius:6,padding:"5px 12px",color:C.white,fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:FONT}}>📈 Trends</button>
         <div style={{width:1,height:20,background:C.darkBlue4,margin:"0 3px"}}/>
