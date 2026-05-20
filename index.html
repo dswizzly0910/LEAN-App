@@ -1394,8 +1394,9 @@ function MetricCard(_ref13) {
     onClick = _ref13.onClick,
     selected = _ref13.selected;
   const hib = metric.hib ?? true;
-  const gap = metric.mtd.actual - metric.mtd.standard;
-  const hit = hib ? gap >= 0 : gap <= 0;
+  const hasData = metric.mtd && metric.mtd.actual != null;
+  const gap = hasData ? metric.mtd.actual - metric.mtd.standard : null;
+  const hit = hasData ? (hib ? gap >= 0 : gap <= 0) : false;
   return /*#__PURE__*/React.createElement("div", {
     onClick: () => onClick(id),
     style: {
@@ -1447,7 +1448,7 @@ function MetricCard(_ref13) {
       fontWeight: 700,
       color: perfColor(hit)
     }
-  }, fmtM(id, metric.mtd.actual)), /*#__PURE__*/React.createElement("div", {
+  }, hasData ? fmtM(id, metric.mtd.actual) : "—"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 10,
       color: selected ? C.grayMid : C.grayDark
@@ -1473,12 +1474,12 @@ function MetricCard(_ref13) {
       color: selected ? C.white : C.darkBlue,
       fontWeight: 700
     }
-  }, fmtM(id, metric.mtd.standard))), /*#__PURE__*/React.createElement("span", {
+  }, hasData ? fmtM(id, metric.mtd.standard) : "—")), /*#__PURE__*/React.createElement("span", {
     style: {
       color: perfColor(hit),
       fontWeight: 700
     }
-  }, hit ? "▲ +" : "▼ ", (Math.abs(gap) * 100).toFixed(2), "pp")));
+  }, hasData ? (hit ? "▲ +" : "▼ ") + (Math.abs(gap) * 100).toFixed(2) + "pp" : "—")));
 }
 function Card(_ref14) {
   let title = _ref14.title,
@@ -3947,7 +3948,7 @@ function RegionDashboard(_ref35) {
       gap: 7,
       flexWrap: "wrap"
     }
-  }, [["Daily Tgt", mt.daily.standard, false], ["Daily Act", mt.daily.actual, true], ["MTD Tgt", mt.mtd.standard, false], ["MTD Act", mt.mtd.actual, true], ["MTD Gap", mt.mtd.actual - mt.mtd.standard, true]].map(_ref38 => {
+  }, [["Daily Tgt", mt.daily.standard, false], ["Daily Act", mt.daily ? mt.daily.actual : null, true], ["MTD Tgt", mt.mtd.standard, false], ["MTD Act", mt.mtd ? mt.mtd.actual : null, true], ["MTD Gap", (mt.mtd && mt.mtd.actual != null) ? mt.mtd.actual - mt.mtd.standard : null, true]].map(_ref38 => {
     let _ref39 = _slicedToArray(_ref38, 3),
       l = _ref39[0],
       v = _ref39[1],
@@ -3978,7 +3979,7 @@ function RegionDashboard(_ref35) {
         fontWeight: 700,
         color: col ? perfColor(hit) : C.darkBlue
       }
-    }, ig ? `${(hib ? v >= 0 : v <= 0) ? "+" : ""}${(Math.abs(v) * 100).toFixed(2)}pp` : fmtM(sm, v)));
+    }, v == null ? "—" : ig ? `${(hib ? v >= 0 : v <= 0) ? "+" : ""}${(Math.abs(v) * 100).toFixed(2)}pp` : fmtM(sm, v)));
   }))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
