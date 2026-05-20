@@ -879,14 +879,16 @@ const REGION_GROUPS = [{
 const CWD = [24, 25, 26, 27];
 function weeklyAvg(metric) {
   const vals = CWD.map(d => metric.dailyTrend[d]).filter(v => v != null);
-  if (!vals.length) return metric.mtd.actual;
+  if (!vals.length) return metric.mtd ? metric.mtd.actual : null;
   return vals.reduce((s, v) => s + v, 0) / vals.length;
 }
 function metricHit(key, value) {
+  if (value == null) return false;
   const def = METRIC_DEFS[key];
   return def.hib ? value >= def.goal : value <= def.goal;
 }
 function normScore(key, value) {
+  if (value == null) return 0;
   const def = METRIC_DEFS[key];
   if (def.hib) return Math.min(1, value);
   return Math.max(0, Math.min(1, 1 - (value - def.goal) / def.goal));
@@ -3741,9 +3743,15 @@ function applySheetData(metrics, regionKey, sheetsData) {
       January: null, February: null, March: null,
       April: null, May: null, June: null
     };
+    // When sheets connected but no KPI data, null out actuals so dummy values don't show
+    const clearedActuals = kpi ? {} : {
+      daily: { ...metric.daily, actual: null },
+      mtd:   { ...metric.mtd,   actual: null },
+    };
     result[mk] = {
       ...metric,
       ...(kpi ? {} : { monthly: { ...metric.monthly, ...clearedMonthly } }),
+      ...(kpi ? {} : clearedActuals),
       ...(sheetsHasTrendData ? {} : clearedTrends),
       ...(kpi ? {
         daily: kpi.daily,
