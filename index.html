@@ -26,7 +26,7 @@ button { font-family: inherit; }
 (function waitForReact(){
   if(typeof React==='undefined'||typeof ReactDOM==='undefined'){setTimeout(waitForReact,50);return;}
   (function(){
-var useState=React.useState,useEffect=React.useEffect;
+var useState=React.useState,useEffect=React.useEffect,useCallback=React.useCallback,useRef=React.useRef;
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -3681,7 +3681,9 @@ function DataView(_ref25) {
 function RegionDashboard(_ref31) {
   let region = _ref31.region,
     regionKey = _ref31.regionKey,
-    sheetsData = _ref31.sheetsData;
+    sheetsData = _ref31.sheetsData,
+    _ref31$refreshKey = _ref31.refreshKey,
+    refreshKey = _ref31$refreshKey === void 0 ? 0 : _ref31$refreshKey;
   const m = region.metrics;
   const fk = Object.keys(m)[0];
   const _useState37 = useState(fk),
@@ -3709,24 +3711,28 @@ function RegionDashboard(_ref31) {
     sheetsSaveMsg = _useState48[0],
     setSheetsSaveMsg = _useState48[1];
 
-  // Load CI Log + Pareto from Sheets on mount (if connected)
+  // Load CI Log + Pareto from Sheets on mount AND whenever global refresh fires
   React.useEffect(() => {
     if (!sheetsConnected) return;
     Object.keys(m).forEach(async mk => {
-      const _await$Promise$all = await Promise.all([loadCILog(regionKey, mk), loadPareto(regionKey, mk)]),
-        _await$Promise$all2 = _slicedToArray(_await$Promise$all, 2),
-        ciData = _await$Promise$all2[0],
-        paretoData = _await$Promise$all2[1];
-      if (ciData) setCl(prev => ({
-        ...prev,
-        [mk]: ciData
-      }));
-      if (paretoData) setPs(prev => ({
-        ...prev,
-        [mk]: [paretoData]
-      }));
+      try {
+        const _await$Promise$all = await Promise.all([loadCILog(regionKey, mk), loadPareto(regionKey, mk)]),
+          _await$Promise$all2 = _slicedToArray(_await$Promise$all, 2),
+          ciData = _await$Promise$all2[0],
+          paretoData = _await$Promise$all2[1];
+        if (ciData !== null) setCl(prev => ({
+          ...prev,
+          [mk]: ciData
+        }));
+        if (paretoData && Object.keys(paretoData).length > 0) setPs(prev => ({
+          ...prev,
+          [mk]: [paretoData]
+        }));
+      } catch (e) {
+        console.warn('CI/Pareto load failed for', mk, e);
+      }
     });
-  }, [regionKey]);
+  }, [regionKey, refreshKey]);
 
   // Save CI Log to Sheets
   const saveCIToSheets = async (mk, log) => {
@@ -5086,12 +5092,11 @@ function App() {
   const _useState55 = useState("demo"),
     _useState56 = _slicedToArray(_useState55, 2),
     sheetsStatus = _useState56[0],
-    setSheetsStatus = _useState56[1]; // demo|loading|connected|error
+    setSheetsStatus = _useState56[1];
   const _useState57 = useState(null),
     _useState58 = _slicedToArray(_useState57, 2),
     sheetsData = _useState58[0],
-    setSheetsData = _useState58[1]; // overrides loaded from Sheets
-  const isConfigured = SHEETS_CONFIG.WEB_APP_URL && !SHEETS_CONFIG.WEB_APP_URL.includes("YOUR_APPS");
+    setSheetsData = _useState58[1];
   const _React$useState = React.useState(null),
     _React$useState2 = _slicedToArray(_React$useState, 2),
     lastRefresh = _React$useState2[0],
@@ -5100,8 +5105,15 @@ function App() {
     _React$useState4 = _slicedToArray(_React$useState3, 2),
     refreshing = _React$useState4[0],
     setRefreshing = _React$useState4[1];
-  const loadFromSheets = async () => {
-    if (!isConfigured) return;
+  const _React$useState5 = React.useState(0),
+    _React$useState6 = _slicedToArray(_React$useState5, 2),
+    refreshKey = _React$useState6[0],
+    setRefreshKey = _React$useState6[1]; // incremented on each refresh to signal children
+  const isConfigured = SHEETS_CONFIG.WEB_APP_URL && !SHEETS_CONFIG.WEB_APP_URL.includes("YOUR_APPS");
+  const refreshingRef = React.useRef(false);
+  const loadFromSheets = React.useCallback(async () => {
+    if (!isConfigured || refreshingRef.current) return;
+    refreshingRef.current = true;
     setRefreshing(true);
     setSheetsStatus("loading");
     try {
@@ -5119,6 +5131,7 @@ function App() {
         setSheetsStatus("connected");
         sheetsConnected = true;
         setLastRefresh(new Date());
+        setRefreshKey(k => k + 1); // signal RegionDashboard to reload CI+Pareto
       } else {
         setSheetsStatus("demo");
       }
@@ -5126,20 +5139,21 @@ function App() {
       sheetsError = e.message || String(e);
       setSheetsStatus("error");
     }
+    refreshingRef.current = false;
     setRefreshing(false);
-  };
+  }, [isConfigured]);
 
   // Load on mount
   React.useEffect(() => {
     loadFromSheets();
   }, []);
 
-  // Auto-refresh every 5 minutes
+  // Auto-refresh every 5 minutes — uses ref so always calls latest version
   React.useEffect(() => {
     if (!isConfigured) return;
-    const interval = setInterval(loadFromSheets, 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
+    const id = setInterval(() => loadFromSheets(), 5 * 60 * 1000);
+    return () => clearInterval(id);
+  }, [loadFromSheets]);
   return /*#__PURE__*/React.createElement("div", {
     style: {
       height: "100vh",
@@ -5322,7 +5336,8 @@ function App() {
     key: view,
     region: REGIONS[view],
     regionKey: view,
-    sheetsData: sheetsData
+    sheetsData: sheetsData,
+    refreshKey: refreshKey
   })));
 }
 ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(App, null));
