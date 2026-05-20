@@ -1166,7 +1166,10 @@ function PCalendar(_ref1) {
   let data = _ref1.data,
     goal = _ref1.goal,
     _ref1$hib = _ref1.hib,
-    hib = _ref1$hib === void 0 ? true : _ref1$hib;
+    hib = _ref1$hib === void 0 ? true : _ref1$hib,
+    _ref1$weekendSet = _ref1.weekendSet,
+    weekendSet = _ref1$weekendSet === void 0 ? MARCH_WEEKENDS : _ref1$weekendSet;
+  const isWeekend = d => weekendSet.has(d);
   const ROWS = 6,
     COLS = 7;
   const inP = (r, c) => {
@@ -1227,7 +1230,7 @@ function PCalendar(_ref1) {
         opacity: 0.3
       }
     });
-    const iw = isMarchWeekend(d);
+    const iw = isWeekend(d);
     const v = data[d];
     const hd = v != null;
     const hit = hd && (hib ? v >= goal : v <= goal);
@@ -1278,7 +1281,10 @@ function PCalendar(_ref1) {
 }
 function DCalendar(_ref11) {
   let data = _ref11.data,
-    goal = _ref11.goal;
+    goal = _ref11.goal,
+    _ref11$weekendSet = _ref11.weekendSet,
+    weekendSet = _ref11$weekendSet === void 0 ? MARCH_WEEKENDS : _ref11$weekendSet;
+  const isWeekend = d => weekendSet.has(d);
   const ROWS = 6,
     COLS = 6;
   const inD = (r, c) => {
@@ -1340,7 +1346,7 @@ function DCalendar(_ref11) {
         opacity: 0.3
       }
     });
-    const iw = isMarchWeekend(d);
+    const iw = isWeekend(d);
     const v = data[d];
     const hd = v != null;
     const hit = hd && v >= goal;
@@ -1524,8 +1530,8 @@ function TrendView(_ref15) {
     weekendSet = _getMonthInfo2.weekendSet,
     daysInMonth = _getMonthInfo2.daysInMonth;
   const hmd = ["January", "February", "March", "April", "May", "June"].includes(sel);
-  const useP = ["OT", "Scanning", "POD", "Call", "Shortages", "Preschedule", "CES", "RNS"].includes(metricId) && sel === "March";
-  const useD = metricId === "COT" && sel === "March";
+  const useP = ["OT", "Scanning", "POD", "Call", "Shortages", "Preschedule", "CES", "RNS"].includes(metricId);
+  const useD = metricId === "COT";
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Card, {
     title: "Monthly Performance"
   }, /*#__PURE__*/React.createElement("div", {
@@ -1623,10 +1629,12 @@ function TrendView(_ref15) {
   }, useP ? /*#__PURE__*/React.createElement(PCalendar, {
     data: td,
     goal: metric.goal,
-    hib: hib
+    hib: hib,
+    weekendSet: weekendSet
   }) : useD ? /*#__PURE__*/React.createElement(DCalendar, {
     data: td,
-    goal: metric.goal
+    goal: metric.goal,
+    weekendSet: weekendSet
   }) : hmd ? /*#__PURE__*/React.createElement(CalendarGrid, {
     data: td,
     goal: metric.goal,
