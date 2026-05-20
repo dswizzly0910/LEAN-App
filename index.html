@@ -3363,6 +3363,7 @@ function DataView(_ref25) {
   const re = n2d(dateRange[1]);
   // Use sheet orders if available and non-empty, otherwise fall back to SAMPLE_DATA
   const regionOrders = sheetsOrders ? sheetsOrders.filter(r => !regionKey || !r.region || r.region === regionKey) : [];
+  if (sheetsOrders) console.log('[CDS] Orders from sheet:', sheetsOrders.length, 'total, region', regionKey, ':', regionOrders.length, 'matching. Sample:', sheetsOrders[0]);
   const baseData = regionOrders.length > 0 ? regionOrders : SAMPLE_DATA;
   const filtered = baseData.filter(r => filterStatus === "All" || r.status === filterStatus).filter(r => filterFacility === "All" || r.facility === filterFacility).filter(r => r.date >= rs && r.date <= re).sort((a, b) => {
     const av = a[sortCol] ?? "",
@@ -3687,14 +3688,53 @@ function DataView(_ref25) {
     }
   }, "Showing ", filtered.length, " of ", baseData.length, " records \xB7 click headers to sort", sheetsOrders && sheetsOrders.length > 0 ? " (from Google Sheet)" : ""));
 }
-function RegionDashboard(_ref31) {
-  let region = _ref31.region,
-    regionKey = _ref31.regionKey,
-    sheetsData = _ref31.sheetsData,
-    _ref31$refreshKey = _ref31.refreshKey,
-    refreshKey = _ref31$refreshKey === void 0 ? 0 : _ref31$refreshKey;
-  const m = region.metrics;
+
+// Merge sheet data overrides into a metrics object
+function applySheetData(metrics, regionKey, sheetsData) {
+  if (!sheetsData) return metrics;
+  const kpiOverrides = sheetsData.kpi && sheetsData.kpi[regionKey];
+  const trendOverrides = sheetsData.trends && sheetsData.trends[regionKey];
+  if (!kpiOverrides && !trendOverrides) return metrics;
+  const result = {};
+  Object.entries(metrics).forEach(_ref31 => {
+    let _ref32 = _slicedToArray(_ref31, 2),
+      mk = _ref32[0],
+      metric = _ref32[1];
+    const kpi = kpiOverrides && kpiOverrides[mk];
+    const trend = trendOverrides && trendOverrides[mk];
+    result[mk] = {
+      ...metric,
+      ...(kpi ? {
+        daily: kpi.daily,
+        mtd: kpi.mtd,
+        monthly: {
+          ...metric.monthly,
+          ...Object.fromEntries(Object.entries(kpi.monthly).filter(_ref33 => {
+            let _ref34 = _slicedToArray(_ref33, 2),
+              v = _ref34[1];
+            return v !== null;
+          }))
+        }
+      } : {}),
+      ...(trend ? {
+        dailyTrend: {
+          ...metric.dailyTrend,
+          ...trend
+        }
+      } : {})
+    };
+  });
+  return result;
+}
+function RegionDashboard(_ref35) {
+  let region = _ref35.region,
+    regionKey = _ref35.regionKey,
+    sheetsData = _ref35.sheetsData,
+    _ref35$refreshKey = _ref35.refreshKey,
+    refreshKey = _ref35$refreshKey === void 0 ? 0 : _ref35$refreshKey;
+  const m = applySheetData(region.metrics, regionKey, sheetsData);
   const fk = Object.keys(m)[0];
+  const isConfigured = SHEETS_CONFIG.WEB_APP_URL && !SHEETS_CONFIG.WEB_APP_URL.includes("YOUR_APPS");
   const _useState37 = useState(fk),
     _useState38 = _slicedToArray(_useState37, 2),
     sm = _useState38[0],
@@ -3720,16 +3760,18 @@ function RegionDashboard(_ref31) {
     sheetsSaveMsg = _useState48[0],
     setSheetsSaveMsg = _useState48[1];
 
-  // Load CI Log + Pareto from Sheets on mount AND whenever global refresh fires
+  // Load CI Log + Pareto from Sheets whenever region changes OR global refresh fires
   React.useEffect(() => {
-    if (!sheetsConnected) return;
-    Object.keys(m).forEach(async mk => {
+    if (!isConfigured) return;
+    const metricKeys = Object.keys(region.metrics);
+    metricKeys.forEach(async mk => {
       try {
         const _await$Promise$all = await Promise.all([loadCILog(regionKey, mk), loadPareto(regionKey, mk)]),
           _await$Promise$all2 = _slicedToArray(_await$Promise$all, 2),
           ciData = _await$Promise$all2[0],
           paretoData = _await$Promise$all2[1];
-        if (ciData !== null) setCl(prev => ({
+        console.log('[CDS] CI/Pareto loaded', regionKey, mk, 'ci:', ciData && ciData.length, 'pareto:', paretoData && Object.keys(paretoData).length);
+        if (Array.isArray(ciData)) setCl(prev => ({
           ...prev,
           [mk]: ciData
         }));
@@ -3738,7 +3780,7 @@ function RegionDashboard(_ref31) {
           [mk]: [paretoData]
         }));
       } catch (e) {
-        console.warn('CI/Pareto load failed for', mk, e);
+        console.warn('[CDS] CI/Pareto load failed for', regionKey, mk, e.message);
       }
     });
   }, [regionKey, refreshKey]);
@@ -3797,10 +3839,10 @@ function RegionDashboard(_ref31) {
       textTransform: "uppercase",
       marginBottom: 8
     }
-  }, "KPI Metrics"), Object.entries(m).map(_ref32 => {
-    let _ref33 = _slicedToArray(_ref32, 2),
-      id = _ref33[0],
-      metric = _ref33[1];
+  }, "KPI Metrics"), Object.entries(m).map(_ref36 => {
+    let _ref37 = _slicedToArray(_ref36, 2),
+      id = _ref37[0],
+      metric = _ref37[1];
     return /*#__PURE__*/React.createElement(MetricCard, {
       key: id,
       id: id,
@@ -3845,11 +3887,11 @@ function RegionDashboard(_ref31) {
       gap: 7,
       flexWrap: "wrap"
     }
-  }, [["Daily Tgt", mt.daily.standard, false], ["Daily Act", mt.daily.actual, true], ["MTD Tgt", mt.mtd.standard, false], ["MTD Act", mt.mtd.actual, true], ["MTD Gap", mt.mtd.actual - mt.mtd.standard, true]].map(_ref34 => {
-    let _ref35 = _slicedToArray(_ref34, 3),
-      l = _ref35[0],
-      v = _ref35[1],
-      col = _ref35[2];
+  }, [["Daily Tgt", mt.daily.standard, false], ["Daily Act", mt.daily.actual, true], ["MTD Tgt", mt.mtd.standard, false], ["MTD Act", mt.mtd.actual, true], ["MTD Gap", mt.mtd.actual - mt.mtd.standard, true]].map(_ref38 => {
+    let _ref39 = _slicedToArray(_ref38, 3),
+      l = _ref39[0],
+      v = _ref39[1],
+      col = _ref39[2];
     const ig = l === "MTD Gap";
     const hit = ig ? hib ? v >= 0 : v <= 0 : hib ? v >= mt.goal : v <= mt.goal;
     return /*#__PURE__*/React.createElement("div", {
@@ -3949,22 +3991,33 @@ function weekAvgForDays(metric, days) {
   if (!vals.length) return null;
   return vals.reduce((s, v) => s + v, 0) / vals.length;
 }
-function TrendsView() {
+function TrendsView(_ref40) {
+  let sheetsData = _ref40.sheetsData;
   const _useState49 = useState("byRegion"),
     _useState50 = _slicedToArray(_useState49, 2),
     trendsView = _useState50[0],
     setTrendsView = _useState50[1];
+  // Build merged regions with sheet data applied
+  const MERGED_REGIONS = Object.fromEntries(Object.entries(REGIONS).map(_ref41 => {
+    let _ref42 = _slicedToArray(_ref41, 2),
+      k = _ref42[0],
+      r = _ref42[1];
+    return [k, {
+      ...r,
+      metrics: applySheetData(r.metrics, k, sheetsData)
+    }];
+  }));
 
   // Gray trend lines, colored dots
-  function Spark(_ref36) {
-    let values = _ref36.values,
-      goal = _ref36.goal,
-      _ref36$hib = _ref36.hib,
-      hib = _ref36$hib === void 0 ? true : _ref36$hib,
-      _ref36$width = _ref36.width,
-      width = _ref36$width === void 0 ? 90 : _ref36$width,
-      _ref36$height = _ref36.height,
-      height = _ref36$height === void 0 ? 36 : _ref36$height;
+  function Spark(_ref43) {
+    let values = _ref43.values,
+      goal = _ref43.goal,
+      _ref43$hib = _ref43.hib,
+      hib = _ref43$hib === void 0 ? true : _ref43$hib,
+      _ref43$width = _ref43.width,
+      width = _ref43$width === void 0 ? 90 : _ref43$width,
+      _ref43$height = _ref43.height,
+      height = _ref43$height === void 0 ? 36 : _ref43$height;
     const valid = values.filter(v => v != null);
     if (valid.length < 2) return /*#__PURE__*/React.createElement("span", {
       style: {
@@ -4026,10 +4079,10 @@ function TrendsView() {
   const overallWkPerf = WEEKS.map(w => {
     let total = 0;
     let count = 0;
-    Object.entries(REGIONS).forEach(_ref37 => {
-      let _ref38 = _slicedToArray(_ref37, 2),
-        rk = _ref38[0],
-        region = _ref38[1];
+    Object.entries(MERGED_REGIONS).forEach(_ref44 => {
+      let _ref45 = _slicedToArray(_ref44, 2),
+        rk = _ref45[0],
+        region = _ref45[1];
       REGION_METRIC_KEYS[rk].forEach(mk => {
         const metric = region.metrics[mk];
         const v = weekAvgForDays(metric, w.days);
@@ -4195,10 +4248,10 @@ function TrendsView() {
         fontFamily: FONT
       }
     }, "95.0%"));
-  })(), Object.entries(REGIONS).map((_ref39, ri) => {
-    let _ref40 = _slicedToArray(_ref39, 2),
-      rk = _ref40[0],
-      region = _ref40[1];
+  })(), Object.entries(REGIONS).map((_ref46, ri) => {
+    let _ref47 = _slicedToArray(_ref46, 2),
+      rk = _ref47[0],
+      region = _ref47[1];
     const wkScores = WEEKS.map(w => {
       const vals = REGION_METRIC_KEYS[rk].map(mk => normScore(mk, weekAvgForDays(region.metrics[mk], w.days) ?? weeklyAvg(region.metrics[mk]))).filter(v => v != null);
       return vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
@@ -4308,10 +4361,10 @@ function TrendsView() {
       gridTemplateColumns: "repeat(2,1fr)",
       gap: 18
     }
-  }, Object.entries(REGIONS).map(_ref41 => {
-    let _ref42 = _slicedToArray(_ref41, 2),
-      rk = _ref42[0],
-      region = _ref42[1];
+  }, Object.entries(MERGED_REGIONS).map(_ref48 => {
+    let _ref49 = _slicedToArray(_ref48, 2),
+      rk = _ref49[0],
+      region = _ref49[1];
     const mks = REGION_METRIC_KEYS[rk];
     return /*#__PURE__*/React.createElement("div", {
       key: rk,
@@ -4455,9 +4508,9 @@ function TrendsView() {
     }
   }, ["OT", "COT", "Scanning", "POD", "Call", "Shortages", "Preschedule", "CES", "RNS", "Dwell"].filter(mk => Object.values(REGIONS).some(r => r.metrics[mk])).map(mk => {
     const d = METRIC_DEFS[mk];
-    const regions = Object.entries(REGIONS).filter(_ref43 => {
-      let _ref44 = _slicedToArray(_ref43, 1),
-        rk = _ref44[0];
+    const regions = Object.entries(REGIONS).filter(_ref50 => {
+      let _ref51 = _slicedToArray(_ref50, 1),
+        rk = _ref51[0];
       return REGION_METRIC_KEYS[rk].includes(mk);
     });
     return /*#__PURE__*/React.createElement("div", {
@@ -4548,10 +4601,10 @@ function TrendsView() {
         borderBottom: `2px solid ${C.gray}`,
         fontFamily: FONT
       }
-    }, "Trend"))), /*#__PURE__*/React.createElement("tbody", null, regions.map((_ref45, ri) => {
-      let _ref46 = _slicedToArray(_ref45, 2),
-        rk = _ref46[0],
-        region = _ref46[1];
+    }, "Trend"))), /*#__PURE__*/React.createElement("tbody", null, regions.map((_ref52, ri) => {
+      let _ref53 = _slicedToArray(_ref52, 2),
+        rk = _ref53[0],
+        region = _ref53[1];
       const metric = region.metrics[mk];
       const wv = WEEKS.map(w => weekAvgForDays(metric, w.days));
       return /*#__PURE__*/React.createElement("tr", {
@@ -4599,20 +4652,25 @@ function TrendsView() {
     })))));
   })));
 }
-function SummaryView(_ref47) {
-  let onDrillDown = _ref47.onDrillDown;
+function SummaryView(_ref54) {
+  let onDrillDown = _ref54.onDrillDown,
+    sheetsData = _ref54.sheetsData;
   const _useState51 = useState("byRegion"),
     _useState52 = _slicedToArray(_useState51, 2),
     summaryView = _useState52[0],
     setSummaryView = _useState52[1];
-  const ranked = Object.entries(REGIONS).map(_ref48 => {
-    let _ref49 = _slicedToArray(_ref48, 2),
-      k = _ref49[0],
-      r = _ref49[1];
+  const ranked = Object.entries(REGIONS).map(_ref55 => {
+    let _ref56 = _slicedToArray(_ref55, 2),
+      k = _ref56[0],
+      r = _ref56[1];
+    const m = applySheetData(r.metrics, k, sheetsData);
     return {
       k,
-      r,
-      s: overallScore(r.metrics)
+      r: {
+        ...r,
+        metrics: m
+      },
+      s: overallScore(m)
     };
   }).sort((a, b) => b.s - a.s);
   return /*#__PURE__*/React.createElement("div", {
@@ -4644,10 +4702,10 @@ function SummaryView(_ref47) {
       gap: 14,
       marginBottom: 28
     }
-  }, ranked.map((_ref50, rank) => {
-    let k = _ref50.k,
-      r = _ref50.r,
-      s = _ref50.s;
+  }, ranked.map((_ref57, rank) => {
+    let k = _ref57.k,
+      r = _ref57.r,
+      s = _ref57.s;
     const mks = REGION_METRIC_KEYS[k];
     const mh = mks.filter(mk => metricHit(mk, weeklyAvg(r.metrics[mk]))).length;
     const sc = s >= 0.95 ? C.green : s >= 0.90 ? C.amber : C.red;
@@ -4964,9 +5022,9 @@ function SummaryView(_ref47) {
     }
   }, ["OT", "COT", "Scanning", "POD", "Call", "Shortages", "Preschedule", "CES", "RNS", "Dwell"].filter(mk => Object.values(REGIONS).some(r => r.metrics[mk])).map(mk => {
     const d = METRIC_DEFS[mk];
-    const applicableRegions = Object.entries(REGIONS).filter(_ref51 => {
-      let _ref52 = _slicedToArray(_ref51, 1),
-        rk = _ref52[0];
+    const applicableRegions = Object.entries(REGIONS).filter(_ref58 => {
+      let _ref59 = _slicedToArray(_ref58, 1),
+        rk = _ref59[0];
       return REGION_METRIC_KEYS[rk].includes(mk);
     });
     return /*#__PURE__*/React.createElement("div", {
@@ -5041,10 +5099,10 @@ function SummaryView(_ref47) {
         color: C.grayMid,
         fontFamily: FONT
       }
-    }, "vs Target"))), /*#__PURE__*/React.createElement("tbody", null, applicableRegions.map((_ref53, i) => {
-      let _ref54 = _slicedToArray(_ref53, 2),
-        rk = _ref54[0],
-        r = _ref54[1];
+    }, "vs Target"))), /*#__PURE__*/React.createElement("tbody", null, applicableRegions.map((_ref60, i) => {
+      let _ref61 = _slicedToArray(_ref60, 2),
+        rk = _ref61[0],
+        r = _ref61[1];
       const v = weeklyAvg(r.metrics[mk]);
       const h = metricHit(mk, v);
       const gap = d.hib ? v - d.goal : d.goal - v;
@@ -5344,8 +5402,11 @@ function App() {
       overflow: "hidden"
     }
   }, view === "summary" ? /*#__PURE__*/React.createElement(SummaryView, {
-    onDrillDown: k => setView(k)
-  }) : view === "trends" ? /*#__PURE__*/React.createElement(TrendsView, null) : REGIONS[view] && /*#__PURE__*/React.createElement(RegionDashboard, {
+    onDrillDown: k => setView(k),
+    sheetsData: sheetsData
+  }) : view === "trends" ? /*#__PURE__*/React.createElement(TrendsView, {
+    sheetsData: sheetsData
+  }) : REGIONS[view] && /*#__PURE__*/React.createElement(RegionDashboard, {
     key: view,
     region: REGIONS[view],
     regionKey: view,
