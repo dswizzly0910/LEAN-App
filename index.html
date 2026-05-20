@@ -49,10 +49,19 @@ async function sheetGet(action) {
     action,
     ...params
   }).toString();
-  const resp = await fetch(`${SHEETS_CONFIG.WEB_APP_URL}?${qs}`);
-  const json = await resp.json();
-  if (!json.ok) throw new Error(json.error || 'Sheet read failed');
-  return json.data;
+  const url = `${SHEETS_CONFIG.WEB_APP_URL}?${qs}`;
+  console.log('[CDS] GET', action, params);
+  const resp = await fetch(url);
+  const text = await resp.text();
+  console.log('[CDS] Response', action, text.slice(0, 200));
+  try {
+    const json = JSON.parse(text);
+    if (!json.ok) throw new Error(json.error || 'Sheet read failed');
+    console.log('[CDS] Data', action, 'rows:', Array.isArray(json.data) ? json.data.length : typeof json.data === 'object' ? Object.keys(json.data).length : json.data);
+    return json.data;
+  } catch (e) {
+    throw new Error('Parse error: ' + text.slice(0, 200));
+  }
 }
 async function sheetPost(action) {
   let payload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
@@ -5116,12 +5125,14 @@ function App() {
     refreshingRef.current = true;
     setRefreshing(true);
     setSheetsStatus("loading");
+    console.log('[CDS] Starting refresh...');
     try {
       const _await$Promise$all3 = await Promise.all([loadKPIMetrics(), loadDailyTrends(), loadOrders('all')]),
         _await$Promise$all4 = _slicedToArray(_await$Promise$all3, 3),
         kpiData = _await$Promise$all4[0],
         trendData = _await$Promise$all4[1],
         ordersData = _await$Promise$all4[2];
+      console.log('[CDS] Refresh complete — KPI:', !!kpiData, 'Trends:', !!trendData, 'Orders:', ordersData ? ordersData.length : 0);
       if (kpiData || trendData || ordersData) {
         setSheetsData({
           kpi: kpiData,
@@ -5131,11 +5142,13 @@ function App() {
         setSheetsStatus("connected");
         sheetsConnected = true;
         setLastRefresh(new Date());
-        setRefreshKey(k => k + 1); // signal RegionDashboard to reload CI+Pareto
+        setRefreshKey(k => k + 1);
       } else {
+        console.log('[CDS] No data returned — showing demo');
         setSheetsStatus("demo");
       }
     } catch (e) {
+      console.error('[CDS] Refresh error:', e.message);
       sheetsError = e.message || String(e);
       setSheetsStatus("error");
     }
