@@ -3346,7 +3346,7 @@ function DataView(_ref25) {
     _useState30 = _slicedToArray(_useState29, 2),
     filterFacility = _useState30[0],
     setFilterFacility = _useState30[1];
-  const _useState31 = useState("date"),
+  const _useState31 = useState("deliveryDT"),
     _useState32 = _slicedToArray(_useState31, 2),
     sortCol = _useState32[0],
     setSortCol = _useState32[1];
@@ -3354,18 +3354,33 @@ function DataView(_ref25) {
     _useState34 = _slicedToArray(_useState33, 2),
     sortDir = _useState34[0],
     setSortDir = _useState34[1];
-  const _useState35 = useState([DN_MAX - 13, DN_MAX]),
-    _useState36 = _slicedToArray(_useState35, 2),
-    dateRange = _useState36[0],
-    setDateRange = _useState36[1];
-  const facilities = ["All", ...Array.from(new Set(SAMPLE_DATA.map(r => r.facility))).sort()];
-  const rs = n2d(dateRange[0]);
-  const re = n2d(dateRange[1]);
-  // Use sheet orders if available and non-empty, otherwise fall back to SAMPLE_DATA
+
+  // Use sheet orders if available, otherwise SAMPLE_DATA
   const regionOrders = sheetsOrders ? sheetsOrders.filter(r => !regionKey || !r.region || r.region === regionKey) : [];
-  if (sheetsOrders) console.log('[CDS] Orders from sheet:', sheetsOrders.length, 'total, region', regionKey, ':', regionOrders.length, 'matching. Sample:', sheetsOrders[0]);
   const baseData = regionOrders.length > 0 ? regionOrders : SAMPLE_DATA;
-  const filtered = baseData.filter(r => filterStatus === "All" || r.status === filterStatus).filter(r => filterFacility === "All" || r.facility === filterFacility).filter(r => r.date >= rs && r.date <= re).sort((a, b) => {
+
+  // Normalise each row: sheet rows use deliveryDT as the primary date, sample rows use date
+  const normalised = baseData.map(r => ({
+    ...r,
+    _date: (r.deliveryDT || r.date || "").slice(0, 10) // extract YYYY-MM-DD for filtering
+  }));
+
+  // Build date range from actual data
+  const allDates = normalised.map(r => r._date).filter(Boolean).sort();
+  const dateMin = allDates[0] || "2026-01-01";
+  const dateMax = allDates[allDates.length - 1] || "2026-12-31";
+  const _useState35 = useState(""),
+    _useState36 = _slicedToArray(_useState35, 2),
+    dateFrom = _useState36[0],
+    setDateFrom = _useState36[1];
+  const _useState37 = useState(""),
+    _useState38 = _slicedToArray(_useState37, 2),
+    dateTo = _useState38[0],
+    setDateTo = _useState38[1];
+  const rs = dateFrom || dateMin;
+  const re = dateTo || dateMax;
+  const facilities = ["All", ...Array.from(new Set(baseData.map(r => r.facility).filter(Boolean))).sort()];
+  const filtered = normalised.filter(r => filterStatus === "All" || r.status === filterStatus).filter(r => filterFacility === "All" || r.facility === filterFacility).filter(r => !r._date || r._date >= rs && r._date <= re).sort((a, b) => {
     const av = a[sortCol] ?? "",
       bv = b[sortCol] ?? "";
     return sortDir === "asc" ? av.localeCompare(bv) : bv.localeCompare(av);
@@ -3410,20 +3425,6 @@ function DataView(_ref25) {
   const SortIcon = _ref26 => {
     let col = _ref26.col;
     return sortCol === col ? sortDir === "asc" ? " ▲" : " ▼" : " ⇅";
-  };
-  const fp = v => (v - DN_MIN) / (DN_MAX - DN_MIN) * 100;
-  const rib = {
-    position: "absolute",
-    width: "100%",
-    height: 6,
-    background: "transparent",
-    WebkitAppearance: "none",
-    appearance: "none",
-    outline: "none",
-    top: 0,
-    left: 0,
-    margin: 0,
-    padding: 0
   };
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -3504,69 +3505,63 @@ function DataView(_ref25) {
   }, f)))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
-      flexDirection: "column",
-      minWidth: 240
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      justifyContent: "space-between",
-      marginBottom: 2
+      alignItems: "center",
+      gap: 6
     }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 11,
+      fontSize: 12,
       color: C.grayDark,
       fontWeight: 600
     }
-  }, "Date Range:"), /*#__PURE__*/React.createElement("span", {
+  }, "From:"), /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    value: dateFrom,
+    onChange: e => setDateFrom(e.target.value),
+    style: {
+      background: C.offWhite,
+      border: `1px solid ${C.gray}`,
+      borderRadius: 5,
+      color: C.darkBlue,
+      padding: "4px 8px",
+      fontSize: 12,
+      fontFamily: FONT
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 12,
+      color: C.grayDark,
+      fontWeight: 600
+    }
+  }, "To:"), /*#__PURE__*/React.createElement("input", {
+    type: "date",
+    value: dateTo,
+    onChange: e => setDateTo(e.target.value),
+    style: {
+      background: C.offWhite,
+      border: `1px solid ${C.gray}`,
+      borderRadius: 5,
+      color: C.darkBlue,
+      padding: "4px 8px",
+      fontSize: 12,
+      fontFamily: FONT
+    }
+  }), (dateFrom || dateTo) && /*#__PURE__*/React.createElement("button", {
+    onClick: () => {
+      setDateFrom("");
+      setDateTo("");
+    },
     style: {
       fontSize: 11,
-      color: C.darkBlue,
-      fontWeight: 700
+      padding: "4px 8px",
+      borderRadius: 5,
+      border: `1px solid ${C.gray}`,
+      background: C.white,
+      color: C.grayDark,
+      cursor: "pointer",
+      fontFamily: FONT
     }
-  }, rs, " \u2192 ", re)), /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "relative",
-      height: 6,
-      background: C.gray,
-      borderRadius: 3,
-      margin: "6px 0 3px"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      position: "absolute",
-      height: "100%",
-      background: C.blue,
-      borderRadius: 3,
-      left: `${fp(dateRange[0])}%`,
-      right: `${100 - fp(dateRange[1])}%`
-    }
-  }), /*#__PURE__*/React.createElement("input", {
-    type: "range",
-    min: DN_MIN,
-    max: DN_MAX,
-    step: 1,
-    value: dateRange[0],
-    onChange: e => setDateRange([Math.min(Number(e.target.value), dateRange[1] - 1), dateRange[1]]),
-    style: {
-      ...rib,
-      pointerEvents: "all",
-      zIndex: 3
-    }
-  }), /*#__PURE__*/React.createElement("input", {
-    type: "range",
-    min: DN_MIN,
-    max: DN_MAX,
-    step: 1,
-    value: dateRange[1],
-    onChange: e => setDateRange([dateRange[0], Math.max(Number(e.target.value), dateRange[0] + 1)]),
-    style: {
-      ...rib,
-      pointerEvents: "all",
-      zIndex: 4
-    }
-  })))), /*#__PURE__*/React.createElement("div", {
+  }, "\u2715 Clear"))), /*#__PURE__*/React.createElement("div", {
     style: {
       background: C.white,
       border: `1px solid ${C.gray}`,
@@ -3686,7 +3681,7 @@ function DataView(_ref25) {
       fontSize: 11,
       color: C.grayDark
     }
-  }, "Showing ", filtered.length, " of ", baseData.length, " records \xB7 click headers to sort", sheetsOrders && sheetsOrders.length > 0 ? " (from Google Sheet)" : ""));
+  }, "Showing ", filtered.length, " of ", baseData.length, " records", regionOrders.length > 0 ? " · from Google Sheet" : " · sample data", " \xB7 click headers to sort"));
 }
 
 // Merge sheet data overrides into a metrics object
@@ -3735,30 +3730,30 @@ function RegionDashboard(_ref35) {
   const m = applySheetData(region.metrics, regionKey, sheetsData);
   const fk = Object.keys(m)[0];
   const isConfigured = SHEETS_CONFIG.WEB_APP_URL && !SHEETS_CONFIG.WEB_APP_URL.includes("YOUR_APPS");
-  const _useState37 = useState(fk),
-    _useState38 = _slicedToArray(_useState37, 2),
-    sm = _useState38[0],
-    setSm = _useState38[1];
-  const _useState39 = useState("trend"),
+  const _useState39 = useState(fk),
     _useState40 = _slicedToArray(_useState39, 2),
-    tab = _useState40[0],
-    setTab = _useState40[1];
-  const _useState41 = useState(Object.fromEntries(Object.keys(m).map(k => [k, [Object.fromEntries(Object.keys(m[k].pareto || {}).map(r => [r, 0]))]]))),
+    sm = _useState40[0],
+    setSm = _useState40[1];
+  const _useState41 = useState("trend"),
     _useState42 = _slicedToArray(_useState41, 2),
-    ps = _useState42[0],
-    setPs = _useState42[1];
-  const _useState43 = useState(Object.fromEntries(Object.keys(m).map(k => [k, m[k].ciLog || []]))),
+    tab = _useState42[0],
+    setTab = _useState42[1];
+  const _useState43 = useState(Object.fromEntries(Object.keys(m).map(k => [k, [Object.fromEntries(Object.keys(m[k].pareto || {}).map(r => [r, 0]))]]))),
     _useState44 = _slicedToArray(_useState43, 2),
-    cl = _useState44[0],
-    setCl = _useState44[1];
-  const _useState45 = useState(false),
+    ps = _useState44[0],
+    setPs = _useState44[1];
+  const _useState45 = useState(Object.fromEntries(Object.keys(m).map(k => [k, m[k].ciLog || []]))),
     _useState46 = _slicedToArray(_useState45, 2),
-    sheetsSaving = _useState46[0],
-    setSheetsSaving = _useState46[1];
-  const _useState47 = useState(""),
+    cl = _useState46[0],
+    setCl = _useState46[1];
+  const _useState47 = useState(false),
     _useState48 = _slicedToArray(_useState47, 2),
-    sheetsSaveMsg = _useState48[0],
-    setSheetsSaveMsg = _useState48[1];
+    sheetsSaving = _useState48[0],
+    setSheetsSaving = _useState48[1];
+  const _useState49 = useState(""),
+    _useState50 = _slicedToArray(_useState49, 2),
+    sheetsSaveMsg = _useState50[0],
+    setSheetsSaveMsg = _useState50[1];
 
   // Load CI Log + Pareto from Sheets whenever region changes OR global refresh fires
   React.useEffect(() => {
@@ -3993,10 +3988,10 @@ function weekAvgForDays(metric, days) {
 }
 function TrendsView(_ref40) {
   let sheetsData = _ref40.sheetsData;
-  const _useState49 = useState("byRegion"),
-    _useState50 = _slicedToArray(_useState49, 2),
-    trendsView = _useState50[0],
-    setTrendsView = _useState50[1];
+  const _useState51 = useState("byRegion"),
+    _useState52 = _slicedToArray(_useState51, 2),
+    trendsView = _useState52[0],
+    setTrendsView = _useState52[1];
   // Build merged regions with sheet data applied
   const MERGED_REGIONS = Object.fromEntries(Object.entries(REGIONS).map(_ref41 => {
     let _ref42 = _slicedToArray(_ref41, 2),
@@ -4655,10 +4650,10 @@ function TrendsView(_ref40) {
 function SummaryView(_ref54) {
   let onDrillDown = _ref54.onDrillDown,
     sheetsData = _ref54.sheetsData;
-  const _useState51 = useState("byRegion"),
-    _useState52 = _slicedToArray(_useState51, 2),
-    summaryView = _useState52[0],
-    setSummaryView = _useState52[1];
+  const _useState53 = useState("byRegion"),
+    _useState54 = _slicedToArray(_useState53, 2),
+    summaryView = _useState54[0],
+    setSummaryView = _useState54[1];
   const ranked = Object.entries(REGIONS).map(_ref55 => {
     let _ref56 = _slicedToArray(_ref55, 2),
       k = _ref56[0],
@@ -5152,18 +5147,18 @@ function SummaryView(_ref54) {
 }
 function App() {
   var _REGIONS$view, _REGION_METRIC_KEYS$v;
-  const _useState53 = useState("summary"),
-    _useState54 = _slicedToArray(_useState53, 2),
-    view = _useState54[0],
-    setView = _useState54[1];
-  const _useState55 = useState("demo"),
+  const _useState55 = useState("summary"),
     _useState56 = _slicedToArray(_useState55, 2),
-    sheetsStatus = _useState56[0],
-    setSheetsStatus = _useState56[1];
-  const _useState57 = useState(null),
+    view = _useState56[0],
+    setView = _useState56[1];
+  const _useState57 = useState("demo"),
     _useState58 = _slicedToArray(_useState57, 2),
-    sheetsData = _useState58[0],
-    setSheetsData = _useState58[1];
+    sheetsStatus = _useState58[0],
+    setSheetsStatus = _useState58[1];
+  const _useState59 = useState(null),
+    _useState60 = _slicedToArray(_useState59, 2),
+    sheetsData = _useState60[0],
+    setSheetsData = _useState60[1];
   const _React$useState = React.useState(null),
     _React$useState2 = _slicedToArray(_React$useState, 2),
     lastRefresh = _React$useState2[0],
