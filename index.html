@@ -27,6 +27,7 @@ button { font-family: inherit; }
   if(typeof React==='undefined'||typeof ReactDOM==='undefined'){setTimeout(waitForReact,50);return;}
   (function(){
 var useState=React.useState,useEffect=React.useEffect,useCallback=React.useCallback,useRef=React.useRef;
+var useState=React.useState,useEffect=React.useEffect,useCallback=React.useCallback,useRef=React.useRef;
 function _slicedToArray(r, e) { return _arrayWithHoles(r) || _iterableToArrayLimit(r, e) || _unsupportedIterableToArray(r, e) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
@@ -162,7 +163,18 @@ async function exportAllToSheet(regions, sampleData) {
       });
     });
   });
-  const orders = sampleData.map(r => ['Northeast', r.order, r.status, r.facility, r.billTo, r.manufacturer, r.driver, r.deliveryDT || '', r.tfStart || '', r.tfEnd || '', r.receiveDT || '', r.actualReceiveDate || '', r.dwellDays ?? '', r.schedOnDate || '', r.presActualReceiveDate || '', r.scanType || '', r.totalItems ?? '', r.shortItems ?? '', r.cesScore ?? '', r.audited || '']);
+  const inferMetric = r => {
+      if(r.metricKey) return r.metricKey;
+      if(r.tfStart) return 'OT';
+      if(r.scanType) return 'Scanning';
+      if(r.shortItems!=null) return 'Shortages';
+      if(r.cesScore!=null) return 'CES';
+      if(r.receiveDT) return 'RNS';
+      if(r.dwellDays!=null) return 'Dwell';
+      if(r.schedOnDate) return 'Preschedule';
+      return 'OT';
+    };
+    const orders = sampleData.map(r => [r.region||'Northeast', inferMetric(r), r.order, r.status, r.facility, r.billTo, r.manufacturer, r.driver, r.deliveryDT||'', r.tfStart||'', r.tfEnd||'', r.receiveDT||'', r.actualReceiveDate||'', r.dwellDays??'', r.schedOnDate||'', r.presActualReceiveDate||'', r.scanType||'', r.totalItems??'', r.shortItems??'', r.cesScore??'', r.audited||'']);
   return sheetPost('exportAll', {
     payload: {
       kpiMetrics,
@@ -3356,7 +3368,7 @@ function DataView(_ref25) {
     setSortDir = _useState34[1];
 
   // Use sheet orders if available, otherwise SAMPLE_DATA
-  const regionOrders = sheetsOrders ? sheetsOrders.filter(r => !regionKey || !r.region || r.region === regionKey) : [];
+  const regionOrders = sheetsOrders ? sheetsOrders.filter(r => (!regionKey || !r.region || r.region === regionKey) && (!metricId || !r.metricKey || r.metricKey === metricId)) : [];
   // Only fall back to SAMPLE_DATA if sheets are not connected at all.
   // If sheets ARE connected but this region has no orders, show empty — don't bleed other regions' data.
   const sheetsConnectedNow = !!sheetsOrders;
