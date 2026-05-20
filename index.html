@@ -159,7 +159,7 @@ async function exportAllToSheet(regions, sampleData) {
         let _ref6 = _slicedToArray(_ref5, 2),
           day = _ref6[0],
           val = _ref6[1];
-        dailyTrends.push([regionKey, mk, day, val]);
+        dailyTrends.push([regionKey, mk, 'March', day, val]); // exported as March by default
       });
     });
   });
@@ -1515,11 +1515,12 @@ function TrendView(_ref15) {
     sel = _useState2[0],
     setSel = _useState2[1];
   const hib = metric.hib ?? true;
-  const td = sel === "January" ? metric.januaryTrend || {} : sel === "February" ? metric.februaryTrend || {} : metric.dailyTrend;
+  const monthTrendKey = sel.toLowerCase() + 'Trend';
+  const td = metric[monthTrendKey] || (sel === "March" ? metric.dailyTrend : {});
   const _getMonthInfo2 = getMonthInfo(sel, 2026),
     weekendSet = _getMonthInfo2.weekendSet,
     daysInMonth = _getMonthInfo2.daysInMonth;
-  const hmd = ["January", "February", "March"].includes(sel);
+  const hmd = ["January", "February", "March", "April", "May", "June"].includes(sel);
   const useP = ["OT", "Scanning", "POD", "Call", "Shortages", "Preschedule", "CES", "RNS"].includes(metricId) && sel === "March";
   const useD = metricId === "COT" && sel === "March";
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Card, {
@@ -1532,7 +1533,7 @@ function TrendView(_ref15) {
   }, MONTHS.map((mo, idx) => {
     const v = metric.monthly[mo];
     const pv = idx > 0 ? metric.monthly[MONTHS[idx - 1]] : null;
-    const dv = v ?? (mo === "March" ? metric.mtd.actual : null);
+    const dv = v ?? (mo === "March" ? metric.mtd.actual : null); // Apr-Jun become active when monthly[mo] is set
     const hit = dv != null && (hib ? dv >= metric.goal : dv <= metric.goal);
     const bg = dv == null ? C.blueLight : hit ? C.green : C.red;
     const isSel = sel === mo;
@@ -3744,12 +3745,22 @@ function applySheetData(metrics, regionKey, sheetsData) {
           }))
         }
       } : {}),
-      ...(trend ? {
-        dailyTrend: {
-          ...metric.dailyTrend,
-          ...trend
+      ...(trend ? (() => {
+        // trend may contain {marchTrend:{...}, aprilTrend:{...}} or flat day->value
+        const merged = {};
+        // Check if it's per-month keyed
+        const monthKeys = ['januaryTrend','februaryTrend','marchTrend','aprilTrend','mayTrend','juneTrend'];
+        const hasMonthKeys = monthKeys.some(k => trend[k]);
+        if (hasMonthKeys) {
+          monthKeys.forEach(k => { if (trend[k]) merged[k] = {...(metric[k]||{}), ...trend[k]}; });
+          // Also merge marchTrend into dailyTrend for current month display
+          if (trend.marchTrend) merged.dailyTrend = {...metric.dailyTrend, ...trend.marchTrend};
+        } else {
+          // Legacy flat format — goes into dailyTrend (March)
+          merged.dailyTrend = {...metric.dailyTrend, ...trend};
         }
-      } : {})
+        return merged;
+      })() : {})
     };
   });
   return result;
