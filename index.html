@@ -1533,7 +1533,7 @@ function TrendView(_ref15) {
   }, MONTHS.map((mo, idx) => {
     const v = metric.monthly[mo];
     const pv = idx > 0 ? metric.monthly[MONTHS[idx - 1]] : null;
-    const dv = v ?? (mo === "March" ? metric.mtd.actual : null); // Apr-Jun become active when monthly[mo] is set
+    const dv = v ?? (mo === "March" && metric._fromSheet !== false ? metric.mtd.actual : null);
     const hit = dv != null && (hib ? dv >= metric.goal : dv <= metric.goal);
     const bg = dv == null ? C.blueLight : hit ? C.green : C.red;
     const isSel = sel === mo;
@@ -3723,7 +3723,7 @@ function applySheetData(metrics, regionKey, sheetsData) {
   if (!sheetsData) return metrics;
   const kpiOverrides = sheetsData.kpi && sheetsData.kpi[regionKey];
   const trendOverrides = sheetsData.trends && sheetsData.trends[regionKey];
-  if (!kpiOverrides && !trendOverrides) return metrics;
+  // Sheets connected — always process all metrics, clearing dummy data where sheet has none
   const result = {};
   Object.entries(metrics).forEach(_ref31 => {
     let _ref32 = _slicedToArray(_ref31, 2),
@@ -3731,11 +3731,24 @@ function applySheetData(metrics, regionKey, sheetsData) {
       metric = _ref32[1];
     const kpi = kpiOverrides && kpiOverrides[mk];
     const trend = trendOverrides && trendOverrides[mk];
+    // When sheets are connected, wipe dummy trend/monthly data unless sheet provides it
+    const sheetsHasTrendData = !!(trend);
+    const clearedTrends = sheetsHasTrendData ? {} : {
+      januaryTrend: {}, februaryTrend: {}, marchTrend: {}, dailyTrend: {},
+      aprilTrend: {}, mayTrend: {}, juneTrend: {}
+    };
+    const clearedMonthly = kpi ? {} : {
+      January: null, February: null, March: null,
+      April: null, May: null, June: null
+    };
     result[mk] = {
       ...metric,
+      ...(kpi ? {} : { monthly: { ...metric.monthly, ...clearedMonthly } }),
+      ...(sheetsHasTrendData ? {} : clearedTrends),
       ...(kpi ? {
         daily: kpi.daily,
         mtd: kpi.mtd,
+        _fromSheet: true,
         monthly: {
           ...metric.monthly,
           ...Object.fromEntries(Object.entries(kpi.monthly).filter(_ref33 => {
@@ -3744,7 +3757,7 @@ function applySheetData(metrics, regionKey, sheetsData) {
             return v !== null;
           }))
         }
-      } : {}),
+      } : { _fromSheet: false }),
       ...(trend ? (() => {
         // trend may contain {marchTrend:{...}, aprilTrend:{...}} or flat day->value
         const merged = {};
