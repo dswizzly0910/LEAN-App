@@ -3357,7 +3357,10 @@ function DataView(_ref25) {
 
   // Use sheet orders if available, otherwise SAMPLE_DATA
   const regionOrders = sheetsOrders ? sheetsOrders.filter(r => !regionKey || !r.region || r.region === regionKey) : [];
-  const baseData = regionOrders.length > 0 ? regionOrders : SAMPLE_DATA;
+  // Only fall back to SAMPLE_DATA if sheets are not connected at all.
+  // If sheets ARE connected but this region has no orders, show empty — don't bleed other regions' data.
+  const sheetsConnectedNow = !!sheetsOrders;
+  const baseData = regionOrders.length > 0 ? regionOrders : sheetsConnectedNow ? [] : SAMPLE_DATA;
 
   // Normalise each row: sheet rows use deliveryDT as the primary date, sample rows use date
   const normalised = baseData.map(r => ({
