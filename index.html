@@ -3368,11 +3368,29 @@ function DataView(_ref25) {
     setSortDir = _useState34[1];
 
   // Use sheet orders if available, otherwise SAMPLE_DATA
-  const regionOrders = sheetsOrders ? sheetsOrders.filter(r => (!regionKey || !r.region || r.region === regionKey) && (!metricId || !r.metricKey || r.metricKey === metricId)) : [];
+  // Infer metric from row fields when metricKey not explicitly set
+  const rowMatchesMetric = (r, mk) => {
+    if (!mk) return true;
+    if (r.metricKey) return r.metricKey === mk;
+    // Infer from which fields are populated
+    if (mk === 'OT')          return !!(r.tfStart);
+    if (mk === 'Scanning')    return !!(r.scanType);
+    if (mk === 'Shortages')   return r.shortItems != null;
+    if (mk === 'CES')         return r.cesScore != null;
+    if (mk === 'RNS')         return !!(r.receiveDT);
+    if (mk === 'Dwell')       return r.dwellDays != null;
+    if (mk === 'Preschedule') return !!(r.schedOnDate);
+    // COT, POD, Call — show all orders (no specific differentiating field)
+    return true;
+  };
+  const regionOrders = sheetsOrders
+    ? sheetsOrders.filter(r => (!regionKey || !r.region || r.region === regionKey) && rowMatchesMetric(r, metricId))
+    : [];
   // Only fall back to SAMPLE_DATA if sheets are not connected at all.
   // If sheets ARE connected but this region has no orders, show empty — don't bleed other regions' data.
   const sheetsConnectedNow = !!sheetsOrders;
-  const baseData = regionOrders.length > 0 ? regionOrders : sheetsConnectedNow ? [] : SAMPLE_DATA;
+  const sampleFiltered = SAMPLE_DATA.filter(r => rowMatchesMetric(r, metricId));
+  const baseData = regionOrders.length > 0 ? regionOrders : sheetsConnectedNow ? [] : sampleFiltered;
 
   // Normalise each row: sheet rows use deliveryDT as the primary date, sample rows use date
   const normalised = baseData.map(r => ({
