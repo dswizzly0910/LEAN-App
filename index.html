@@ -5027,8 +5027,9 @@ function SummaryView(_ref54) {
       fontFamily: FONT
     }
   }, "\u226595.0%"))), /*#__PURE__*/React.createElement("tbody", null, grp.keys.map((rk, i) => {
-    const r = REGIONS[rk];
-    const s = overallScore(r.metrics);
+    const rankedEntry = ranked.find(x => x.k === rk);
+    const r = rankedEntry ? rankedEntry.r : REGIONS[rk];
+    const s = rankedEntry ? rankedEntry.s : overallScore(r.metrics);
     return /*#__PURE__*/React.createElement("tr", {
       key: rk,
       style: {
@@ -5087,6 +5088,10 @@ function SummaryView(_ref54) {
       let _ref59 = _slicedToArray(_ref58, 1),
         rk = _ref59[0];
       return REGION_METRIC_KEYS[rk].includes(mk);
+    }).map(_ref58 => {
+      let _ref59 = _slicedToArray(_ref58, 2), rk = _ref59[0];
+      const re = ranked.find(x => x.k === rk);
+      return re ? [rk, re.r] : _ref58;
     });
     return /*#__PURE__*/React.createElement("div", {
       key: mk,
