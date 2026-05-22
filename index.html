@@ -338,8 +338,8 @@ const METRIC_DEFS = {
   CES: {
     label: "CES (fmr CDET)",
     category: "Compliance",
-    goal: 0.95,
-    fmt: "pct",
+    goal: 5,
+    fmt: "score",
     hib: true
   },
   RNS: {
@@ -890,6 +890,7 @@ function metricHit(key, value) {
 function normScore(key, value) {
   if (value == null) return 0;
   const def = METRIC_DEFS[key];
+  if (def.fmt === "score") return Math.min(1, value / def.goal); // e.g. 4.5/5 = 0.9
   if (def.hib) return Math.min(1, value);
   return Math.max(0, Math.min(1, 1 - (value - def.goal) / def.goal));
 }
@@ -901,7 +902,7 @@ function fmtM(key, value) {
   if (value == null) return "—";
   const def = METRIC_DEFS[key];
   if (!def) return pct(value);
-  return def.fmt === "pct" ? pct(def.hib ? Math.min(1, value) : value) : `${Math.round(value)}d`;
+  return def.fmt === "score" ? `${Number.isInteger(value) ? value : value.toFixed(1)} / 5` : def.fmt === "pct" ? pct(def.hib ? Math.min(1, value) : value) : `${Math.round(value)}d`;
 }
 function getMonthInfo(name, year) {
   const i = MONTHS.indexOf(name);
@@ -971,119 +972,103 @@ function MiniChart(_ref9) {
     daysInMonth = _ref9.daysInMonth,
     _ref9$hib = _ref9.hib,
     hib = _ref9$hib === void 0 ? true : _ref9$hib;
-  const days = Array.from({
-    length: daysInMonth
-  }, (_, i) => i + 1).filter(d => !weekendSet.has(d));
-  const pts = days.filter(d => data[d] != null).map(d => ({
-    d,
-    v: data[d]
-  }));
-  if (!pts.length) return /*#__PURE__*/React.createElement("div", {
-    style: {
-      color: C.grayDark,
-      fontSize: 13,
-      padding: "20px 0",
-      fontFamily: FONT
-    }
-  }, "No data for ", monthLabel);
+  const [hovered, setHovered] = useState(null); // {d, v, cx, cy}
+  const days = Array.from({length: daysInMonth}, (_, i) => i + 1).filter(d => !weekendSet.has(d));
+  const pts = days.filter(d => data[d] != null).map(d => ({d, v: data[d]}));
+  if (!pts.length) return React.createElement("div", {style: {color: C.grayDark, fontSize: 13, padding: "20px 0", fontFamily: FONT}}, "No data for ", monthLabel);
   const allV = pts.map(p => p.v);
   const mn = Math.min(hib ? goal - 0.06 : 0, ...allV);
   const mx = Math.max(hib ? 1.005 : goal * 1.5, ...allV);
   const rng = mx - mn || 0.01;
-  const W = 440,
-    H = 110,
-    PL = 8,
-    PR = 52,
-    PT = 8,
-    PB = 28;
+  const W = 440, H = 110, PL = 8, PR = 52, PT = 8, PB = 28;
   const x = d => PL + (d - 1) / (daysInMonth - 1) * (W - PL - PR);
   const y = v => H - PB - (v - mn) / rng * (H - PT - PB);
   const gy = y(goal);
   const pd = pts.map((p, i) => `${i === 0 ? "M" : "L"}${x(p.d).toFixed(1)},${y(p.v).toFixed(1)}`).join(" ");
-  const ad = `${pd} L${x(pts[pts.length - 1].d).toFixed(1)},${H - PB} L${x(pts[0].d).toFixed(1)},${H - PB} Z`;
-  const lp = pts.filter((p, i) => i === 0 || x(p.d) - x(pts[i - 1].d) >= 22);
+  const ad = `${pd} L${x(pts[pts.length-1].d).toFixed(1)},${H-PB} L${x(pts[0].d).toFixed(1)},${H-PB} Z`;
+  const lp = pts.filter((p, i) => i === 0 || x(p.d) - x(pts[i-1].d) >= 22);
   const sm = monthLabel.slice(0, 3);
-  return /*#__PURE__*/React.createElement("svg", {
-    viewBox: `0 0 ${W} ${H}`,
-    style: {
-      width: "100%",
-      overflow: "visible",
-      display: "block"
-    }
-  }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("linearGradient", {
-    id: "ag",
-    x1: "0",
-    y1: "0",
-    x2: "0",
-    y2: "1"
-  }, /*#__PURE__*/React.createElement("stop", {
-    offset: "0%",
-    stopColor: C.blue,
-    stopOpacity: "0.15"
-  }), /*#__PURE__*/React.createElement("stop", {
-    offset: "100%",
-    stopColor: C.blue,
-    stopOpacity: "0.01"
-  }))), /*#__PURE__*/React.createElement("line", {
-    x1: PL,
-    y1: H - PB,
-    x2: W - PR,
-    y2: H - PB,
-    stroke: C.gray,
-    strokeWidth: 1
-  }), /*#__PURE__*/React.createElement("line", {
-    x1: PL,
-    y1: gy,
-    x2: W - PR,
-    y2: gy,
-    stroke: C.darkBlue,
-    strokeOpacity: 0.3,
-    strokeDasharray: "6,4",
-    strokeWidth: 1.5
-  }), /*#__PURE__*/React.createElement("text", {
-    x: W - PR + 4,
-    y: gy + 4,
-    fontSize: 11,
-    fill: C.darkBlue,
-    opacity: 0.6,
-    fontFamily: FONT,
-    fontWeight: "700"
-  }, "Target"), /*#__PURE__*/React.createElement("path", {
-    d: ad,
-    fill: "url(#ag)"
-  }), /*#__PURE__*/React.createElement("path", {
-    d: pd,
-    fill: "none",
-    stroke: C.blue,
-    strokeWidth: 2.5,
-    strokeLinecap: "round",
-    strokeLinejoin: "round"
-  }), pts.map(p => /*#__PURE__*/React.createElement("circle", {
-    key: p.d,
-    cx: x(p.d),
-    cy: y(p.v),
-    r: 4.5,
-    fill: (hib ? p.v >= goal : p.v <= goal) ? C.green : C.red,
-    stroke: C.white,
-    strokeWidth: 1.5
-  })), lp.map(p => /*#__PURE__*/React.createElement("g", {
-    key: `t${p.d}`
-  }, /*#__PURE__*/React.createElement("line", {
-    x1: x(p.d),
-    y1: H - PB,
-    x2: x(p.d),
-    y2: H - PB + 4,
-    stroke: C.grayDark,
-    strokeWidth: 1
-  }), /*#__PURE__*/React.createElement("text", {
-    x: x(p.d),
-    y: H - PB + 15,
-    textAnchor: "middle",
-    fontSize: 10,
-    fill: C.grayDark,
-    fontFamily: FONT
-  }, `${sm} ${p.d}`))));
+  const isScore = goal > 1 && goal <= 10 && !Number.isInteger(goal * 10) === false;
+  const fmtVal = v => {
+    if (v == null) return "—";
+    if (goal > 1 && goal <= 10) return `${Number.isInteger(v) ? v : v.toFixed(1)} / ${goal}`; // score format
+    if (hib || goal <= 1) return `${(v * 100).toFixed(1)}%`;
+    return `${Math.round(v)}d`;
+  };
+
+  // Tooltip position: flip to left side if near right edge
+  const tooltipX = hovered ? (hovered.cx > W * 0.65 ? hovered.cx - 10 : hovered.cx + 10) : 0;
+  const tooltipAnchor = hovered ? (hovered.cx > W * 0.65 ? "end" : "start") : "start";
+  const hit = hovered ? (hib ? hovered.v >= goal : hovered.v <= goal) : false;
+
+  return React.createElement("div", {style: {position: "relative"}},
+    React.createElement("svg", {
+      viewBox: `0 0 ${W} ${H}`,
+      style: {width: "100%", overflow: "visible", display: "block"}
+    },
+      React.createElement("defs", null,
+        React.createElement("linearGradient", {id: "ag", x1: "0", y1: "0", x2: "0", y2: "1"},
+          React.createElement("stop", {offset: "0%", stopColor: C.blue, stopOpacity: "0.15"}),
+          React.createElement("stop", {offset: "100%", stopColor: C.blue, stopOpacity: "0.01"})
+        )
+      ),
+      React.createElement("line", {x1: PL, y1: H-PB, x2: W-PR, y2: H-PB, stroke: C.gray, strokeWidth: 1}),
+      React.createElement("line", {x1: PL, y1: gy, x2: W-PR, y2: gy, stroke: C.darkBlue, strokeOpacity: 0.3, strokeDasharray: "6,4", strokeWidth: 1.5}),
+      React.createElement("text", {x: W-PR+4, y: gy+4, fontSize: 11, fill: C.darkBlue, opacity: 0.6, fontFamily: FONT, fontWeight: "700"}, "Target"),
+      React.createElement("path", {d: ad, fill: "url(#ag)"}),
+      React.createElement("path", {d: pd, fill: "none", stroke: C.blue, strokeWidth: 2.5, strokeLinecap: "round", strokeLinejoin: "round"}),
+      // Invisible wider hit areas for easier hover
+      pts.map(p => React.createElement("circle", {
+        key: `h${p.d}`,
+        cx: x(p.d), cy: y(p.v), r: 12,
+        fill: "transparent",
+        style: {cursor: "pointer"},
+        onMouseEnter: () => setHovered({d: p.d, v: p.v, cx: x(p.d), cy: y(p.v)}),
+        onMouseLeave: () => setHovered(null)
+      })),
+      // Visible dots
+      pts.map(p => React.createElement("circle", {
+        key: p.d,
+        cx: x(p.d), cy: y(p.v), r: hovered && hovered.d === p.d ? 6.5 : 4.5,
+        fill: (hib ? p.v >= goal : p.v <= goal) ? C.green : C.red,
+        stroke: C.white, strokeWidth: 1.5,
+        style: {transition: "r 0.1s", pointerEvents: "none"}
+      })),
+      // Tooltip bubble
+      hovered && React.createElement("g", {style: {pointerEvents: "none"}},
+        React.createElement("line", {
+          x1: hovered.cx, y1: hovered.cy - 8,
+          x2: hovered.cx, y2: H - PB,
+          stroke: C.grayDark, strokeWidth: 1, strokeDasharray: "3,2", opacity: 0.4
+        }),
+        React.createElement("rect", {
+          x: tooltipAnchor === "end" ? hovered.cx - 10 - 90 : hovered.cx + 10,
+          y: hovered.cy - 30,
+          width: 90, height: 38,
+          rx: 5, ry: 5,
+          fill: C.darkBlue, opacity: 0.92
+        }),
+        React.createElement("text", {
+          x: tooltipAnchor === "end" ? hovered.cx - 10 - 45 : hovered.cx + 10 + 45,
+          y: hovered.cy - 15,
+          textAnchor: "middle", fontSize: 11, fill: C.white,
+          fontFamily: FONT, fontWeight: "700"
+        }, `${sm} ${hovered.d}`),
+        React.createElement("text", {
+          x: tooltipAnchor === "end" ? hovered.cx - 10 - 45 : hovered.cx + 10 + 45,
+          y: hovered.cy + 2,
+          textAnchor: "middle", fontSize: 12, fill: hit ? C.green : C.red,
+          fontFamily: FONT, fontWeight: "700"
+        }, fmtVal(hovered.v))
+      ),
+      lp.map(p => React.createElement("g", {key: `t${p.d}`},
+        React.createElement("line", {x1: x(p.d), y1: H-PB, x2: x(p.d), y2: H-PB+4, stroke: C.grayDark, strokeWidth: 1}),
+        React.createElement("text", {x: x(p.d), y: H-PB+15, textAnchor: "middle", fontSize: 10, fill: C.grayDark, fontFamily: FONT}, `${sm} ${p.d}`)
+      ))
+    )
+  );
 }
+
 function CalendarGrid(_ref0) {
   let data = _ref0.data,
     goal = _ref0.goal,
@@ -1168,8 +1153,12 @@ function PCalendar(_ref1) {
     _ref1$hib = _ref1.hib,
     hib = _ref1$hib === void 0 ? true : _ref1$hib,
     _ref1$weekendSet = _ref1.weekendSet,
-    weekendSet = _ref1$weekendSet === void 0 ? MARCH_WEEKENDS : _ref1$weekendSet;
+    weekendSet = _ref1$weekendSet === void 0 ? MARCH_WEEKENDS : _ref1$weekendSet,
+    _ref1$fmt = _ref1.fmt,
+    fmt = _ref1$fmt === void 0 ? "pct" : _ref1$fmt;
   const isWeekend = d => weekendSet.has(d);
+  const fmtCellVal = v => fmt === "score" ? `${Number.isInteger(v) ? v : v.toFixed(1)}/${goal}` : pct(v);
+  const fmtTitle = (d, v) => fmt === "score" ? `Day ${d}: ${Number.isInteger(v) ? v : v.toFixed(1)} / ${goal}` : `Day ${d}: ${pct(v)}`;
   const ROWS = 6,
     COLS = 7;
   const inP = (r, c) => {
@@ -1238,7 +1227,7 @@ function PCalendar(_ref1) {
     const txt = iw ? C.grayDark : hd ? C.white : C.darkBlue;
     return /*#__PURE__*/React.createElement("div", {
       key: k,
-      title: hd ? `Mar ${d}: ${pct(v)}` : iw ? "Weekend" : "No data",
+      title: hd ? fmtTitle(d, v) : iw ? "Weekend" : "No data",
       style: {
         width: CE,
         height: CE,
@@ -1263,7 +1252,7 @@ function PCalendar(_ref1) {
         color: C.white,
         lineHeight: 1.3
       }
-    }, pct(v)), iw && /*#__PURE__*/React.createElement("span", {
+    }, fmtCellVal(v)), iw && /*#__PURE__*/React.createElement("span", {
       style: {
         fontSize: 7.5,
         color: C.grayDark
@@ -1394,6 +1383,63 @@ function DCalendar(_ref11) {
     }
   }, "31 days \xB7 weekends grayed"));
 }
+function OCalendar(_ref_o) {
+  let data = _ref_o.data,
+    goal = _ref_o.goal,
+    _ref_o$hib = _ref_o.hib,
+    hib = _ref_o$hib === void 0 ? true : _ref_o$hib,
+    _ref_o$weekendSet = _ref_o.weekendSet,
+    weekendSet = _ref_o$weekendSet === void 0 ? MARCH_WEEKENDS : _ref_o$weekendSet;
+  const isWeekend = d => weekendSet.has(d);
+  const ROWS = 5, COLS = 7;
+  // O shape: cells on outer border only, hollow inside (rows 1-3, cols 1-5 are hollow)
+  const inO = (r, c) => {
+    if (r === 0 || r === ROWS - 1) return true; // top and bottom rows
+    if (c === 0 || c === COLS - 1) return true;  // left and right columns
+    return false;
+  };
+  const cells = [];
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (inO(r, c)) cells.push({r, c});
+  const dayMap = {};
+  cells.forEach(({r, c}, i) => { dayMap[`${r}-${c}`] = i + 1; });
+  const CE = 42, G = 5;
+  return React.createElement('div', {style: {display: 'inline-block'}},
+    React.createElement('div', {
+      style: {
+        display: 'grid',
+        gridTemplateColumns: `repeat(${COLS}, ${CE}px)`,
+        gridTemplateRows: `repeat(${ROWS}, ${CE}px)`,
+        gap: G
+      }
+    },
+      Array.from({length: ROWS}, (_, r) =>
+        Array.from({length: COLS}, (_, c) => {
+          const key = `${r}-${c}`;
+          if (!inO(r, c)) return React.createElement('div', {key, style: {width: CE, height: CE}});
+          const d = dayMap[key];
+          if (!d || d > 31) return React.createElement('div', {key, style: {width: CE, height: CE, background: C.blueLight, borderRadius: 5, opacity: 0.3}});
+          const iw = isWeekend(d);
+          const v = data[d];
+          const hd = v != null;
+          const hit = hd && (hib ? v >= goal : v <= goal);
+          const bg = iw ? C.gray : hd ? (hit ? C.green : C.red) : C.blueLight;
+          const txt = iw ? C.grayDark : hd ? C.white : C.darkBlue;
+          return React.createElement('div', {
+            key,
+            title: hd ? `Day ${d}: ${hib ? (v*100).toFixed(1)+'%' : v+'d'}` : iw ? 'Weekend' : 'No data',
+            style: {width: CE, height: CE, borderRadius: 5, background: bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', fontFamily: FONT}
+          },
+            React.createElement('span', {style: {fontSize: 11, color: txt, fontWeight: 700, lineHeight: 1}}, d),
+            hd && !iw && React.createElement('span', {style: {fontSize: 8.5, color: C.white, lineHeight: 1.3}}, `${v}d`)
+          );
+        })
+      ).flat()
+    ),
+    React.createElement('div', {style: {marginTop: 6, fontSize: 11, color: C.grayDark, fontFamily: FONT, fontStyle: 'italic'}}, '31 days · weekends grayed')
+  );
+}
+
+
 function MetricCard(_ref13) {
   let id = _ref13.id,
     metric = _ref13.metric,
@@ -1485,7 +1531,7 @@ function MetricCard(_ref13) {
       color: perfColor(hit),
       fontWeight: 700
     }
-  }, hasData ? (hit ? "▲ +" : "▼ ") + (Math.abs(gap) * 100).toFixed(2) + "pp" : "—")));
+  }, hasData ? (hit ? "▲ +" : "▼ ") + (METRIC_DEFS[id] && METRIC_DEFS[id].fmt === "score" ? Math.abs(gap).toFixed(2) + " pts" : (Math.abs(gap) * 100).toFixed(2) + "pp") : "—")));
 }
 function Card(_ref14) {
   let title = _ref14.title,
@@ -1532,6 +1578,7 @@ function TrendView(_ref15) {
   const hmd = ["January", "February", "March", "April", "May", "June"].includes(sel);
   const useP = ["OT", "Scanning", "POD", "Call", "Shortages", "Preschedule", "CES", "RNS"].includes(metricId);
   const useD = metricId === "COT";
+  const useO = metricId === "Dwell";
   return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Card, {
     title: "Monthly Performance"
   }, /*#__PURE__*/React.createElement("div", {
@@ -1625,15 +1672,21 @@ function TrendView(_ref15) {
       padding: "16px 0"
     }
   }, "No data for ", sel, ".")), /*#__PURE__*/React.createElement(Card, {
-    title: useP ? `Calendar — "P" Shape (March 2026)` : useD ? `Calendar — "D" Shape (March 2026)` : `Calendar — ${sel} 2026`
+    title: useP ? `Calendar — "P" Shape (March 2026)` : useD ? `Calendar — "D" Shape (March 2026)` : useO ? `Calendar — "O" Shape (${sel} 2026)` : `Calendar — ${sel} 2026`
   }, useP ? /*#__PURE__*/React.createElement(PCalendar, {
     data: td,
     goal: metric.goal,
     hib: hib,
-    weekendSet: weekendSet
+    weekendSet: weekendSet,
+    fmt: metric.fmt || "pct"
   }) : useD ? /*#__PURE__*/React.createElement(DCalendar, {
     data: td,
     goal: metric.goal,
+    weekendSet: weekendSet
+  }) : useO ? /*#__PURE__*/React.createElement(OCalendar, {
+    data: td,
+    goal: metric.goal,
+    hib: hib,
     weekendSet: weekendSet
   }) : hmd ? /*#__PURE__*/React.createElement(CalendarGrid, {
     data: td,
@@ -3987,7 +4040,7 @@ function RegionDashboard(_ref35) {
         fontWeight: 700,
         color: col ? perfColor(hit) : C.darkBlue
       }
-    }, v == null ? "—" : ig ? `${(hib ? v >= 0 : v <= 0) ? "+" : ""}${(Math.abs(v) * 100).toFixed(2)}pp` : fmtM(sm, v)));
+    }, v == null ? "—" : ig ? (METRIC_DEFS[sm] && METRIC_DEFS[sm].fmt === "score" ? `${(hib ? v >= 0 : v <= 0) ? "+" : ""}${Math.abs(v).toFixed(2)} pts` : `${(hib ? v >= 0 : v <= 0) ? "+" : ""}${(Math.abs(v) * 100).toFixed(2)}pp`) : fmtM(sm, v)));
   }))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
