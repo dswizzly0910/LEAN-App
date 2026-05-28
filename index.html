@@ -3877,15 +3877,7 @@ function RegionDashboard(_ref35) {
     regionKey = _ref35.regionKey,
     sheetsData = _ref35.sheetsData,
     _ref35$refreshKey = _ref35.refreshKey,
-    refreshKey = _ref35$refreshKey === void 0 ? 0 : _ref35$refreshKey,
-    _ref35$globalPs = _ref35.globalPs,
-    globalPs = _ref35$globalPs === void 0 ? {} : _ref35$globalPs,
-    _ref35$setGlobalPs = _ref35.setGlobalPs,
-    setGlobalPs = _ref35$setGlobalPs === void 0 ? () => {} : _ref35$setGlobalPs,
-    _ref35$globalCl = _ref35.globalCl,
-    globalCl = _ref35$globalCl === void 0 ? {} : _ref35$globalCl,
-    _ref35$setGlobalCl = _ref35.setGlobalCl,
-    setGlobalCl = _ref35$setGlobalCl === void 0 ? () => {} : _ref35$setGlobalCl;
+    refreshKey = _ref35$refreshKey === void 0 ? 0 : _ref35$refreshKey;
   const m = applySheetData(region.metrics, regionKey, sheetsData);
   const fk = Object.keys(m)[0];
   const isConfigured = SHEETS_CONFIG.WEB_APP_URL && !SHEETS_CONFIG.WEB_APP_URL.includes("YOUR_APPS");
@@ -3897,15 +3889,14 @@ function RegionDashboard(_ref35) {
     _useState42 = _slicedToArray(_useState41, 2),
     tab = _useState42[0],
     setTab = _useState42[1];
-  // Reset selected metric and tab when region changes
-  React.useEffect(() => { setSm(fk); setTab("trend"); }, [regionKey]);
-  // Use globalPs for persistence across navigation, fall back to local init
-  const initPs = () => globalPs[regionKey] || Object.fromEntries(Object.keys(m).map(k => [k, [Object.fromEntries(Object.keys(m[k].pareto || {}).map(r => [r, 0]))]]));
-  const ps = globalPs[regionKey] || initPs();
-  const setPs = v => setGlobalPs(prev => ({...prev, [regionKey]: typeof v === 'function' ? v(prev[regionKey] || initPs()) : v}));
-  // Use globalCl for persistence across navigation
-  const cl = globalCl[regionKey] || Object.fromEntries(Object.keys(m).map(k => [k, m[k].ciLog || []]));
-  const setCl = v => setGlobalCl(prev => ({...prev, [regionKey]: typeof v === 'function' ? v(prev[regionKey] || Object.fromEntries(Object.keys(m).map(k => [k, m[k].ciLog || []]))) : v}));
+  const _useState43 = useState(Object.fromEntries(Object.keys(m).map(k => [k, [Object.fromEntries(Object.keys(m[k].pareto || {}).map(r => [r, 0]))]]))),
+    _useState44 = _slicedToArray(_useState43, 2),
+    ps = _useState44[0],
+    setPs = _useState44[1];
+  const _useState45 = useState(Object.fromEntries(Object.keys(m).map(k => [k, m[k].ciLog || []]))),
+    _useState46 = _slicedToArray(_useState45, 2),
+    cl = _useState46[0],
+    setCl = _useState46[1];
   const _useState47 = useState(false),
     _useState48 = _slicedToArray(_useState47, 2),
     sheetsSaving = _useState48[0],
@@ -5336,14 +5327,6 @@ function App() {
     _React$useState6 = _slicedToArray(_React$useState5, 2),
     refreshKey = _React$useState6[0],
     setRefreshKey = _React$useState6[1]; // incremented on each refresh to signal children
-  const _React$useStatePs = React.useState({}),
-    _React$useStatePs2 = _slicedToArray(_React$useStatePs, 2),
-    globalPs = _React$useStatePs2[0],
-    setGlobalPs = _React$useStatePs2[1];
-  const _React$useStateCl = React.useState({}),
-    _React$useStateCl2 = _slicedToArray(_React$useStateCl, 2),
-    globalCl = _React$useStateCl2[0],
-    setGlobalCl = _React$useStateCl2[1];
   const isConfigured = SHEETS_CONFIG.WEB_APP_URL && !SHEETS_CONFIG.WEB_APP_URL.includes("YOUR_APPS");
   const refreshingRef = React.useRef(false);
   const loadFromSheets = React.useCallback(async () => {
@@ -5575,14 +5558,11 @@ function App() {
   }) : view === "trends" ? /*#__PURE__*/React.createElement(TrendsView, {
     sheetsData: sheetsData
   }) : REGIONS[view] && /*#__PURE__*/React.createElement(RegionDashboard, {
+    key: view,
     region: REGIONS[view],
     regionKey: view,
     sheetsData: sheetsData,
-    refreshKey: refreshKey,
-    globalPs: globalPs,
-    setGlobalPs: setGlobalPs,
-    globalCl: globalCl,
-    setGlobalCl: setGlobalCl
+    refreshKey: refreshKey
   })));
 }
 ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(App, null));
