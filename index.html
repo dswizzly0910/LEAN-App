@@ -1584,13 +1584,13 @@ function Card(_ref14) {
 function TrendView(_ref15) {
   let metric = _ref15.metric,
     metricId = _ref15.metricId;
-  const _useState = useState("March"),
+  const _useState = useState("May"),
     _useState2 = _slicedToArray(_useState, 2),
     sel = _useState2[0],
     setSel = _useState2[1];
   const hib = metric.hib ?? true;
   const monthTrendKey = sel.toLowerCase() + 'Trend';
-  const td = metric[monthTrendKey] || (sel === "March" ? metric.dailyTrend : {});
+  const td = metric[monthTrendKey] || (sel === "March" ? (metric.marchTrend || metric.dailyTrend || {}) : {});
   const _getMonthInfo2 = getMonthInfo(sel, 2026),
     weekendSet = _getMonthInfo2.weekendSet,
     daysInMonth = _getMonthInfo2.daysInMonth;
@@ -3861,8 +3861,9 @@ function applySheetData(metrics, regionKey, sheetsData) {
         const hasMonthKeys = monthKeys.some(k => trend[k]);
         if (hasMonthKeys) {
           monthKeys.forEach(k => { if (trend[k]) merged[k] = {...(metric[k]||{}), ...trend[k]}; });
-          // Also merge marchTrend into dailyTrend for current month display
+          // Also merge current month trend into dailyTrend for backwards compat
           if (trend.marchTrend) merged.dailyTrend = {...metric.dailyTrend, ...trend.marchTrend};
+          if (trend.mayTrend) merged.dailyTrend = {...(merged.dailyTrend||metric.dailyTrend||{}), ...trend.mayTrend};
         } else {
           // Legacy flat format — goes into dailyTrend (March)
           merged.dailyTrend = {...metric.dailyTrend, ...trend};
