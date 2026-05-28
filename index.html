@@ -4127,20 +4127,26 @@ function RegionDashboard(_ref35) {
 
 // Last 4 weeks of daily trend day buckets
 const WEEKS = [{
-  label: "Wk of 4/7",
-  days: [3, 4, 5, 6]
-}, {
-  label: "Wk of 4/14",
-  days: [10, 11, 12, 13]
-}, {
-  label: "Wk of 4/21",
-  days: [17, 18, 19, 20]
-}, {
   label: "Wk of 5/4",
-  days: [24, 25, 26, 27]
+  days: [4, 5, 6, 7, 8],
+  month: "May"
+}, {
+  label: "Wk of 5/11",
+  days: [11, 12, 13, 14, 15],
+  month: "May"
+}, {
+  label: "Wk of 5/18",
+  days: [18, 19, 20, 21, 22],
+  month: "May"
+}, {
+  label: "Wk of 5/25",
+  days: [25, 26, 27, 28, 29],
+  month: "May"
 }];
-function weekAvgForDays(metric, days) {
-  const vals = days.map(d => metric.dailyTrend[d]).filter(v => v != null);
+function weekAvgForDays(metric, days, month) {
+  const trendKey = month ? month.toLowerCase() + 'Trend' : 'dailyTrend';
+  const td = metric[trendKey] || metric.dailyTrend || {};
+  const vals = days.map(d => td[d]).filter(v => v != null);
   if (!vals.length) return null;
   return vals.reduce((s, v) => s + v, 0) / vals.length;
 }
@@ -4238,7 +4244,7 @@ function TrendsView(_ref40) {
         region = _ref45[1];
       REGION_METRIC_KEYS[rk].forEach(mk => {
         const metric = region.metrics[mk];
-        const v = weekAvgForDays(metric, w.days);
+        const v = weekAvgForDays(metric, w.days, w.month);
         if (v != null) {
           total += normScore(mk, v);
           count++;
@@ -4406,7 +4412,7 @@ function TrendsView(_ref40) {
       rk = _ref47[0],
       region = _ref47[1];
     const wkScores = WEEKS.map(w => {
-      const vals = REGION_METRIC_KEYS[rk].map(mk => normScore(mk, weekAvgForDays(region.metrics[mk], w.days) ?? weeklyAvg(region.metrics[mk]))).filter(v => v != null);
+      const vals = REGION_METRIC_KEYS[rk].map(mk => normScore(mk, weekAvgForDays(region.metrics[mk], w.days, w.month) ?? weeklyAvg(region.metrics[mk]))).filter(v => v != null);
       return vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
     });
     return /*#__PURE__*/React.createElement("tr", {
@@ -4599,7 +4605,7 @@ function TrendsView(_ref40) {
     }, "Target"))), /*#__PURE__*/React.createElement("tbody", null, mks.map((mk, mki) => {
       const metric = region.metrics[mk];
       const d = METRIC_DEFS[mk];
-      const wv = WEEKS.map(w => weekAvgForDays(metric, w.days));
+      const wv = WEEKS.map(w => weekAvgForDays(metric, w.days, w.month));
       const rowBg = mki % 2 === 0 ? C.white : C.offWhite;
       return /*#__PURE__*/React.createElement("tr", {
         key: mk,
@@ -4759,7 +4765,7 @@ function TrendsView(_ref40) {
         rk = _ref53[0],
         region = _ref53[1];
       const metric = region.metrics[mk];
-      const wv = WEEKS.map(w => weekAvgForDays(metric, w.days));
+      const wv = WEEKS.map(w => weekAvgForDays(metric, w.days, w.month));
       return /*#__PURE__*/React.createElement("tr", {
         key: rk,
         style: {
