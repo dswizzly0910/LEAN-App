@@ -1777,18 +1777,10 @@ function ParetoView(_ref20) {
     ...a,
     [k]: 0
   }), {});
-  const _useState1 = useState({
-      ...sv
-    }),
-    _useState10 = _slicedToArray(_useState1, 2),
-    dr = _useState10[0],
-    setDr = _useState10[1];
-  // Sync dr with ps whenever ps changes (e.g. after navigation or sheet refresh)
-  React.useEffect(() => {
-    if (ps[0] && Object.keys(ps[0]).length > 0) {
-      setDr({...ps[0]});
-    }
-  }, [ps]);
+  // dr is derived from ps[0] — no separate local state needed
+  const dr = ps[0] || sv;
+  const setDr = newVals => setPs(p => [{...p[0], ...(typeof newVals === 'function' ? newVals(p[0]||sv) : newVals)}]);
+
   const _useState11 = useState(false),
     _useState12 = _slicedToArray(_useState11, 2),
     msg = _useState12[0],
