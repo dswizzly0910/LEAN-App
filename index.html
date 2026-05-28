@@ -5351,12 +5351,37 @@ function App() {
     setSheetsStatus("loading");
     console.log('[CDS] Starting refresh...');
     try {
-      const _await$Promise$all3 = await Promise.all([loadKPIMetrics(), loadDailyTrends(), loadOrders('all')]),
-        _await$Promise$all4 = _slicedToArray(_await$Promise$all3, 3),
-        kpiData = _await$Promise$all4[0],
-        trendData = _await$Promise$all4[1],
-        ordersData = _await$Promise$all4[2];
-      console.log('[CDS] Refresh complete — KPI:', !!kpiData, 'Trends:', !!trendData, 'Orders:', ordersData ? ordersData.length : 0);
+      // Build all pareto fetch promises for all regions/metrics
+      const allParetoPromises = [];
+      const allParetoKeys = [];
+      Object.entries(REGIONS).forEach(([rk, region]) => {
+        Object.keys(region.metrics).forEach(mk => {
+          allParetoPromises.push(loadPareto(rk, mk));
+          allParetoKeys.push([rk, mk]);
+        });
+      });
+      const allResults = await Promise.all([loadKPIMetrics(), loadDailyTrends(), loadOrders('all'), ...allParetoPromises]);
+      const kpiData = allResults[0], trendData = allResults[1], ordersData = allResults[2];
+      const paretoResults = allResults.slice(3);
+      // Merge pareto into globalPs
+      const newGlobalPs = {};
+      allParetoKeys.forEach(([rk, mk], i) => {
+        const pd = paretoResults[i];
+        if (pd && Object.keys(pd).length > 0) {
+          if (!newGlobalPs[rk]) newGlobalPs[rk] = {};
+          newGlobalPs[rk][mk] = [pd];
+        }
+      });
+      if (Object.keys(newGlobalPs).length > 0) {
+        setGlobalPs(prev => {
+          const merged = {...prev};
+          Object.entries(newGlobalPs).forEach(([rk, metrics]) => {
+            merged[rk] = {...(prev[rk]||{}), ...metrics};
+          });
+          return merged;
+        });
+      }
+      console.log('[CDS] Refresh complete — KPI:', !!kpiData, 'Trends:', !!trendData, 'Orders:', ordersData ? ordersData.length : 0, 'Pareto:', Object.keys(newGlobalPs).length, 'regions');
       if (kpiData || trendData || ordersData) {
         setSheetsData({
           kpi: kpiData,
