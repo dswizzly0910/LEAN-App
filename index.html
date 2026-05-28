@@ -971,7 +971,9 @@ function MiniChart(_ref9) {
     monthLabel = _ref9.monthLabel,
     daysInMonth = _ref9.daysInMonth,
     _ref9$hib = _ref9.hib,
-    hib = _ref9$hib === void 0 ? true : _ref9$hib;
+    hib = _ref9$hib === void 0 ? true : _ref9$hib,
+    _ref9$fmt = _ref9.fmt,
+    fmt = _ref9$fmt === void 0 ? "pct" : _ref9$fmt;
   const [hovered, setHovered] = useState(null); // {d, v, cx, cy}
   const days = Array.from({length: daysInMonth}, (_, i) => i + 1).filter(d => !weekendSet.has(d));
   const pts = days.filter(d => data[d] != null).map(d => ({d, v: data[d]}));
@@ -991,9 +993,9 @@ function MiniChart(_ref9) {
   const isScore = goal > 1 && goal <= 10 && !Number.isInteger(goal * 10) === false;
   const fmtVal = v => {
     if (v == null) return "—";
-    if (goal > 1 && goal <= 10) return `${Number.isInteger(v) ? v : v.toFixed(1)} / 5`; // score format — always out of 5
-    if (hib || goal <= 1) return `${(v * 100).toFixed(1)}%`;
-    return `${parseFloat(v).toFixed(2)}d`;
+    if (fmt === "score") return `${Number.isInteger(v) ? v : v.toFixed(1)} / 5`;
+    if (fmt === "num") return `${parseFloat(v).toFixed(2)}d`;
+    return `${(v * 100).toFixed(1)}%`;
   };
 
   // Tooltip position: flip to left side if near right edge
@@ -1652,7 +1654,8 @@ function TrendView(_ref15) {
     weekendSet: weekendSet,
     monthLabel: sel,
     daysInMonth: daysInMonth,
-    hib: hib
+    hib: hib,
+    fmt: metric.fmt
   }), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
