@@ -1783,6 +1783,12 @@ function ParetoView(_ref20) {
     _useState10 = _slicedToArray(_useState1, 2),
     dr = _useState10[0],
     setDr = _useState10[1];
+  // Sync dr with ps whenever ps changes (e.g. after navigation or sheet refresh)
+  React.useEffect(() => {
+    if (ps[0] && Object.keys(ps[0]).length > 0) {
+      setDr({...ps[0]});
+    }
+  }, [ps]);
   const _useState11 = useState(false),
     _useState12 = _slicedToArray(_useState11, 2),
     msg = _useState12[0],
