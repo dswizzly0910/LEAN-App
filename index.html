@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CDS Daily Management — March 2026</title>
+<title>CDS Daily Management</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body, #root { height: 100%; }
@@ -271,11 +271,7 @@ function SheetsStatus(_ref7) {
     disabled: refreshing,
     title: "Refresh data from Google Sheet",
     style: btnStyle
-  }, refreshing ? "…" : "↻ Refresh"), status === "connected" && onExport && /*#__PURE__*/React.createElement("button", {
-    onClick: onExport,
-    title: "Export current data to Google Sheet",
-    style: btnStyle
-  }, "\u2191 Export to Sheet"));
+  }, refreshing ? "…" : "↻ Refresh"));
 }
 const C = {
   darkBlue: "#002f56",
@@ -1554,7 +1550,7 @@ function MetricCard(_ref13) {
       color: perfColor(hit),
       fontWeight: 700
     }
-  }, hasData ? (hit ? "▲ +" : "▼ ") + (METRIC_DEFS[id] && METRIC_DEFS[id].fmt === "score" ? Math.abs(gap).toFixed(2) + " pts" : (Math.abs(gap) * 100).toFixed(2) + "pp") : "—")));
+  }, hasData ? (() => { const sign = hit ? "▲ +" : "▼ "; const def = METRIC_DEFS[id]; if (def && def.fmt === "score") return sign + Math.abs(gap).toFixed(2) + " pts"; if (def && def.fmt === "num") return sign + Math.abs(gap).toFixed(2) + "d"; return sign + (Math.abs(gap) * 100).toFixed(2) + "pp"; })() : "—")));
 }
 function Card(_ref14) {
   let title = _ref14.title,
@@ -1706,7 +1702,7 @@ function TrendView(_ref15) {
       padding: "16px 0"
     }
   }, "No data for ", sel, ".")), /*#__PURE__*/React.createElement(Card, {
-    title: useP ? `Calendar — "P" Shape (March 2026)` : useD ? `Calendar — "D" Shape (March 2026)` : useO ? `Calendar — "O" Shape (${sel} 2026)` : `Calendar — ${sel} 2026`
+    title: useP ? `Calendar — "P" Shape (${sel} 2026)` : useD ? `Calendar — "D" Shape (${sel} 2026)` : useO ? `Calendar — "O" Shape (${sel} 2026)` : `Calendar — ${sel} 2026`
   }, useP ? /*#__PURE__*/React.createElement(PCalendar, {
     data: td,
     goal: metric.goal,
@@ -3447,7 +3443,7 @@ function DataView(_ref25) {
   let metricId = _ref25.metricId,
     regionKey = _ref25.regionKey,
     sheetsOrders = _ref25.sheetsOrders;
-  const _useState27 = useState("All"),
+  const _useState27 = useState("Failure"),
     _useState28 = _slicedToArray(_useState27, 2),
     filterStatus = _useState28[0],
     setFilterStatus = _useState28[1];
@@ -4094,7 +4090,13 @@ function RegionDashboard(_ref35) {
         fontWeight: 700,
         color: col ? perfColor(hit) : C.darkBlue
       }
-    }, v == null ? "—" : ig ? (METRIC_DEFS[sm] && METRIC_DEFS[sm].fmt === "score" ? `${(hib ? v >= 0 : v <= 0) ? "+" : ""}${Math.abs(v).toFixed(2)} pts` : `${(hib ? v >= 0 : v <= 0) ? "+" : ""}${(Math.abs(v) * 100).toFixed(2)}pp`) : fmtM(sm, v)));
+    }, v == null ? "—" : ig ? (() => {
+        const sign = (hib ? v >= 0 : v <= 0) ? "+" : "";
+        const def = METRIC_DEFS[sm];
+        if (def && def.fmt === "score") return `${sign}${Math.abs(v).toFixed(2)} pts`;
+        if (def && def.fmt === "num")   return `${sign}${Math.abs(v).toFixed(2)}d`;
+        return `${sign}${(Math.abs(v) * 100).toFixed(2)}pp`;
+      })() : fmtM(sm, v)));
   }))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -5497,7 +5499,7 @@ function App() {
       fontWeight: 700,
       color: C.white
     }
-  }, "March 2026 Performance Dashboard"))), /*#__PURE__*/React.createElement("div", {
+  }, `${new Date().toLocaleString("en-US", {month:"long"})} ${new Date().getFullYear()} Performance Dashboard`))), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 3,
@@ -5509,7 +5511,7 @@ function App() {
     refreshing: refreshing,
     lastRefresh: lastRefresh,
     onRefresh: isConfigured ? loadFromSheets : null,
-    onExport: sheetsConnected ? () => exportAllToSheet(REGIONS, SAMPLE_DATA).then(() => alert("✅ Data exported to Google Sheet!")).catch(e => alert("❌ Export failed: " + (e && e.message || String(e)))) : null
+    
   }), /*#__PURE__*/React.createElement("button", {
     onClick: () => setView("summary"),
     style: {
