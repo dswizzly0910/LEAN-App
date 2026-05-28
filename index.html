@@ -4873,7 +4873,13 @@ function SummaryView(_ref54) {
       fontWeight: 700,
       color: C.darkBlue
     }
-  }, "Weekly Summary \u2014 Week of 5/4"), /*#__PURE__*/React.createElement("div", {
+  }, (() => {
+    const now = new Date();
+    const day = now.getDay(); // 0=Sun, 1=Mon...
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - (day === 0 ? 6 : day - 1));
+    return `Weekly Summary — Week of ${monday.getMonth()+1}/${monday.getDate()}`;
+  })()), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: C.grayDark,
@@ -5335,7 +5341,7 @@ function SummaryView(_ref54) {
           borderBottom: `1px solid ${C.gray}`,
           fontFamily: FONT
         }
-      }, gap >= 0 ? "+" : "", (gap * 100).toFixed(2), "pp"));
+      }, gap >= 0 ? "+" : "", (() => { if (d.fmt === "score") return Math.abs(gap).toFixed(2) + " pts"; if (d.fmt === "num") return Math.abs(gap).toFixed(2) + "d"; return (gap * 100).toFixed(2) + "pp"; })()));
     }))));
   })));
 }
