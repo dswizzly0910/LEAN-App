@@ -3499,11 +3499,16 @@ function DataView(_ref25) {
   const allDates = normalised.map(r => r._date).filter(Boolean).sort();
   const dateMin = allDates[0] || "2026-01-01";
   const dateMax = allDates[allDates.length - 1] || "2026-12-31";
-  const _useState35 = useState(""),
+  // Default to current month range
+  const _now = new Date();
+  const _monthStart = `${_now.getFullYear()}-${String(_now.getMonth()+1).padStart(2,'0')}-01`;
+  const _lastDay = new Date(_now.getFullYear(), _now.getMonth()+1, 0).getDate();
+  const _monthEnd = `${_now.getFullYear()}-${String(_now.getMonth()+1).padStart(2,'0')}-${String(_lastDay).padStart(2,'0')}`;
+  const _useState35 = useState(_monthStart),
     _useState36 = _slicedToArray(_useState35, 2),
     dateFrom = _useState36[0],
     setDateFrom = _useState36[1];
-  const _useState37 = useState(""),
+  const _useState37 = useState(_monthEnd),
     _useState38 = _slicedToArray(_useState37, 2),
     dateTo = _useState38[0],
     setDateTo = _useState38[1];
