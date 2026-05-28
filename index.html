@@ -973,14 +973,18 @@ function MiniChart(_ref9) {
     _ref9$hib = _ref9.hib,
     hib = _ref9$hib === void 0 ? true : _ref9$hib,
     _ref9$fmt = _ref9.fmt,
-    fmt = _ref9$fmt === void 0 ? "pct" : _ref9$fmt;
+    fmt = _ref9$fmt === void 0 ? "pct" : _ref9$fmt,
+    _ref9$globalMin = _ref9.globalMin,
+    globalMin = _ref9$globalMin === void 0 ? null : _ref9$globalMin,
+    _ref9$globalMax = _ref9.globalMax,
+    globalMax = _ref9$globalMax === void 0 ? null : _ref9$globalMax;
   const [hovered, setHovered] = useState(null); // {d, v, cx, cy}
   const days = Array.from({length: daysInMonth}, (_, i) => i + 1).filter(d => !weekendSet.has(d));
   const pts = days.filter(d => data[d] != null).map(d => ({d, v: data[d]}));
   if (!pts.length) return React.createElement("div", {style: {color: C.grayDark, fontSize: 13, padding: "20px 0", fontFamily: FONT}}, "No data for ", monthLabel);
   const allV = pts.map(p => p.v);
-  const mn = Math.min(hib ? goal - 0.06 : 0, ...allV);
-  const mx = Math.max(hib ? 1.005 : goal * 1.5, ...allV);
+  const mn = globalMin !== null ? globalMin : Math.min(hib ? goal - 0.06 : 0, ...allV);
+  const mx = globalMax !== null ? globalMax : Math.max(hib ? 1.005 : goal * 1.5, ...allV);
   const rng = mx - mn || 0.01;
   const W = 460, H = 130, PL = 42, PR = 52, PT = 12, PB = 28;
   const x = d => PL + (d - 1) / (daysInMonth - 1) * (W - PL - PR);
@@ -1648,15 +1652,25 @@ function TrendView(_ref15) {
     }, impr ? "↑" : "↓"));
   }))), /*#__PURE__*/React.createElement(Card, {
     title: `${sel} 2026 — Daily Trend`
-  }, hmd ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(MiniChart, {
-    data: td,
-    goal: metric.goal,
-    weekendSet: weekendSet,
-    monthLabel: sel,
-    daysInMonth: daysInMonth,
-    hib: hib,
-    fmt: metric.fmt
-  }), /*#__PURE__*/React.createElement("div", {
+  }, hmd ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/(() => {
+    // Calculate consistent Y-axis range across all months
+    const allMonthKeys = ['januaryTrend','februaryTrend','marchTrend','aprilTrend','mayTrend','juneTrend','dailyTrend'];
+    const allVals = allMonthKeys.flatMap(k => Object.values(metric[k] || {})).filter(v => v != null);
+    const hib = metric.hib ?? true;
+    const gMin = allVals.length ? Math.min(hib ? metric.goal - 0.06 : 0, ...allVals) : null;
+    const gMax = allVals.length ? Math.max(hib ? 1.005 : metric.goal * 1.5, ...allVals) : null;
+    return React.createElement(MiniChart, {
+      data: td,
+      goal: metric.goal,
+      weekendSet: weekendSet,
+      monthLabel: sel,
+      daysInMonth: daysInMonth,
+      hib: hib,
+      fmt: metric.fmt,
+      globalMin: gMin,
+      globalMax: gMax
+    });
+  })(), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
       gap: 16,
