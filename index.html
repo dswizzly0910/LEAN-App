@@ -1768,467 +1768,303 @@ function ParetoView(_ref20) {
   let metric = _ref20.metric,
     ps = _ref20.ps,
     setPs = _ref20.setPs;
-  const _useState3 = useState([]),
-    _useState4 = _slicedToArray(_useState3, 2),
-    customCodes = _useState4[0],
-    setCustomCodes = _useState4[1];
-  const _useState5 = useState([]),
-    _useState6 = _slicedToArray(_useState5, 2),
-    removedBuiltIn = _useState6[0],
-    setRemovedBuiltIn = _useState6[1];
-  const _useState7 = useState(""),
-    _useState8 = _slicedToArray(_useState7, 2),
-    newCode = _useState8[0],
-    setNewCode = _useState8[1];
-  const _useState9 = useState(""),
-    _useState0 = _slicedToArray(_useState9, 2),
-    addMsg = _useState0[0],
-    setAddMsg = _useState0[1];
+
+  const MONTHS_LIST = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const now = new Date();
+  const currentMonth = MONTHS_LIST[now.getMonth()];
+  const currentMonthShort = now.toLocaleString('en-US',{month:'short'});
+
+  // Tab state: MTD, YTD, or a specific month name
+  const _useStateTab = React.useState('MTD'),
+    _useStateTab2 = _slicedToArray(_useStateTab, 2),
+    paretoTab = _useStateTab2[0],
+    setParetoTab = _useStateTab2[1];
+
+  // Month tab state for Last 6 Months
+  const prevMonth = MONTHS_LIST[now.getMonth() === 0 ? 11 : now.getMonth() - 1];
+  const _useStateMonthTab = React.useState(prevMonth),
+    _useStateMonthTab2 = _slicedToArray(_useStateMonthTab, 2),
+    selectedMonth = _useStateMonthTab2[0],
+    setSelectedMonth = _useStateMonthTab2[1];
+
+  // ps structure: {MTD: [{code:count}], Jan: [{...}], Feb: [{...}], ...}
+  // For backwards compat, if ps is an array treat it as MTD data
+  const psObj = (() => {
+    if (!ps) return {};
+    if (Array.isArray(ps) && ps.length > 0 && typeof ps[0] === 'object' && !Array.isArray(ps[0])) {
+      const first = ps[0];
+      const monthKeys = ['January','February','March','April','May','June','July','August','September','October','November','December','YTD','MTD'];
+      if (first && monthKeys.some(k => k in first)) return first;
+      return {MTD: ps};
+    }
+    if (Array.isArray(ps)) return {MTD: ps};
+    return ps;
+  })();
+
+  // Get counts for a given tab key
+  const getTabData = (tabKey) => {
+    const d = psObj[tabKey];
+    if (!d) return {};
+    return Array.isArray(d) ? (d[0] || {}) : d;
+  };
+
+  // Compute YTD = sum of all monthly data
+  const ytdData = {};
+  MONTHS_LIST.forEach(mo => {
+    const d = getTabData(mo);
+    Object.entries(d).forEach(([code, cnt]) => {
+      ytdData[code] = (ytdData[code] || 0) + (parseInt(cnt) || 0);
+    });
+  });
+
+  // Active data depends on tab
+  const activeData = paretoTab === 'YTD' ? ytdData
+    : paretoTab === 'Months' ? getTabData(selectedMonth)
+    : getTabData(currentMonth);
+
+  // Built-in reason codes from metric definition
   const builtInRs = Object.keys(metric.pareto || {});
-  const rs = [...builtInRs.filter(k => !removedBuiltIn.includes(k)), ...customCodes];
-  const sv = ps[0] || rs.reduce((a, k) => ({
-    ...a,
-    [k]: 0
-  }), {});
-  // dr is derived from ps[0] — no separate local state needed
-  const dr = ps[0] || sv;
-  const setDr = newVals => setPs(p => [{...p[0], ...(typeof newVals === 'function' ? newVals(p[0]||sv) : newVals)}]);
+
+  // Custom codes per tab
+  const customCodesKey = 'customCodes_' + (paretoTab === 'Months' ? selectedMonth : paretoTab === 'MTD' ? currentMonth : paretoTab);
+  const _useStateCC = React.useState({}),
+    _useStateCCtuple = _slicedToArray(_useStateCC, 2),
+    allCustomCodes = _useStateCCtuple[0],
+    setAllCustomCodes = _useStateCCtuple[1];
+
+  // For YTD, collect custom codes from ALL tabs to ensure all codes appear
+  const customCodes = paretoTab === 'YTD'
+    ? [...new Set(Object.values(allCustomCodes).flat())]
+    : allCustomCodes[customCodesKey] || [];
+  const setCustomCodes = (codes) => setAllCustomCodes(prev => ({...prev, [customCodesKey]: typeof codes === 'function' ? codes(prev[customCodesKey]||[]) : codes}));
+
+  const _useStateRB = React.useState({}),
+    _useStateRBtuple = _slicedToArray(_useStateRB, 2),
+    allRemovedBuiltIn = _useStateRBtuple[0],
+    setAllRemovedBuiltIn = _useStateRBtuple[1];
+
+  const removedBuiltIn = allRemovedBuiltIn[customCodesKey] || [];
+  const setRemovedBuiltIn = (codes) => setAllRemovedBuiltIn(prev => ({...prev, [customCodesKey]: typeof codes === 'function' ? codes(prev[customCodesKey]||[]) : codes}));
+
+  // For YTD: derive codes from all data keys (built-in + any custom codes used)
+  const allYtdKeys = paretoTab === 'YTD' ? [...new Set([...builtInRs, ...Object.keys(ytdData)])] : null;
+  const rs = paretoTab === 'YTD'
+    ? allYtdKeys.filter(k => (ytdData[k] || 0) > 0)
+    : [...builtInRs.filter(k => !removedBuiltIn.includes(k)), ...customCodes];
+
+  const sv = {...activeData};
+  rs.forEach(k => { if (sv[k] == null) sv[k] = 0; });
+
+  const _useStateDr = React.useState({...sv}),
+    _useStateDr2 = _slicedToArray(_useStateDr, 2),
+    dr = _useStateDr2[0],
+    setDr = _useStateDr2[1];
+
+  React.useEffect(() => { setDr({...sv}); }, [JSON.stringify(sv)]);
 
   const _useState11 = useState(false),
     _useState12 = _slicedToArray(_useState11, 2),
     msg = _useState12[0],
     setMsg = _useState12[1];
-  const tot = Object.values(sv).reduce((s, v) => s + v, 0);
-  const srt = [...rs].sort((a, b) => (sv[b] || 0) - (sv[a] || 0));
+
+  const _useState7 = useState(""),
+    _useState8 = _slicedToArray(_useState7, 2),
+    newCode = _useState8[0],
+    setNewCode = _useState8[1];
+
+  const _useState9 = useState(""),
+    _useState10 = _slicedToArray(_useState9, 2),
+    addMsg = _useState10[0],
+    setAddMsg = _useState10[1];
+
+  const tot = Object.values(activeData).reduce((s, v) => s + (parseInt(v) || 0), 0);
+  const srt = [...rs].sort((a, b) => (activeData[b] || 0) - (activeData[a] || 0));
   const bc = [C.darkBlue, C.blue, "#5b8db8", "#7aafcf", "#9eb8cc", C.grayDark, "#a0aec0"];
-  const is = {
-    background: C.offWhite,
-    border: `1px solid ${C.gray}`,
-    borderRadius: 5,
-    color: C.darkBlue,
-    padding: "6px 8px",
-    fontSize: 13,
-    width: "100%",
-    boxSizing: "border-box",
-    fontFamily: FONT
-  };
+  const is = {background: C.offWhite, border: `1px solid ${C.gray}`, borderRadius: 5, color: C.darkBlue, padding: "6px 8px", fontSize: 13, width: "100%", boxSizing: "border-box", fontFamily: FONT};
+
+  const getTabKey = () => paretoTab === 'Months' ? selectedMonth : paretoTab === 'MTD' ? currentMonth : paretoTab;
+
   const save = () => {
-    setPs([{
-      ...dr
-    }]);
+    const tabKey = getTabKey();
+    const newPsObj = {...psObj, [tabKey]: {...dr}};
+    setPs([newPsObj]);
     setMsg(true);
     setTimeout(() => setMsg(false), 2000);
   };
+
   const addCode = () => {
     const trimmed = newCode.trim();
     if (!trimmed) return;
-    if (rs.includes(trimmed)) {
-      setAddMsg("Already exists");
-      setTimeout(() => setAddMsg(""), 2000);
-      return;
-    }
+    if (rs.includes(trimmed)) { setAddMsg("Already exists"); setTimeout(() => setAddMsg(""), 2000); return; }
     setCustomCodes(prev => [...prev, trimmed]);
-    setDr(prev => ({
-      ...prev,
-      [trimmed]: 0
-    }));
+    setDr(prev => ({...prev, [trimmed]: 0}));
     setNewCode("");
     setAddMsg("Added!");
     setTimeout(() => setAddMsg(""), 2000);
   };
+
   const removeCode = code => {
-    if (builtInRs.includes(code)) {
-      setRemovedBuiltIn(prev => [...prev, code]);
-    } else {
-      setCustomCodes(prev => prev.filter(c => c !== code));
-    }
-    setDr(prev => {
-      const n = {
-        ...prev
-      };
-      delete n[code];
-      return n;
-    });
-    setPs([Object.fromEntries(Object.entries(ps[0] || {}).filter(_ref21 => {
-      let _ref22 = _slicedToArray(_ref21, 1),
-        k = _ref22[0];
-      return k !== code;
-    }))]);
+    if (builtInRs.includes(code)) { setRemovedBuiltIn(prev => [...prev, code]); }
+    else { setCustomCodes(prev => prev.filter(c => c !== code)); }
+    setDr(prev => { const n = {...prev}; delete n[code]; return n; });
+    const tabKey = getTabKey();
+    const cur = getTabData(tabKey);
+    const updated = {...cur}; delete updated[code];
+    setPs([{...psObj, [tabKey]: updated}]);
   };
-  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement(Card, {
-    title: "Reason Codes (MTD)"
-  }, rs.length === 0 ? /*#__PURE__*/React.createElement("div", {
-    style: {
-      color: C.grayDark,
-      fontSize: 13,
-      marginBottom: 14,
-      fontStyle: "italic"
-    }
-  }, "No reason codes yet \u2014 add one below.") : /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "grid",
-      gridTemplateColumns: "1fr 1fr",
-      gap: 10,
-      marginBottom: 14
-    }
-  }, rs.map(r => /*#__PURE__*/React.createElement("div", {
-    key: r,
-    style: {
-      position: "relative"
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginBottom: 3
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: C.darkBlue,
-      fontWeight: 600
-    }
-  }, r), /*#__PURE__*/React.createElement("button", {
-    onClick: () => removeCode(r),
-    title: "Remove reason code",
-    style: {
-      background: "none",
-      border: "none",
-      color: C.red,
-      cursor: "pointer",
-      fontSize: 16,
-      padding: "0 4px",
-      lineHeight: 1,
-      opacity: 0.7
-    }
-  }, "\xD7")), /*#__PURE__*/React.createElement("input", {
-    type: "number",
-    min: 0,
-    value: dr[r] ?? 0,
-    onChange: e => setDr(p => ({
-      ...p,
-      [r]: parseInt(e.target.value) || 0
-    })),
-    style: is
-  })))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      borderTop: `1px solid ${C.gray}`,
-      paddingTop: 14,
-      marginTop: 4
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      color: C.darkBlue,
-      fontWeight: 700,
-      marginBottom: 8,
-      textTransform: "uppercase",
-      letterSpacing: "0.05em"
-    }
-  }, "Add Reason Code"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      gap: 8,
-      alignItems: "center"
-    }
-  }, /*#__PURE__*/React.createElement("input", {
-    type: "text",
-    value: newCode,
-    onChange: e => setNewCode(e.target.value),
-    onKeyDown: e => e.key === "Enter" && addCode(),
-    placeholder: "e.g. Weather, Equipment Failure\u2026",
-    style: {
-      ...is,
-      flex: 1,
-      padding: "7px 10px"
-    }
-  }), /*#__PURE__*/React.createElement("button", {
-    onClick: addCode,
-    style: {
-      background: C.blue,
-      border: "none",
-      borderRadius: 6,
-      padding: "7px 18px",
-      color: C.white,
-      fontWeight: 700,
-      fontSize: 13,
-      cursor: "pointer",
-      fontFamily: FONT,
-      whiteSpace: "nowrap"
-    }
-  }, "+ Add"), addMsg && /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 13,
-      color: addMsg === "Added!" ? C.green : C.red,
-      fontWeight: 700,
-      whiteSpace: "nowrap"
-    }
-  }, addMsg))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: "flex",
-      alignItems: "center",
-      gap: 12,
-      marginTop: 14
-    }
-  }, /*#__PURE__*/React.createElement("button", {
-    onClick: save,
-    style: {
-      background: C.darkBlue,
-      border: "none",
-      borderRadius: 6,
-      padding: "8px 22px",
-      color: C.white,
-      fontWeight: 700,
-      fontSize: 13,
-      cursor: "pointer",
-      fontFamily: FONT
-    }
-  }, "\uD83D\uDCBE Save"), msg && /*#__PURE__*/React.createElement("span", {
-    style: {
-      fontSize: 13,
-      color: C.green,
-      fontWeight: 700
-    }
-  }, "\u2713 Saved!"))), tot > 0 && /*#__PURE__*/React.createElement(Card, {
-    title: "Pareto Analysis",
-    noTitleBorder: true
-  }, (() => {
-    const visItems = srt.filter(r => (sv[r] || 0) > 0);
-    const maxV = Math.max(...visItems.map(r => sv[r] || 0));
+
+  // Get last 6 months
+  const last6Months = [];
+  for (let i = 6; i >= 1; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    last6Months.push(MONTHS_LIST[d.getMonth()]);
+  }
+
+  const tabBtnStyle = (active) => ({
+    padding: "6px 14px", borderRadius: "6px 6px 0 0", fontSize: 12, fontWeight: 700,
+    cursor: "pointer", fontFamily: FONT, border: `1px solid ${C.gray}`,
+    borderBottom: active ? `2px solid ${C.blue}` : `1px solid ${C.gray}`,
+    background: active ? C.white : C.offWhite,
+    color: active ? C.blue : C.grayDark, marginRight: 2
+  });
+
+  const monthBtnStyle = (active) => ({
+    padding: "4px 10px", borderRadius: 5, fontSize: 11, fontWeight: 600,
+    cursor: "pointer", fontFamily: FONT,
+    border: `1px solid ${active ? C.blue : C.gray}`,
+    background: active ? C.blue : C.white,
+    color: active ? C.white : C.grayDark, marginRight: 4, marginBottom: 6
+  });
+
+  // Chart rendering (same as before)
+  const renderChart = () => {
+    if (tot === 0) return React.createElement("div", {style: {color: C.grayDark, fontSize: 13, padding: "20px 0", fontStyle: "italic", fontFamily: FONT}}, "No data for this period.");
+    const visItems = srt.filter(r => (activeData[r] || 0) > 0);
+    const maxV = Math.max(...visItems.map(r => activeData[r] || 0));
     const CHART_H = 220;
-    const BAR_AREA = 0.7;
-    // Cumulative % points for line
     let cumPct = 0;
-    const cumPts = visItems.map(r => {
-      cumPct += (sv[r] || 0) / tot * 100;
-      return cumPct;
-    });
-    return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-      style: {
-        position: "relative",
-        marginBottom: 8
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 40,
-        bottom: 28,
-        pointerEvents: "none"
-      }
-    }, [0, 25, 50, 75, 100].map(pv => {
-      const yPct = 100 - pv;
-      return /*#__PURE__*/React.createElement("div", {
-        key: pv,
-        style: {
-          position: "absolute",
-          top: `${yPct}%`,
-          left: 0,
-          right: 0,
-          display: "flex",
-          alignItems: "center"
-        }
-      }, /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontSize: 10,
-          color: C.grayDark,
-          width: 28,
-          textAlign: "right",
-          flexShrink: 0,
-          marginRight: 4
-        }
-      }, pv), /*#__PURE__*/React.createElement("div", {
-        style: {
-          flex: 1,
-          borderTop: `1px solid ${pv === 0 ? "#ccc" : "#eee"}`
-        }
-      }));
-    })), /*#__PURE__*/React.createElement("div", {
-      style: {
-        position: "absolute",
-        top: 0,
-        right: 0,
-        bottom: 28,
-        width: 36,
-        pointerEvents: "none"
-      }
-    }, [0, 25, 50, 75, 100].map(pv => {
-      const yPct = 100 - pv;
-      return /*#__PURE__*/React.createElement("div", {
-        key: pv,
-        style: {
-          position: "absolute",
-          top: `${yPct}%`,
-          right: 0,
-          transform: "translateY(-50%)"
-        }
-      }, /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontSize: 10,
-          color: C.amber
-        }
-      }, pv, "%"));
-    })), /*#__PURE__*/React.createElement("div", {
-      style: {
-        marginLeft: 36,
-        marginRight: 40,
-        height: CHART_H,
-        position: "relative",
-        marginBottom: 52
-      }
-    }, /*#__PURE__*/React.createElement("svg", {
-      width: "100%",
-      height: CHART_H,
-      style: {
-        display: "block",
-        overflow: "visible"
-      }
-    }, (() => {
-      const n = visItems.length;
-      const barW = Math.min(60, BAR_AREA / n * 100);
-      const gap = (100 - barW * n) / (n + 1);
-      return visItems.map((r, i) => {
-        const v = sv[r] || 0;
-        const barH = v / maxV * CHART_H * 0.85;
-        const x = `${gap * (i + 1) + barW * i}%`;
-        const bw = `${barW}%`;
-        const barColor = bc[i] || C.grayDark;
-        const cx = `${gap * (i + 1) + barW * i + barW / 2}%`;
-        const lineY = CHART_H - cumPts[i] / 100 * CHART_H;
-        const prevY = i > 0 ? CHART_H - cumPts[i - 1] / 100 * CHART_H : null;
-        const prevCx = i > 0 ? `${gap * i + barW * (i - 1) + barW / 2}%` : null;
-        return /*#__PURE__*/React.createElement("g", {
-          key: r
-        }, /*#__PURE__*/React.createElement("rect", {
-          x: x,
-          y: CHART_H - barH,
-          width: bw,
-          height: barH,
-          fill: barColor,
-          rx: 3
-        }), /*#__PURE__*/React.createElement("text", {
-          x: cx,
-          y: CHART_H - barH - 6,
-          textAnchor: "middle",
-          fontSize: 11,
-          fill: barColor,
-          fontWeight: "700",
-          fontFamily: FONT
-        }, v), prevY != null && /*#__PURE__*/React.createElement("line", {
-          x1: prevCx,
-          y1: prevY,
-          x2: cx,
-          y2: lineY,
-          stroke: C.amber,
-          strokeWidth: 2.5,
-          strokeLinecap: "round"
-        }), /*#__PURE__*/React.createElement("circle", {
-          cx: cx,
-          cy: lineY,
-          r: 5,
-          fill: C.amber,
-          stroke: C.white,
-          strokeWidth: 1.5
-        }), /*#__PURE__*/React.createElement("text", {
-          x: cx,
-          y: lineY - 9,
-          textAnchor: "middle",
-          fontSize: 10,
-          fill: C.amber,
-          fontWeight: "700",
-          fontFamily: FONT
-        }, cumPts[i].toFixed(0), "%"));
-      });
-    })()), /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        position: "absolute",
-        bottom: -44,
-        left: 0,
-        right: 0
-      }
-    }, visItems.map((r, i) => {
-      const n = visItems.length;
-      const barW = Math.min(60, BAR_AREA / n * 100);
-      const gap = (100 - barW * n) / (n + 1);
-      return /*#__PURE__*/React.createElement("div", {
-        key: r,
-        style: {
-          position: "absolute",
-          left: `${gap * (i + 1) + barW * i + barW / 2}%`,
-          transform: "translateX(-50%)",
-          textAlign: "center",
-          width: `${barW + gap + 4}%`
-        }
-      }, /*#__PURE__*/React.createElement("span", {
-        style: {
-          fontSize: 13,
-          fontWeight: 600,
-          color: C.darkBlue,
-          fontFamily: FONT,
-          lineHeight: 1.3,
-          display: "block",
-          whiteSpace: "normal",
-          wordBreak: "break-word"
-        }
-      }, r));
-    })))), /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        gap: 20,
-        marginTop: 32,
-        paddingTop: 10,
-        borderTop: `1px solid ${C.gray}`,
-        flexWrap: "wrap",
-        alignItems: "center"
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 5,
-        fontSize: 12,
-        color: C.grayDark,
-        fontFamily: FONT
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        width: 14,
-        height: 14,
-        borderRadius: 3,
-        background: C.darkBlue,
-        display: "inline-block"
-      }
-    }), "Occurrences"), /*#__PURE__*/React.createElement("span", {
-      style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 5,
-        fontSize: 12,
-        color: C.grayDark,
-        fontFamily: FONT
-      }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        width: 20,
-        height: 3,
-        background: C.amber,
-        display: "inline-block",
-        borderRadius: 2
-      }
-    }), "Cumulative %"), /*#__PURE__*/React.createElement("span", {
-      style: {
-        marginLeft: "auto",
-        fontSize: 13,
-        color: C.darkBlue,
-        fontWeight: 700,
-        fontFamily: FONT
-      }
-    }, "Total: ", tot)));
-  })()));
+    const cumPts = visItems.map(r => { cumPct += (activeData[r] || 0) / tot * 100; return cumPct; });
+    return React.createElement("div", null,
+      React.createElement("div", {style: {position: "relative", marginBottom: 8}},
+        React.createElement("div", {style: {position: "absolute", top: 0, left: 0, right: 40, bottom: 28, pointerEvents: "none"}},
+          [0,25,50,75,100].map(pv => React.createElement("div", {key: pv, style: {position: "absolute", top: `${100-pv}%`, left: 0, right: 0, display: "flex", alignItems: "center"}},
+            React.createElement("span", {style: {fontSize: 10, color: C.grayDark, width: 28, textAlign: "right", flexShrink: 0, marginRight: 4}}, pv),
+            React.createElement("div", {style: {flex: 1, borderTop: `1px solid ${pv===0?"#ccc":"#eee"}`}})
+          ))
+        ),
+        React.createElement("div", {style: {position: "absolute", top: 0, right: 0, bottom: 28, width: 36, pointerEvents: "none"}},
+          [0,25,50,75,100].map(pv => React.createElement("div", {key: pv, style: {position: "absolute", top: `${100-pv}%`, right: 0, transform: "translateY(-50%)"}},
+            React.createElement("span", {style: {fontSize: 10, color: C.amber}}, `${pv}%`)
+          ))
+        ),
+        React.createElement("div", {style: {marginLeft: 36, marginRight: 40, height: CHART_H, position: "relative", marginBottom: 52}},
+          React.createElement("svg", {width: "100%", height: CHART_H, style: {display: "block", overflow: "visible"}},
+            (() => {
+              const n = visItems.length;
+              const barW = Math.min(60, 0.7/n*100);
+              const gap = (100 - barW*n) / (n+1);
+              return visItems.map((r, i) => {
+                const v = activeData[r] || 0;
+                const barH = (v/maxV)*CHART_H*0.85;
+                const x = `${gap*(i+1)+barW*i}%`;
+                const bw = `${barW}%`;
+                const barColor = bc[i] || C.grayDark;
+                const cx = `${gap*(i+1)+barW*i+barW/2}%`;
+                const lineY = CHART_H - (cumPts[i]/100)*CHART_H;
+                const prevY = i > 0 ? CHART_H - (cumPts[i-1]/100)*CHART_H : null;
+                const prevCx = i > 0 ? `${gap*i+barW*(i-1)+barW/2}%` : null;
+                return React.createElement("g", {key: r},
+                  React.createElement("rect", {x, y: CHART_H-barH, width: bw, height: barH, fill: barColor, rx: 3}),
+                  React.createElement("text", {x: cx, y: CHART_H-barH-6, textAnchor: "middle", fontSize: 11, fill: barColor, fontWeight: "700", fontFamily: FONT}, v),
+                  prevY != null && React.createElement("line", {x1: prevCx, y1: prevY, x2: cx, y2: lineY, stroke: C.amber, strokeWidth: 2.5, strokeLinecap: "round"}),
+                  React.createElement("circle", {cx, cy: lineY, r: 5, fill: C.amber, stroke: C.white, strokeWidth: 1.5}),
+                  React.createElement("text", {x: cx, y: lineY-9, textAnchor: "middle", fontSize: 10, fill: C.amber, fontWeight: "700", fontFamily: FONT}, `${cumPts[i].toFixed(0)}%`)
+                );
+              });
+            })()
+          ),
+          React.createElement("div", {style: {display: "flex", position: "absolute", bottom: -44, left: 0, right: 0}},
+            visItems.map((r, i) => {
+              const n = visItems.length;
+              const barW = Math.min(60, 0.7/n*100);
+              const gap = (100 - barW*n) / (n+1);
+              return React.createElement("div", {key: r, style: {position: "absolute", left: `${gap*(i+1)+barW*i+barW/2}%`, transform: "translateX(-50%)", textAlign: "center", width: `${barW+gap+4}%`}},
+                React.createElement("span", {style: {fontSize: 13, fontWeight: 600, color: C.darkBlue, fontFamily: FONT, lineHeight: 1.3, display: "block", whiteSpace: "normal", wordBreak: "break-word"}}, r)
+              );
+            })
+          )
+        )
+      ),
+      React.createElement("div", {style: {display: "flex", gap: 20, marginTop: 32, paddingTop: 10, borderTop: `1px solid ${C.gray}`, flexWrap: "wrap", alignItems: "center"}},
+        React.createElement("span", {style: {display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: C.grayDark, fontFamily: FONT}},
+          React.createElement("span", {style: {width: 14, height: 14, borderRadius: 3, background: C.darkBlue, display: "inline-block"}}), "Occurrences"
+        ),
+        React.createElement("span", {style: {display: "flex", alignItems: "center", gap: 5, fontSize: 12, color: C.grayDark, fontFamily: FONT}},
+          React.createElement("span", {style: {width: 20, height: 3, background: C.amber, display: "inline-block", borderRadius: 2}}), "Cumulative %"
+        ),
+        React.createElement("span", {style: {marginLeft: "auto", fontSize: 13, color: C.darkBlue, fontWeight: 700, fontFamily: FONT}}, `Total: ${tot}`)
+      )
+    );
+  };
+
+  return React.createElement("div", null,
+    // Tab bar
+    React.createElement("div", {style: {display: "flex", borderBottom: `2px solid ${C.gray}`, marginBottom: 16}},
+      React.createElement("button", {onClick: () => setParetoTab('MTD'), style: tabBtnStyle(paretoTab==='MTD')}, `MTD (${currentMonthShort})`),
+      React.createElement("button", {onClick: () => setParetoTab('YTD'), style: tabBtnStyle(paretoTab==='YTD')}, "YTD"),
+      React.createElement("button", {onClick: () => setParetoTab('Months'), style: tabBtnStyle(paretoTab==='Months')}, "Last 6 Months")
+    ),
+
+    // Month selector for Last 6 Months tab
+    paretoTab === 'Months' && React.createElement("div", {style: {marginBottom: 12}},
+      last6Months.map(mo => React.createElement("button", {key: mo, onClick: () => setSelectedMonth(mo), style: monthBtnStyle(selectedMonth===mo)}, mo.slice(0,3)))
+    ),
+
+    // Pareto chart
+    tot > 0 && React.createElement("div", {style: {marginBottom: 16}}, renderChart()),
+
+    // Reason code inputs
+    React.createElement("div", {style: {background: C.white, borderRadius: 9, border: `1px solid ${C.gray}`, padding: "14px 16px", marginBottom: 14}},
+      React.createElement("div", {style: {fontSize: 11, fontWeight: 700, color: C.darkBlue, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10}},
+        `Reason Codes — ${paretoTab === 'Months' ? selectedMonth : paretoTab === 'MTD' ? currentMonth + ' (MTD)' : paretoTab}`
+      ),
+      paretoTab === 'YTD' ? React.createElement("div", {style: {color: C.grayDark, fontSize: 12, marginBottom: 14, fontStyle: "italic"}}, "YTD totals are calculated from monthly data.")
+        : rs.length === 0
+        ? React.createElement("div", {style: {color: C.grayDark, fontSize: 13, marginBottom: 14, fontStyle: "italic"}}, "No reason codes yet — add one below.")
+        : React.createElement("div", {style: {display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14}},
+            rs.map(r => React.createElement("div", {key: r, style: {position: "relative"}},
+              React.createElement("div", {style: {display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 3}},
+                React.createElement("div", {style: {fontSize: 12, color: C.darkBlue, fontWeight: 600}}, r),
+                React.createElement("button", {onClick: () => removeCode(r), title: "Remove reason code", style: {background: "none", border: "none", color: C.red, cursor: "pointer", fontSize: 16, padding: "0 4px", lineHeight: 1, opacity: 0.7}}, "×")
+              ),
+              React.createElement("input", {
+                type: "number", min: 0,
+                value: dr[r] ?? 0,
+                onChange: e => setDr(p => ({...p, [r]: parseInt(e.target.value)||0})),
+                style: is
+              })
+            ))
+          ),
+
+      // Add reason code - hide on YTD
+      paretoTab !== 'YTD' && React.createElement("div", {style: {borderTop: `1px solid ${C.gray}`, paddingTop: 14, marginTop: 4}},
+        React.createElement("div", {style: {fontSize: 12, color: C.darkBlue, fontWeight: 700, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em"}}, "Add Reason Code"),
+        React.createElement("div", {style: {display: "flex", gap: 8, alignItems: "center"}},
+          React.createElement("input", {type: "text", value: newCode, onChange: e => setNewCode(e.target.value), onKeyDown: e => e.key==="Enter" && addCode(), placeholder: "e.g. Weather, Equipment Failure\u2026", style: {...is, flex: 1, padding: "7px 10px"}}),
+          React.createElement("button", {onClick: addCode, style: {background: C.blue, border: "none", borderRadius: 6, padding: "7px 18px", color: C.white, fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: FONT, whiteSpace: "nowrap"}}, "+ Add"),
+          addMsg && React.createElement("span", {style: {fontSize: 13, color: addMsg==="Added!"?C.green:C.red, fontWeight: 700, whiteSpace: "nowrap"}}, addMsg)
+        )
+      ),
+
+      // Save button - hide on YTD
+      paretoTab !== 'YTD' && React.createElement("div", {style: {display: "flex", alignItems: "center", gap: 12, marginTop: 14}},
+        React.createElement("button", {onClick: save, style: {background: C.darkBlue, border: "none", borderRadius: 6, padding: "8px 22px", color: C.white, fontWeight: 700, fontSize: 13, cursor: "pointer", fontFamily: FONT}}, "\uD83D\uDCBE Save"),
+        msg && React.createElement("span", {style: {fontSize: 13, color: C.green, fontWeight: 700}}, "\u2713 Saved!")
+      )
+    )
+  );
 }
+
 function CILogView(_ref23) {
   let ciLog = _ref23.ciLog,
     setCiLog = _ref23.setCiLog,
@@ -2261,6 +2097,7 @@ function CILogView(_ref23) {
     owner: owners[0] || "",
     dueDate: "",
     status: "Problem Identified",
+    emailNotification: false,
     updates: []
   };
   const _useState13 = useState(bl),
@@ -2283,6 +2120,10 @@ function CILogView(_ref23) {
     _useState22 = _slicedToArray(_useState21, 2),
     ut = _useState22[0],
     setUt = _useState22[1];
+  const _useStateUb = React.useState(false),
+    _useStateUb2 = _slicedToArray(_useStateUb, 2),
+    ub = _useStateUb2[0],
+    setUb = _useStateUb2[1];
   const _useState23 = useState(null),
     _useState24 = _slicedToArray(_useState23, 2),
     cd = _useState24[0],
@@ -2328,15 +2169,18 @@ function CILogView(_ref23) {
       ...e,
       updates: [...(e.updates || []), {
         ts: new Date().toISOString().slice(0, 10),
-        text: ut.trim()
+        text: ut.trim(),
+        blocker: ub
       }]
     } : e));
     setUt("");
+    setUb(false);
   };
   const sf = (a, b) => {
     if (sb === "status") return sts.indexOf(a.status) - sts.indexOf(b.status);
     if (sb === "dueDate") return (a.dueDate || "").localeCompare(b.dueDate || "");
     if (sb === "owner") return (a.owner || "").localeCompare(b.owner || "");
+    if (sb === "pctComplete") return (b.pctComplete || 0) - (a.pctComplete || 0);
     return (a.date || "").localeCompare(b.date || "");
   };
   const dp = ciLog.map((e, i) => ({
@@ -2478,7 +2322,17 @@ function CILogView(_ref23) {
     }),
     placeholder: "Countermeasure\u2026",
     style: is
-  }))), /*#__PURE__*/React.createElement("button", {
+  }))), /*#__PURE__*/React.createElement("label", {
+    style: {display: "flex", alignItems: "center", gap: 8, marginTop: 12, cursor: "pointer", fontSize: 13, color: C.darkBlue, fontFamily: FONT}
+  },
+    React.createElement("input", {
+      type: "checkbox",
+      checked: form.emailNotification || false,
+      onChange: e => setForm({...form, emailNotification: e.target.checked}),
+      style: {accentColor: C.darkBlue, width: 16, height: 16}
+    }),
+    "Email Notification"
+  ), /*#__PURE__*/React.createElement("button", {
     onClick: addE,
     style: {
       marginTop: 12,
@@ -2524,6 +2378,9 @@ function CILogView(_ref23) {
   }), /*#__PURE__*/React.createElement(SB, {
     v: "owner",
     l: "Owner"
+  }), /*#__PURE__*/React.createElement(SB, {
+    v: "pctComplete",
+    l: "% Complete"
   })), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "flex",
@@ -2649,7 +2506,7 @@ function CILogView(_ref23) {
         color: C.grayDark,
         marginBottom: 3
       }
-    }, e.date, e.owner && ` · ${e.owner}`, e.dueDate && ` · Due: ${e.dueDate}`), /*#__PURE__*/React.createElement("div", {
+    }, e.date, e.owner && ` · ${e.owner}`, e.dueDate && ` · Due: ${e.dueDate}`, e.pctComplete != null && e.pctComplete > 0 && ` · ${e.pctComplete}% complete`), /*#__PURE__*/React.createElement("div", {
       style: {
         fontSize: 13,
         color: C.darkBlue,
@@ -2811,7 +2668,30 @@ function CILogView(_ref23) {
         ...is,
         background: C.white
       }
-    }))), /*#__PURE__*/React.createElement("div", {
+    })), /*#__PURE__*/React.createElement("div", null,
+      React.createElement("div", {style: {fontSize: 10, color: C.grayDark, fontWeight: 700, marginBottom: 3, textTransform: "uppercase"}}, "% Complete"),
+      React.createElement("input", {type: "number", min: 0, max: 100,
+        value: e.pctComplete ?? 0,
+        onChange: function(ev){uf(i,"pctComplete",Math.min(100,Math.max(0,parseInt(ev.target.value)||0)))},
+        style: {...is, background: C.white}})
+    ), /*#__PURE__*/React.createElement("div", {style: {gridColumn: "1/-1"}},
+      React.createElement("div", {style: {fontSize: 10, color: C.grayDark, fontWeight: 700, marginBottom: 3, textTransform: "uppercase"}}, "Root Cause Note"),
+      React.createElement("input", {type: "text",
+        value: e.rootCause || "",
+        onChange: function(ev){uf(i,"rootCause",ev.target.value)},
+        placeholder: "Describe root cause\u2026",
+        style: {...is, background: C.white}})
+    ), /*#__PURE__*/React.createElement("div", {style: {gridColumn: "1/-1", marginTop: 4}},
+      React.createElement("label", {style: {display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 12, color: C.darkBlue, fontFamily: FONT}},
+        React.createElement("input", {
+          type: "checkbox",
+          checked: e.emailNotification || false,
+          onChange: function(ev){uf(i,"emailNotification",ev.target.checked)},
+          style: {accentColor: C.darkBlue, width: 16, height: 16}
+        }),
+        "Email Notification"
+      )
+    )), /*#__PURE__*/React.createElement("div", {
       style: {
         marginBottom: 12
       }
@@ -2835,22 +2715,53 @@ function CILogView(_ref23) {
       style: {
         fontSize: 12,
         color: C.darkBlue,
-        borderLeft: `2px solid ${C.blue}`,
+        borderLeft: `2px solid ${u.blocker ? C.red : C.blue}`,
         paddingLeft: 8,
-        marginBottom: 5
+        marginBottom: 5,
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 8
       }
-    }, /*#__PURE__*/React.createElement("span", {
-      style: {
-        color: C.grayDark,
-        marginRight: 6
-      }
-    }, u.ts), u.text)), /*#__PURE__*/React.createElement("div", {
+    },
+    /*#__PURE__*/React.createElement("label", {
+      title: "Blocker",
+      style: {display: "flex", alignItems: "center", gap: 3, cursor: "pointer", flexShrink: 0, marginTop: 1}
+    },
+      React.createElement("input", {
+        type: "checkbox",
+        checked: u.blocker || false,
+        onChange: function(ev) {
+          const newUpdates = (e.updates||[]).map((x,xi) => xi===ui ? {...x, blocker: ev.target.checked} : x);
+          uf(i, "updates", newUpdates);
+        },
+        style: {accentColor: C.red, width: 13, height: 13}
+      }),
+      React.createElement("span", {style: {fontSize: 10, color: u.blocker ? C.red : C.grayDark, fontWeight: u.blocker ? 700 : 400}}, "Blocker")
+    ),
+    /*#__PURE__*/React.createElement("div", null,
+      React.createElement("span", {style: {color: C.grayDark, marginRight: 6}}, u.ts),
+      u.text
+    )
+  )), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 7,
-        marginTop: 7
+        marginTop: 7,
+        alignItems: "center"
       }
-    }, /*#__PURE__*/React.createElement("input", {
+    },
+    /*#__PURE__*/React.createElement("label", {
+      style: {display: "flex", alignItems: "center", gap: 4, cursor: "pointer", flexShrink: 0, fontSize: 12, color: ub ? C.red : C.grayDark, fontWeight: ub ? 700 : 400}
+    },
+      React.createElement("input", {
+        type: "checkbox",
+        checked: ub,
+        onChange: ev => setUb(ev.target.checked),
+        style: {accentColor: C.red, width: 13, height: 13}
+      }),
+      "Blocker"
+    ),
+    /*#__PURE__*/React.createElement("input", {
       value: ut,
       onChange: ev => setUt(ev.target.value),
       onKeyDown: ev => ev.key === "Enter" && au(i),
@@ -4329,9 +4240,14 @@ function TrendsView(_ref40) {
   }, /*#__PURE__*/React.createElement("table", {
     style: {
       width: "100%",
-      borderCollapse: "collapse"
+      borderCollapse: "collapse",
+      tableLayout: "fixed"
     }
-  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
+  }, /*#__PURE__*/React.createElement("colgroup", null,
+    React.createElement("col", {style: {width: "140px"}}),
+    grp.metricKeys.map(k => React.createElement("col", {key: k})),
+    React.createElement("col", {style: {width: "80px"}})
+  ), /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
     style: {
       background: C.darkBlue
     }
