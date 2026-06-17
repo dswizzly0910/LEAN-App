@@ -1764,14 +1764,29 @@ function TrendView(_ref15) {
     }, lbl));
   }))));
 }
+const PARETO_CATEGORIES = {
+  OT: ["Late Departure from Warehouse", "Traffic", "White Glove"],
+  Scanning: ["Driver Error", "Scanner Failure"],
+  CES: ["No Precall", "Damage", "Property Damage", "Missing Items", "Missing Timeframe", "Driver Interaction"]
+};
+
 function ParetoView(_ref20) {
   let metric = _ref20.metric,
     ps = _ref20.ps,
-    setPs = _ref20.setPs;
+    setPs = _ref20.setPs,
+    _ref20$metricId = _ref20.metricId,
+    metricId = _ref20$metricId === void 0 ? "" : _ref20$metricId,
+    _ref20$rowCats = _ref20.rowCategories,
+    rowCategories = _ref20$rowCats === void 0 ? {} : _ref20$rowCats,
+    _ref20$orders = _ref20.sheetsOrders,
+    sheetsOrders = _ref20$orders === void 0 ? [] : _ref20$orders,
+    _ref20$rk = _ref20.regionKey,
+    regionKey = _ref20$rk === void 0 ? "" : _ref20$rk;
 
   const MONTHS_LIST = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   const now = new Date();
   const currentMonth = MONTHS_LIST[now.getMonth()];
+
   const currentMonthShort = now.toLocaleString('en-US',{month:'short'});
 
   // Tab state: MTD, YTD, or a specific month name
@@ -1786,6 +1801,44 @@ function ParetoView(_ref20) {
     _useStateMonthTab2 = _slicedToArray(_useStateMonthTab, 2),
     selectedMonth = _useStateMonthTab2[0],
     setSelectedMonth = _useStateMonthTab2[1];
+
+  // Compute Pareto counts from Data tab category selections
+  const hasParetoCategories = !!(PARETO_CATEGORIES[metricId] && PARETO_CATEGORIES[metricId].length > 0);
+  const orderMonthMap = (() => {
+    const map = {};
+    (sheetsOrders || []).forEach(r => {
+      // Use deliveryDT as the date source (format: 'YYYY-MM-DD HH:MM' or 'YYYY-MM-DD')
+      const dateStr = r.deliveryDT || r.date || '';
+      if (r.order && dateStr) {
+        const datePart = dateStr.split(' ')[0]; // strip time if present
+        const mo = new Date(datePart + 'T00:00:00').getMonth();
+        if (!isNaN(mo)) map[r.order] = MONTHS_LIST[mo];
+      }
+    });
+    return map;
+  })();
+  const computedCountsByMonth = (() => {
+    if (!hasParetoCategories) return null;
+    const byMonth = {};
+    Object.entries(rowCategories).forEach(([orderId, cat]) => {
+      if (!cat) return;
+      const mo = orderMonthMap[orderId] || currentMonth;
+      if (!byMonth[mo]) byMonth[mo] = {};
+      byMonth[mo][cat] = (byMonth[mo][cat] || 0) + 1;
+    });
+    return byMonth;
+  })();
+  const computedCounts = (() => {
+    if (!hasParetoCategories || !computedCountsByMonth) return null;
+    if (paretoTab === 'MTD') return computedCountsByMonth[currentMonth] || {};
+    if (paretoTab === 'Months') return computedCountsByMonth[selectedMonth] || {};
+    if (paretoTab === 'YTD') {
+      const totals = {};
+      Object.values(computedCountsByMonth).forEach(mo => Object.entries(mo).forEach(([cat, cnt]) => { totals[cat] = (totals[cat]||0) + cnt; }));
+      return totals;
+    }
+    return null;
+  })();
 
   // ps structure: {MTD: [{code:count}], Jan: [{...}], Feb: [{...}], ...}
   // For backwards compat, if ps is an array treat it as MTD data
@@ -1817,10 +1870,12 @@ function ParetoView(_ref20) {
     });
   });
 
-  // Active data depends on tab
-  const activeData = paretoTab === 'YTD' ? ytdData
+  // Active data: use computed counts from Data tab categories when available
+  const rawActiveData = paretoTab === 'YTD' ? ytdData
     : paretoTab === 'Months' ? getTabData(selectedMonth)
     : getTabData(currentMonth);
+  const useComputedData = hasParetoCategories && computedCounts && (paretoTab === 'MTD' || paretoTab === 'Months' || paretoTab === 'YTD');
+  const activeData = useComputedData ? computedCounts : rawActiveData;
 
   // Built-in reason codes from metric definition
   const builtInRs = Object.keys(metric.pareto || {});
@@ -1852,7 +1907,7 @@ function ParetoView(_ref20) {
     ? allYtdKeys.filter(k => (ytdData[k] || 0) > 0)
     : [...builtInRs.filter(k => !removedBuiltIn.includes(k)), ...customCodes];
 
-  const sv = {...activeData};
+  const sv = {...(activeData||{})};
   rs.forEach(k => { if (sv[k] == null) sv[k] = 0; });
 
   const _useStateDr = React.useState({...sv}),
@@ -1877,8 +1932,13 @@ function ParetoView(_ref20) {
     addMsg = _useState10[0],
     setAddMsg = _useState10[1];
 
-  const tot = Object.values(activeData).reduce((s, v) => s + (parseInt(v) || 0), 0);
-  const srt = [...rs].sort((a, b) => (activeData[b] || 0) - (activeData[a] || 0));
+  const totData = useComputedData && computedCounts ? computedCounts : (activeData||{});
+  const tot = Object.values(totData).reduce((s, v) => s + (parseInt(v) || 0), 0);
+  // When using computed data, sort by activeData keys directly (category names)
+  const srtKeys = useComputedData && computedCounts
+    ? Object.keys(computedCounts).filter(k => (computedCounts[k] || 0) > 0)
+    : rs;
+  const srt = [...srtKeys].sort((a, b) => (activeData[b] || 0) - (activeData[a] || 0));
   const bc = [C.darkBlue, C.blue, "#5b8db8", "#7aafcf", "#9eb8cc", C.grayDark, "#a0aec0"];
   const is = {background: C.offWhite, border: `1px solid ${C.gray}`, borderRadius: 5, color: C.darkBlue, padding: "6px 8px", fontSize: 13, width: "100%", boxSizing: "border-box", fontFamily: FONT};
 
@@ -1938,7 +1998,11 @@ function ParetoView(_ref20) {
 
   // Chart rendering (same as before)
   const renderChart = () => {
-    if (tot === 0) return React.createElement("div", {style: {color: C.grayDark, fontSize: 13, padding: "20px 0", fontStyle: "italic", fontFamily: FONT}}, "No data for this period.");
+    if (tot === 0) return React.createElement("div", {style: {color: C.grayDark, fontSize: 13, padding: "20px 0", fontStyle: "italic", fontFamily: FONT}},
+      hasParetoCategories && useComputedData
+        ? "No categories selected yet. Go to the Data tab and assign a Category (Pareto) to each row."
+        : "No data for this period."
+    );
     const visItems = srt.filter(r => (activeData[r] || 0) > 0);
     const maxV = Math.max(...visItems.map(r => activeData[r] || 0));
     const CHART_H = 220;
@@ -2026,11 +2090,20 @@ function ParetoView(_ref20) {
     // Reason code inputs
     React.createElement("div", {style: {background: C.white, borderRadius: 9, border: `1px solid ${C.gray}`, padding: "14px 16px", marginBottom: 14}},
       React.createElement("div", {style: {fontSize: 11, fontWeight: 700, color: C.darkBlue, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10}},
-        `Reason Codes — ${paretoTab === 'Months' ? selectedMonth : paretoTab === 'MTD' ? currentMonth + ' (MTD)' : paretoTab}`
+        hasParetoCategories && (paretoTab === 'MTD' || paretoTab === 'Months') ? `Category Counts (from Data tab) — ${paretoTab === 'MTD' ? currentMonth + ' (MTD)' : selectedMonth}` : `Reason Codes — ${paretoTab === 'Months' ? selectedMonth : paretoTab === 'MTD' ? currentMonth + ' (MTD)' : paretoTab}`
       ),
       paretoTab === 'YTD' ? React.createElement("div", {style: {color: C.grayDark, fontSize: 12, marginBottom: 14, fontStyle: "italic"}}, "YTD totals are calculated from monthly data.")
         : rs.length === 0
         ? React.createElement("div", {style: {color: C.grayDark, fontSize: 13, marginBottom: 14, fontStyle: "italic"}}, "No reason codes yet — add one below.")
+        : hasParetoCategories && (paretoTab === 'MTD' || paretoTab === 'Months')
+        ? React.createElement("div", {style: {display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14}},
+            (PARETO_CATEGORIES[metricId] || []).map(r => React.createElement("div", {key: r},
+              React.createElement("div", {style: {fontSize: 12, color: C.darkBlue, fontWeight: 600, marginBottom: 3}}, r),
+              React.createElement("div", {style: {fontSize: 18, fontWeight: 700, color: C.darkBlue, padding: "6px 8px", background: C.offWhite, borderRadius: 5, border: `1px solid ${C.gray}`}},
+                computedCounts && computedCounts[r] ? computedCounts[r] : 0
+              )
+            ))
+          )
         : React.createElement("div", {style: {display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14}},
             rs.map(r => React.createElement("div", {key: r, style: {position: "relative"}},
               React.createElement("div", {style: {display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 3}},
@@ -2046,8 +2119,8 @@ function ParetoView(_ref20) {
             ))
           ),
 
-      // Add reason code - hide on YTD
-      paretoTab !== 'YTD' && React.createElement("div", {style: {borderTop: `1px solid ${C.gray}`, paddingTop: 14, marginTop: 4}},
+      // Add reason code - hide on YTD and auto-count tabs
+      paretoTab !== 'YTD' && !(hasParetoCategories && (paretoTab === 'MTD' || paretoTab === 'Months')) && React.createElement("div", {style: {borderTop: `1px solid ${C.gray}`, paddingTop: 14, marginTop: 4}},
         React.createElement("div", {style: {fontSize: 12, color: C.darkBlue, fontWeight: 700, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.05em"}}, "Add Reason Code"),
         React.createElement("div", {style: {display: "flex", gap: 8, alignItems: "center"}},
           React.createElement("input", {type: "text", value: newCode, onChange: e => setNewCode(e.target.value), onKeyDown: e => e.key==="Enter" && addCode(), placeholder: "e.g. Weather, Equipment Failure\u2026", style: {...is, flex: 1, padding: "7px 10px"}}),
@@ -2097,7 +2170,8 @@ function CILogView(_ref23) {
     owner: owners[0] || "",
     dueDate: "",
     status: "Problem Identified",
-    emailNotification: false,
+    rootCause: "",
+    emailNotification: {notifyStatusChange: false, sendDailyReminders: false, notifyOnComplete: false},
     updates: []
   };
   const _useState13 = useState(bl),
@@ -2314,6 +2388,23 @@ function CILogView(_ref23) {
       marginBottom: 3,
       fontWeight: 700
     }
+  }, "ROOT CAUSE NOTE"), /*#__PURE__*/React.createElement("input", {
+    type: "text",
+    value: form.rootCause || "",
+    onChange: e => setForm({...form, rootCause: e.target.value}),
+    placeholder: "Describe root cause\u2026",
+    style: is
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      gridColumn: "1/-1"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      color: C.grayDark,
+      marginBottom: 3,
+      fontWeight: 700
+    }
   }, "ACTION ITEM"), /*#__PURE__*/React.createElement("input", {
     value: form.actionItem,
     onChange: e => setForm({
@@ -2322,17 +2413,18 @@ function CILogView(_ref23) {
     }),
     placeholder: "Countermeasure\u2026",
     style: is
-  }))), /*#__PURE__*/React.createElement("label", {
-    style: {display: "flex", alignItems: "center", gap: 8, marginTop: 12, cursor: "pointer", fontSize: 13, color: C.darkBlue, fontFamily: FONT}
-  },
-    React.createElement("input", {
-      type: "checkbox",
-      checked: form.emailNotification || false,
-      onChange: e => setForm({...form, emailNotification: e.target.checked}),
-      style: {accentColor: C.darkBlue, width: 16, height: 16}
-    }),
-    "Email Notification"
-  ), /*#__PURE__*/React.createElement("button", {
+  }))), /*#__PURE__*/React.createElement("div", {style: {gridColumn: "1/-1", marginTop: 8}},
+    React.createElement("div", {style: {fontSize: 11, color: C.darkBlue, fontWeight: 700, marginBottom: 6, textTransform: "uppercase"}}, "Email Notification"),
+    React.createElement("div", {style: {display: "flex", flexDirection: "column", gap: 6, padding: "8px 12px", background: C.offWhite, borderRadius: 6, border: `1px solid ${C.gray}`}},
+      ["notifyStatusChange", "sendDailyReminders", "notifyOnComplete"].map(function(key, ki) {
+        var labels = ["Notify when Status is Changed", "Send Daily Reminders", "Notify when Complete"];
+        return React.createElement("label", {key: key, style: {display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 12, color: C.darkBlue, fontFamily: FONT}},
+          React.createElement("input", {type: "checkbox",
+            checked: !!(form.emailNotification && form.emailNotification[key]),
+            onChange: function(ev) { setForm({...form, emailNotification: {...(form.emailNotification||{}), [key]: ev.target.checked}}); },
+            style: {accentColor: C.darkBlue, width: 14, height: 14}}),
+          labels[ki]);
+      }))), /*#__PURE__*/React.createElement("button", {
     onClick: addE,
     style: {
       marginTop: 12,
@@ -2632,7 +2724,14 @@ function CILogView(_ref23) {
         ...is,
         background: C.white
       }
-    })), /*#__PURE__*/React.createElement("div", {
+    })), /*#__PURE__*/React.createElement("div", {style: {gridColumn: "1/-1"}},
+      React.createElement("div", {style: {fontSize: 10, color: C.grayDark, fontWeight: 700, marginBottom: 3, textTransform: "uppercase"}}, "Root Cause Note"),
+      React.createElement("input", {type: "text",
+        value: e.rootCause || "",
+        onChange: function(ev){uf(i,"rootCause",ev.target.value)},
+        placeholder: "Describe root cause\u2026",
+        style: {...is, background: C.white}})
+    ), /*#__PURE__*/React.createElement("div", {
       style: {
         gridColumn: "1/-1"
       }
@@ -2682,16 +2781,18 @@ function CILogView(_ref23) {
         placeholder: "Describe root cause\u2026",
         style: {...is, background: C.white}})
     ), /*#__PURE__*/React.createElement("div", {style: {gridColumn: "1/-1", marginTop: 4}},
-      React.createElement("label", {style: {display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 12, color: C.darkBlue, fontFamily: FONT}},
-        React.createElement("input", {
-          type: "checkbox",
-          checked: e.emailNotification || false,
-          onChange: function(ev){uf(i,"emailNotification",ev.target.checked)},
-          style: {accentColor: C.darkBlue, width: 16, height: 16}
-        }),
-        "Email Notification"
-      )
-    )), /*#__PURE__*/React.createElement("div", {
+      React.createElement("div", {style: {fontSize: 10, color: C.darkBlue, fontWeight: 700, marginBottom: 6, textTransform: "uppercase"}}, "Email Notification"),
+      React.createElement("div", {style: {display: "flex", flexDirection: "column", gap: 6, padding: "8px 12px", background: C.offWhite, borderRadius: 6, border: `1px solid ${C.gray}`}},
+        ["notifyStatusChange", "sendDailyReminders", "notifyOnComplete"].map(function(key, ki) {
+          var labels = ["Notify when Status is Changed", "Send Daily Reminders", "Notify when Complete"];
+          var cur = (e.emailNotification && typeof e.emailNotification === "object") ? e.emailNotification : {};
+          return React.createElement("label", {key: key, style: {display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 12, color: C.darkBlue, fontFamily: FONT}},
+            React.createElement("input", {type: "checkbox",
+              checked: !!(cur[key]),
+              onChange: function(ev) { uf(i, "emailNotification", {...cur, [key]: ev.target.checked}); },
+              style: {accentColor: C.darkBlue, width: 14, height: 14}}),
+            labels[ki]);
+        })))), /*#__PURE__*/React.createElement("div", {
       style: {
         marginBottom: 12
       }
@@ -2731,7 +2832,7 @@ function CILogView(_ref23) {
         type: "checkbox",
         checked: u.blocker || false,
         onChange: function(ev) {
-          const newUpdates = (e.updates||[]).map((x,xi) => xi===ui ? {...x, blocker: ev.target.checked} : x);
+          var newUpdates = (e.updates||[]).map(function(_nu,_ni){if(_ni!==ui)return _nu; var _nb={}; for(var _k in _nu)_nb[_k]=_nu[_k]; _nb.blocker=ev.target.checked; return _nb;});
           uf(i, "updates", newUpdates);
         },
         style: {accentColor: C.red, width: 13, height: 13}
@@ -3353,11 +3454,16 @@ const n2d = n => new Date(Math.round(n) * 86400000).toISOString().slice(0, 10);
 function DataView(_ref25) {
   let metricId = _ref25.metricId,
     regionKey = _ref25.regionKey,
-    sheetsOrders = _ref25.sheetsOrders;
+    sheetsOrders = _ref25.sheetsOrders,
+    _ref25$rowCats = _ref25.rowCategories,
+    rowCategories = _ref25$rowCats === void 0 ? {} : _ref25$rowCats,
+    _ref25$setRowCats = _ref25.setRowCategories,
+    setRowCategories = _ref25$setRowCats === void 0 ? () => {} : _ref25$setRowCats;
   const _useState27 = useState("Failure"),
     _useState28 = _slicedToArray(_useState27, 2),
     filterStatus = _useState28[0],
     setFilterStatus = _useState28[1];
+  const setCat = (orderId, val) => setRowCategories(prev => ({...prev, [orderId]: val}));
   const _useState29 = useState("All"),
     _useState30 = _slicedToArray(_useState29, 2),
     filterFacility = _useState30[0],
@@ -3619,7 +3725,7 @@ function DataView(_ref25) {
       width: "100%",
       borderCollapse: "collapse"
     }
-  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, [["order", "System #"], ["status", "Status"], ["facility", "Facility"], ["billTo", "Bill To"], ["manufacturer", "Manufacturer"], ...(metricId === "RNS" ? [] : [["driver", "Driver"]]), ...(metricId === "RNS" ? [["receiveDT", "Receive Date & Time"], ["deliveryDT", "Scheduled Delivery Date"]] : metricId === "Dwell" ? [] : [["deliveryDT", "Delivery Date & Time"]]), ...(metricId === "OT" ? [["tfStart", "Timeframe Start"], ["tfEnd", "Timeframe End"]] : []), ...(metricId === "Scanning" ? [["scanType", "Scan Type"]] : []), ...(metricId === "Shortages" ? [["totalItems", "Total Items"], ["shortItems", "Short Items at Loadout"]] : []), ...(metricId === "CES" ? [["cesScore", "CES Score"], ["audited", "Audited"], ["customerFeedback", "Customer Feedback"]] : []), ...(metricId === "Dwell" ? [["actualReceiveDate", "Actual Receive Date"], ["deliveryDT", "Delivery Date & Time"], ["dwellDays", "Dwell Days"]] : []), ...(metricId === "Preschedule" ? [["schedOnDate", "Scheduled On Date"], ["presActualReceiveDate", "Actual Receive Date"], ["deliveryDT", "Delivery Date & Time"]] : [])].map(_ref29 => {
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", null, [["order", "System #"], ["status", "Status"], ["facility", "Facility"], ["billTo", "Bill To"], ["manufacturer", "Manufacturer"], ...(metricId === "RNS" ? [] : [["driver", "Driver"]]), ...(metricId === "RNS" ? [["receiveDT", "Receive Date & Time"], ["deliveryDT", "Scheduled Delivery Date"]] : metricId === "Dwell" ? [] : [["deliveryDT", "Delivery Date & Time"]]), ...(metricId === "OT" ? [["tfStart", "Timeframe Start"], ["tfEnd", "Timeframe End"]] : []), ...(metricId === "Scanning" ? [["scanType", "Scan Type"]] : []), ...(metricId === "Shortages" ? [["totalItems", "Total Items"], ["shortItems", "Short Items at Loadout"]] : []), ...(metricId === "CES" ? [["cesScore", "CES Score"], ["audited", "Audited"], ["customerFeedback", "Customer Feedback"]] : []), ...(metricId === "Dwell" ? [["actualReceiveDate", "Actual Receive Date"], ["deliveryDT", "Delivery Date & Time"], ["dwellDays", "Dwell Days"]] : []), ...(metricId === "Preschedule" ? [["schedOnDate", "Scheduled On Date"], ["presActualReceiveDate", "Actual Receive Date"], ["deliveryDT", "Delivery Date & Time"]] : []), ["paretoCategory", "Category (Pareto)"]].map(_ref29 => {
     let _ref30 = _slicedToArray(_ref29, 2),
       col = _ref30[0],
       lbl = _ref30[1];
@@ -3724,7 +3830,28 @@ function DataView(_ref25) {
     }
   }, row.audited || "-"), metricId === "CES" && /*#__PURE__*/React.createElement("td", {
     style: tdStyle
-  }, row.customerFeedback || "—"))))))), /*#__PURE__*/React.createElement("div", {
+  }, row.customerFeedback || "—"), /*#__PURE__*/React.createElement("td", {
+    style: {...tdStyle, minWidth: 160}
+  }, /*#__PURE__*/React.createElement("div", {style: {display: "flex", gap: 4}},
+    /*#__PURE__*/React.createElement("select", {
+      value: rowCategories[row.order] || "",
+      onChange: e => setCat(row.order, e.target.value),
+      style: {fontSize: 12, border: `1px solid ${C.gray}`, borderRadius: 4, padding: "3px 6px", background: C.white, color: C.darkBlue, fontFamily: FONT, flex: 1, maxWidth: 130}
+    },
+      React.createElement("option", {value: ""}, "-- Select --"),
+      (PARETO_CATEGORIES[metricId] || []).map(cat => React.createElement("option", {key: cat, value: cat}, cat)),
+      rowCategories[row.order] && !(PARETO_CATEGORIES[metricId] || []).includes(rowCategories[row.order])
+        ? React.createElement("option", {value: rowCategories[row.order]}, rowCategories[row.order])
+        : null
+    ),
+    /*#__PURE__*/React.createElement("input", {
+      type: "text",
+      placeholder: "Other\u2026",
+      value: (PARETO_CATEGORIES[metricId] || []).includes(rowCategories[row.order] || "") ? "" : (rowCategories[row.order] || ""),
+      onChange: e => setCat(row.order, e.target.value),
+      style: {fontSize: 12, border: `1px solid ${C.gray}`, borderRadius: 4, padding: "3px 6px", fontFamily: FONT, width: 70, display: (PARETO_CATEGORIES[metricId] || []).length > 0 ? "block" : "block"}
+    })
+  )))))))), /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 6,
       fontSize: 11,
@@ -3831,6 +3958,10 @@ function RegionDashboard(_ref35) {
   const initPs = () => globalPs[regionKey] || Object.fromEntries(Object.keys(m).map(k => [k, [Object.fromEntries(Object.keys(m[k].pareto || {}).map(r => [r, 0]))]]));
   const ps = globalPs[regionKey] || initPs();
   const setPs = v => setGlobalPs(prev => ({...prev, [regionKey]: typeof v === 'function' ? v(prev[regionKey] || initPs()) : v}));
+  const _useStateRCG = React.useState({}),
+    _useStateRCG2 = _slicedToArray(_useStateRCG, 2),
+    rowCategories = _useStateRCG2[0],
+    setRowCategories = _useStateRCG2[1];
   // Use globalCl for persistence across navigation
   const cl = globalCl[regionKey] || Object.fromEntries(Object.keys(m).map(k => [k, m[k].ciLog || []]));
   const setCl = v => setGlobalCl(prev => ({...prev, [regionKey]: typeof v === 'function' ? v(prev[regionKey] || Object.fromEntries(Object.keys(m).map(k => [k, m[k].ciLog || []]))) : v}));
@@ -4034,6 +4165,7 @@ function RegionDashboard(_ref35) {
     metricId: sm
   }), tab === "pareto" && /*#__PURE__*/React.createElement(ParetoView, {
     metric: mt,
+    metricId: sm,
     ps: ps[sm],
     setPs: v => {
       setPs(p => ({
@@ -4041,7 +4173,10 @@ function RegionDashboard(_ref35) {
         [sm]: v
       }));
       if (v[0]) saveParetoToSheets(sm, v[0]);
-    }
+    },
+    rowCategories: rowCategories[sm] || {},
+    sheetsOrders: sheetsData && sheetsData.orders,
+    regionKey: regionKey
   }), tab === "ci" && /*#__PURE__*/React.createElement(CILogView, {
     ciLog: cl[sm],
     setCiLog: v => {
@@ -4057,7 +4192,9 @@ function RegionDashboard(_ref35) {
   }), tab === "data" && /*#__PURE__*/React.createElement(DataView, {
     metricId: sm,
     regionKey: regionKey,
-    sheetsOrders: sheetsData && sheetsData.orders
+    sheetsOrders: sheetsData && sheetsData.orders,
+    rowCategories: rowCategories[sm] || {},
+    setRowCategories: v => setRowCategories(prev => ({...prev, [sm]: typeof v === 'function' ? v(prev[sm]||{}) : v}))
   })));
 }
 
@@ -4240,14 +4377,9 @@ function TrendsView(_ref40) {
   }, /*#__PURE__*/React.createElement("table", {
     style: {
       width: "100%",
-      borderCollapse: "collapse",
-      tableLayout: "fixed"
+      borderCollapse: "collapse"
     }
-  }, /*#__PURE__*/React.createElement("colgroup", null,
-    React.createElement("col", {style: {width: "140px"}}),
-    grp.metricKeys.map(k => React.createElement("col", {key: k})),
-    React.createElement("col", {style: {width: "80px"}})
-  ), /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
+  }, /*#__PURE__*/React.createElement("thead", null, /*#__PURE__*/React.createElement("tr", {
     style: {
       background: C.darkBlue
     }
@@ -5261,6 +5393,17 @@ function SummaryView(_ref54) {
     }))));
   })));
 }
+class ErrorBoundary extends React.Component {
+  constructor(props) { super(props); this.state = {error: null}; }
+  componentDidCatch(e) { this.setState({error: e.message + " @ " + (e.stack||"").split("\n")[1]}); }
+  static getDerivedStateFromError(e) { return {error: e.message}; }
+  render() {
+    if (this.state.error) return React.createElement("div", {style:{padding:20,color:"red",fontFamily:"monospace",fontSize:12,background:"#fff3f3",margin:10,borderRadius:8,whiteSpace:"pre-wrap"}},
+      "Error: " + this.state.error);
+    return this.props.children;
+  }
+}
+
 function App() {
   var _REGIONS$view, _REGION_METRIC_KEYS$v;
   const _useState55 = useState("summary"),
@@ -5545,12 +5688,15 @@ function App() {
       flex: 1,
       overflow: "hidden"
     }
-  }, view === "summary" ? /*#__PURE__*/React.createElement(SummaryView, {
-    onDrillDown: k => setView(k),
-    sheetsData: sheetsData
-  }) : view === "trends" ? /*#__PURE__*/React.createElement(TrendsView, {
-    sheetsData: sheetsData
-  }) : REGIONS[view] && /*#__PURE__*/React.createElement(RegionDashboard, {
+  }, view === "summary" ? /*#__PURE__*/React.createElement(ErrorBoundary, {key: "summary"},
+    React.createElement(SummaryView, {
+      onDrillDown: k => setView(k),
+      sheetsData: sheetsData
+    })) : view === "trends" ? /*#__PURE__*/React.createElement(ErrorBoundary, {key: "trends"},
+    React.createElement(TrendsView, {
+      sheetsData: sheetsData
+    })) : REGIONS[view] && /*#__PURE__*/React.createElement(ErrorBoundary, {key: view},
+  React.createElement(RegionDashboard, {
     region: REGIONS[view],
     regionKey: view,
     sheetsData: sheetsData,
@@ -5559,7 +5705,7 @@ function App() {
     setGlobalPs: setGlobalPs,
     globalCl: globalCl,
     setGlobalCl: setGlobalCl
-  })));
+  }))));
 }
 ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(App, null));
 
