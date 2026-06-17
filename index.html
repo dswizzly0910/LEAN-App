@@ -2415,16 +2415,46 @@ function CILogView(_ref23) {
     style: is
   }))), /*#__PURE__*/React.createElement("div", {style: {gridColumn: "1/-1", marginTop: 8}},
     React.createElement("div", {style: {fontSize: 11, color: C.darkBlue, fontWeight: 700, marginBottom: 6, textTransform: "uppercase"}}, "Email Notification"),
-    React.createElement("div", {style: {display: "flex", flexDirection: "column", gap: 6, padding: "8px 12px", background: C.offWhite, borderRadius: 6, border: `1px solid ${C.gray}`}},
+    React.createElement("div", {style: {display: "flex", flexDirection: "column", gap: 8, padding: "8px 12px", background: C.offWhite, borderRadius: 6, border: `1px solid ${C.gray}`}},
       ["notifyStatusChange", "sendDailyReminders", "notifyOnComplete"].map(function(key, ki) {
         var labels = ["Notify when Status is Changed", "Send Daily Reminders", "Notify when Complete"];
-        return React.createElement("label", {key: key, style: {display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 12, color: C.darkBlue, fontFamily: FONT}},
+        return React.createElement("label", {key: key, style: {display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 12, color: C.darkBlue, fontFamily: FONT}},
           React.createElement("input", {type: "checkbox",
             checked: !!(form.emailNotification && form.emailNotification[key]),
             onChange: function(ev) { setForm({...form, emailNotification: {...(form.emailNotification||{}), [key]: ev.target.checked}}); },
             style: {accentColor: C.darkBlue, width: 14, height: 14}}),
           labels[ki]);
-      }))), /*#__PURE__*/React.createElement("button", {
+      }),
+      React.createElement("div", {style: {display: "flex", gap: 16, marginTop: 2, paddingTop: 8, borderTop: `1px solid ${C.gray}`}},
+        ["notifyOwner", "notifyManager", "notifyBoth"].map(function(key, ki) {
+          var labels = ["Notify Owner", "Notify Manager", "Notify Both Owner & Manager"];
+          return React.createElement("label", {key: key, style: {display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 12, color: C.darkBlue, fontFamily: FONT}},
+            React.createElement("input", {type: "checkbox",
+              checked: !!(form.emailNotification && form.emailNotification[key]),
+              onChange: function(ev) { setForm({...form, emailNotification: {...(form.emailNotification||{}), [key]: ev.target.checked}}); },
+              style: {accentColor: C.darkBlue, width: 14, height: 14}}),
+            labels[ki]);
+        })),
+      React.createElement("div", {style: {paddingTop: 8, borderTop: `1px solid ${C.gray}`, marginTop: 2}},
+        React.createElement("label", {style: {display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 12, fontWeight: 600, color: C.darkBlue, fontFamily: FONT}},
+          React.createElement("input", {type: "checkbox",
+            checked: !!(form.emailNotification && form.emailNotification.notifyApproachingDue),
+            onChange: function(ev) { setForm({...form, emailNotification: {...(form.emailNotification||{}), notifyApproachingDue: ev.target.checked}}); },
+            style: {accentColor: C.darkBlue, width: 14, height: 14}}),
+          "Notify when approaching due date"),
+        form.emailNotification && form.emailNotification.notifyApproachingDue && React.createElement("div", {style: {display: "flex", gap: 20, marginTop: 6, marginLeft: 22, padding: "6px 10px", background: C.offWhite, borderRadius: 5, border: `1px solid ${C.gray}`}},
+          ["notify48hrsDue", "notify1WeekDue"].map(function(key, ki) {
+            var labels = ["48 hrs before due date", "1 week before due date"];
+            return React.createElement("label", {key: key, style: {display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 12, color: C.darkBlue, fontFamily: FONT}},
+              React.createElement("input", {type: "checkbox",
+                checked: !!(form.emailNotification && form.emailNotification[key]),
+                onChange: function(ev) { setForm({...form, emailNotification: {...(form.emailNotification||{}), [key]: ev.target.checked}}); },
+                style: {accentColor: C.blue, width: 13, height: 13}}),
+              labels[ki]);
+          })
+        )
+      )
+    ), /*#__PURE__*/React.createElement("button", {
     onClick: addE,
     style: {
       marginTop: 12,
@@ -2786,13 +2816,45 @@ function CILogView(_ref23) {
         ["notifyStatusChange", "sendDailyReminders", "notifyOnComplete"].map(function(key, ki) {
           var labels = ["Notify when Status is Changed", "Send Daily Reminders", "Notify when Complete"];
           var cur = (e.emailNotification && typeof e.emailNotification === "object") ? e.emailNotification : {};
-          return React.createElement("label", {key: key, style: {display: "flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 12, color: C.darkBlue, fontFamily: FONT}},
+          return React.createElement("label", {key: key, style: {display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 12, color: C.darkBlue, fontFamily: FONT}},
             React.createElement("input", {type: "checkbox",
               checked: !!(cur[key]),
               onChange: function(ev) { uf(i, "emailNotification", {...cur, [key]: ev.target.checked}); },
               style: {accentColor: C.darkBlue, width: 14, height: 14}}),
             labels[ki]);
-        })))), /*#__PURE__*/React.createElement("div", {
+        }),
+        React.createElement("div", {style: {display: "flex", gap: 16, marginTop: 2, paddingTop: 8, borderTop: `1px solid ${C.gray}`}},
+          ["notifyOwner", "notifyManager", "notifyBoth"].map(function(key2, ki2) {
+            var labels2 = ["Notify Owner", "Notify Manager", "Notify Both Owner & Manager"];
+            var cur2 = (e.emailNotification && typeof e.emailNotification === "object") ? e.emailNotification : {};
+            return React.createElement("label", {key: key2, style: {display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 12, color: C.darkBlue, fontFamily: FONT}},
+              React.createElement("input", {type: "checkbox",
+                checked: !!(cur2[key2]),
+                onChange: function(ev) { uf(i, "emailNotification", {...cur2, [key2]: ev.target.checked}); },
+                style: {accentColor: C.darkBlue, width: 14, height: 14}}),
+              labels2[ki2]);
+          })),
+        React.createElement("div", {style: {paddingTop: 8, borderTop: `1px solid ${C.gray}`, marginTop: 2}},
+          React.createElement("label", {style: {display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 12, fontWeight: 600, color: C.darkBlue, fontFamily: FONT}},
+            React.createElement("input", {type: "checkbox",
+              checked: !!((e.emailNotification && typeof e.emailNotification === "object") ? e.emailNotification.notifyApproachingDue : false),
+              onChange: function(ev) { var c4=(e.emailNotification&&typeof e.emailNotification==="object")?e.emailNotification:{}; uf(i,"emailNotification",{...c4,notifyApproachingDue:ev.target.checked}); },
+              style: {accentColor: C.darkBlue, width: 14, height: 14}}),
+            "Notify when approaching due date"),
+          e.emailNotification && typeof e.emailNotification === "object" && e.emailNotification.notifyApproachingDue && React.createElement("div", {style: {display: "flex", gap: 20, marginTop: 6, marginLeft: 22, padding: "6px 10px", background: C.offWhite, borderRadius: 5, border: `1px solid ${C.gray}`}},
+            ["notify48hrsDue", "notify1WeekDue"].map(function(key3, ki3) {
+              var labels3 = ["48 hrs before due date", "1 week before due date"];
+              var cur3 = (e.emailNotification && typeof e.emailNotification === "object") ? e.emailNotification : {};
+              return React.createElement("label", {key: key3, style: {display: "flex", alignItems: "center", gap: 6, cursor: "pointer", fontSize: 12, color: C.darkBlue, fontFamily: FONT}},
+                React.createElement("input", {type: "checkbox",
+                  checked: !!(cur3[key3]),
+                  onChange: function(ev) { uf(i, "emailNotification", {...cur3, [key3]: ev.target.checked}); },
+                  style: {accentColor: C.blue, width: 13, height: 13}}),
+                labels3[ki3]);
+            })
+          )
+        )
+      )), /*#__PURE__*/React.createElement("div", {
       style: {
         marginBottom: 12
       }
@@ -2936,8 +2998,8 @@ function CILogView(_ref23) {
         cursor: "pointer",
         fontFamily: FONT
       }
-    }, "Cancel")))));
-  })));
+        }, "Cancel"))))));
+  }))));
 }
 const SAMPLE_DATA = [{
   order: "1001423",
